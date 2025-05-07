@@ -23,8 +23,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_userautodelete\local\admin\admin_setting_configcheckbox_alwaystrue;
+
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_userautodelete_settings', new lang_string('pluginname', 'tool_userautodelete'));
@@ -40,7 +43,7 @@ if ($hassiteconfig) {
         ));
 
         // Exclude site admins.
-        $settings->add(new admin_setting_configcheckbox('tool_userautodelete/ignore_siteadmins',
+        $settings->add(new admin_setting_configcheckbox_alwaystrue('tool_userautodelete/ignore_siteadmins',
             get_string('setting_ignore_siteadmins', 'tool_userautodelete'),
             get_string('setting_ignore_siteadmins_desc', 'tool_userautodelete'),
             '1'
