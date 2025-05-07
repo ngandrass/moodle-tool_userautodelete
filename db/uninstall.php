@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Code that is executed before the tables and data are dropped during the plugin uninstallation
  *
  * @package     tool_userautodelete
- * @category    string
+ * @category    upgrade
  * @copyright   2025 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,4 +26,10 @@
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$string['pluginname'] = 'Automatic User Deletion';
+
+/**
+ * Custom uninstallation procedure
+ */
+function xmldb_tool_userautodelete_uninstall() {
+    return true;
+}

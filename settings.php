@@ -23,7 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+// @codingStandardsIgnoreLine
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_userautodelete_settings', new lang_string('pluginname', 'tool_userautodelete'));
