@@ -49,11 +49,11 @@ class check_and_delete_users extends \core\task\scheduled_task {
     /**
      * Do the job.
      * Throw exceptions on errors (the job will be retried).
+     * @throws \coding_exception
      */
     public function execute() {
-        // TODO (MDL-0): Implement execute() method.
-        mtrace("TODO!");
-        return;
+        $manager = new \tool_userautodelete\manager();
+        $manager->execute();
     }
 
 }
