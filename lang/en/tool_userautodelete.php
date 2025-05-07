@@ -31,6 +31,14 @@ $string['pluginname'] = 'Automatic User Deletion';
 $string['privacy:metadata'] = 'TODO';
 $string['task_check_and_delete_users'] = 'Check and delete users';
 
+// Task execution.
+$string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';
+$string['warning_email_disabled_skipping'] = 'Sending warning emails is disabled, skipping step ...';
+$string['warning_email_sent_to_user'] = 'Warning email sent to user with ID {$a}';
+$string['delete_email_sent_to_user'] = 'Deletion notification email sent to user with ID {$a}';
+$string['user_deleted'] = 'User with ID {$a} was deleted';
+$string['user_recovered'] = 'User with ID {$a} was previously flagged as inactive but returned. User will not be deleted.';
+
 // Admin settings.
 $string['setting_enable'] = 'Enable plugin';
 $string['setting_enable_desc'] = 'Enables or disables the plugin globally. If this is disabled, no action will be performed.';
@@ -64,3 +72,16 @@ $string['setting_warning_email_subject_default'] = 'Your account will be deleted
 $string['setting_warning_email_body'] = 'Mail body';
 $string['setting_warning_email_body_desc'] = 'The body of the warning email.';
 $string['setting_warning_email_body_default'] = '<h1>TODO TODO TODO!</h1>Your account will be deleted soon! Please login to keep your account active.';
+
+// Errors.
+$string['error_invalid_config_aborting'] = 'Invalid plugin configuration found. Aborting ...';
+$string['error_delete_threshold_days_negative'] = 'The deletion threshold days must be greater than 0.';
+$string['error_warning_threshold_days_negative'] = 'The warning threshold days must be greater than 0.';
+$string['error_warning_threshold_days_geq_delete'] = 'The warning threshold days must be less than the deletion threshold days.';
+$string['error_warning_email_subject_empty'] = 'The warning email subject must not be empty.';
+$string['error_warning_email_body_empty'] = 'The warning email body is empty.';
+$string['error_delete_email_subject_empty'] = 'The deletion email subject must not be empty.';
+$string['error_delete_email_body_empty'] = 'The deletion email body is empty.';
+$string['error_sending_warning_mail_to_user'] = 'Sending warning email to user with ID {$a} failed.';
+$string['error_sending_delete_mail_to_user'] = 'Sending deletion notification email to user with ID {$a} failed.';
+$string['error_deleting_user'] = 'Deleting user with ID {$a} failed.';

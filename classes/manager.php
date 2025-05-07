@@ -51,26 +51,28 @@ class manager {
      *
      * This method is called regularly by the check_and_delete_users scheduled task.
      *
-     * @return void
+     * @return bool True, if executed successfully
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function execute(): void {
+    public function execute(): bool {
         // Validate config and check if the plugin is enabled.
         if (!$this->validate_config()) {
-            logger::error(get_string('error_invalid_config', 'tool_userautodelete'));
-            return;
+            logger::error(get_string('error_invalid_config_aborting', 'tool_userautodelete'));
+            return false;
         }
 
         if (!$this->config->enable) {
             logger::info(get_string('plugin_disabled_skipping_execution', 'tool_userautodelete'));
-            return;
+            return false;
         }
 
         // Execute the main workflow.
         $this->find_and_notify_inactive_users();
         $this->delete_inactive_users();
         $this->cleanup();
+
+        return true;
     }
 
     /**
@@ -138,7 +140,7 @@ class manager {
         global $DB;
 
         if (!$this->config->warning_email_enable) {
-            logger::info(get_string('log_warning_email_disabled', 'tool_userautodelete'));
+            logger::info(get_string('warning_email_disabled_skipping', 'tool_userautodelete'));
             return;
         }
 
@@ -178,7 +180,7 @@ class manager {
                 'userid' => $user->id,
                 'timesent' => time(),
             ]);
-            logger::info(get_string('log_warning_email_sent', 'tool_userautodelete', $user->id));
+            logger::info(get_string('warning_email_sent_to_user', 'tool_userautodelete', $user->id));
         }
     }
 
@@ -218,7 +220,7 @@ class manager {
                 )) {
                     logger::error(get_string('error_sending_delete_mail_to_user', 'tool_userautodelete', $user->id));
                 } else {
-                    logger::info(get_string('log_delete_email_sent', 'tool_userautodelete', $user->id));
+                    logger::info(get_string('delete_email_sent_to_user', 'tool_userautodelete', $user->id));
                 }
             }
 
@@ -228,7 +230,7 @@ class manager {
                 continue;
             }
 
-            logger::info(get_string('log_user_deleted', 'tool_userautodelete', $user->id));
+            logger::info(get_string('user_deleted', 'tool_userautodelete', $user->id));
         }
     }
 
@@ -259,7 +261,9 @@ class manager {
         // Drop recovered users from the internal state table and log.
         foreach ($recoveredusers as $user) {
             $DB->delete_records('tool_autouserdelete_mail', ['userid' => $user->id]);
-            logger::info(get_string('log_user_recovered', 'tool_userautodelete', $user->id));
+            if (!$user->deleted) {
+                logger::info(get_string('user_recovered', 'tool_userautodelete', $user->id));
+            }
         }
     }
 
