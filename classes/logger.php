@@ -36,6 +36,27 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  */
 class logger {
 
+    /** @var bool If true, all logging operations are suppressed */
+    protected static bool $suppresslogs = false;
+
+    /**
+     * Enables logging globally
+     *
+     * @return void
+     */
+    public static function enable(): void {
+        self::$suppresslogs = false;
+    }
+
+    /**
+     * Disables logging globally
+     *
+     * @return void
+     */
+    public static function disable(): void {
+        self::$suppresslogs = true;
+    }
+
     /**
      * Logs a debug message
      *
@@ -43,7 +64,9 @@ class logger {
      * @return void
      */
     public static function debug(string $message): void {
-        mtrace("[DEBUG] $message");
+        if (!self::$suppresslogs) {
+            mtrace("[DEBUG] $message");
+        }
     }
 
     /**
@@ -53,7 +76,9 @@ class logger {
      * @return void
      */
     public static function info(string $message): void {
-        mtrace("[INFO] $message");
+        if (!self::$suppresslogs) {
+            mtrace("[INFO] $message");
+        }
     }
 
     /**
@@ -63,7 +88,9 @@ class logger {
      * @return void
      */
     public static function warning(string $message): void {
-        mtrace("[WARN] $message");
+        if (!self::$suppresslogs) {
+            mtrace("[WARN] $message");
+        }
     }
 
     /**
@@ -73,7 +100,9 @@ class logger {
      * @return void
      */
     public static function error(string $message): void {
-        mtrace("[ERROR] $message");
+        if (!self::$suppresslogs) {
+            mtrace("[ERROR] $message");
+        }
     }
 
 }
