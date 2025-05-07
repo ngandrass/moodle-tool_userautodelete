@@ -129,12 +129,34 @@ class manager {
     }
 
     /**
+     * Returns a list of user IDs that are always ignored
+     *
+     * @return array List of user IDs to ignore
+     * @throws \dml_exception
+     */
+    protected function get_ignored_user_ids(): array {
+        global $CFG, $DB;
+
+        // Always ignore site admins.
+        $ignoreduserids = explode(',', $CFG->siteadmins);
+
+        // Ignore the guest user.
+        $guestuserid = $DB->get_field('user', 'id', ['username' => 'guest']);
+        if ($guestuserid) {
+            $ignoreduserids[] = $guestuserid;
+        }
+
+        return $ignoreduserids;
+    }
+
+    /**
      * Searches for users that have been inactive and fall into the warning /
      * notification time period. Sends a warning mail and keeps track of mails
      * sent.
      *
      * @return void
      * @throws \coding_exception
+     * @throws \dml_exception
      */
     protected function find_and_notify_inactive_users(): void {
         global $DB;
@@ -148,18 +170,27 @@ class manager {
         $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
         $notifytime = $deletetime + ($this->config->warning_threshold_days * DAYSECS);
 
+        $ignoreduseridssql = join(',', self::get_ignored_user_ids());
         $userstonotify = $DB->get_records_sql("
             SELECT u.*
             FROM {user} u
-                LEFT JOIN {tool_autouserdelete_mail} m ON u.id = m.userid
+                LEFT JOIN {tool_userautodelete_mail} m ON u.id = m.userid
             WHERE
                 u.deleted = 0 AND
+                u.id NOT IN ({$ignoreduseridssql}) AND
                 m.userid IS NULL AND
-                u.lastaccess < :notifytime AND
-                u.lastaccess > :deletetime
+                (
+                    --v Users that have never logged in (compare timecreated).
+                    (u.lastaccess = 0 AND u.timecreated < :notifytime1 AND u.timecreated > :deletetime1)
+                    OR
+                    --v Users that have logged in at least one time (compare lastaccess).
+                    (u.lastaccess > 0 AND u.lastaccess < :notifytime2 AND u.lastaccess > :deletetime2)
+                )
         ", [
-            'deletetime' => $deletetime,
-            'notifytime' => $notifytime,
+            'deletetime1' => $deletetime,
+            'deletetime2' => $deletetime,
+            'notifytime1' => $notifytime,
+            'notifytime2' => $notifytime,
         ]);
 
         // Notify users.
@@ -176,7 +207,7 @@ class manager {
             }
 
             // Log the sent mail.
-            $DB->insert_record('tool_autouserdelete_mail', [
+            $DB->insert_record('tool_userautodelete_mail', [
                 'userid' => $user->id,
                 'timesent' => time(),
             ]);
@@ -197,20 +228,29 @@ class manager {
 
         // Identify users to delete.
         $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
+        $ignoreduseridssql = join(',', self::get_ignored_user_ids());
         $userstodelete = $DB->get_records_sql("
             SELECT *
             FROM {user}
             WHERE
-                u.deleted = 0 AND
-                u.lastaccess < :deletetime
+                id NOT IN ({$ignoreduseridssql}) AND
+                deleted = 0 AND
+                (
+                    --v Users that have never logged in (compare timecreated).
+                    (lastaccess = 0 AND timecreated < :deletetime1)
+                    OR
+                    --v Users that have logged in at least one time (compare lastaccess).
+                    (lastaccess > 0 AND lastaccess < :deletetime2)
+                )
         ", [
-            'deletetime' => $deletetime,
+            'deletetime1' => $deletetime,
+            'deletetime2' => $deletetime,
         ]);
 
         // Delete users.
         foreach ($userstodelete as $user) {
             // Send deletion mail if enabled.
-            if ($this->config->delete_mail_enable) {
+            if ($this->config->delete_email_enable) {
                 if (!email_to_user(
                     $user,
                     get_admin(),
@@ -249,7 +289,7 @@ class manager {
         $notifytime = $deletetime + ($this->config->warning_threshold_days * DAYSECS);
         $recoveredusers = $DB->get_records_sql("
             SELECT u.id, u.deleted
-            FROM {tool_autouserdelete_mail} m
+            FROM {tool_userautodelete_mail} m
                 INNER JOIN {user} u ON u.id = m.userid
             WHERE
                 u.deleted = 1 OR
@@ -260,7 +300,7 @@ class manager {
 
         // Drop recovered users from the internal state table and log.
         foreach ($recoveredusers as $user) {
-            $DB->delete_records('tool_autouserdelete_mail', ['userid' => $user->id]);
+            $DB->delete_records('tool_userautodelete_mail', ['userid' => $user->id]);
             if (!$user->deleted) {
                 logger::info(get_string('user_recovered', 'tool_userautodelete', $user->id));
             }
