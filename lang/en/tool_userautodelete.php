@@ -23,7 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// @codingStandardsIgnoreLine
+// @codingStandardsIgnoreFile
+
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // General.
