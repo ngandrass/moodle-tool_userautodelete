@@ -76,6 +76,13 @@ if ($hassiteconfig) {
             PARAM_INT
         ));
 
+        // Anonymize user data.
+        $settings->add(new admin_setting_configcheckbox('tool_userautodelete/anonymize_user_data',
+            get_string('setting_anonymize_user_data', 'tool_userautodelete'),
+            get_string('setting_anonymize_user_data_desc', 'tool_userautodelete'),
+            '1'
+        ));
+
         // Enable deletion notifications.
         $settings->add(new admin_setting_configcheckbox('tool_userautodelete/delete_email_enable',
             get_string('setting_delete_email_enable', 'tool_userautodelete'),

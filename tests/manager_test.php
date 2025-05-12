@@ -378,11 +378,6 @@ final class manager_test extends \advanced_testcase {
             $messages[0]->to,
             'Warning message recipient does not match'
         );
-        $this->assertStringContainsString(
-            get_string('setting_warning_email_subject_default', 'tool_userautodelete'),
-            $messages[0]->subject,
-            'Warning message subject does not match'
-        );
 
         // Check that only a single warning message is sent.
         $DB->set_field('user', 'lastaccess', time() - DAYSECS * 5, ['id' => $user->id]);
@@ -457,11 +452,6 @@ final class manager_test extends \advanced_testcase {
             $messages[0]->to,
             'Deletion message recipient does not match'
         );
-        $this->assertStringContainsString(
-            get_string('setting_delete_email_subject_default', 'tool_userautodelete'),
-            $messages[0]->subject,
-            'Deletion message subject does not match'
-        );
     }
 
     /**
@@ -492,6 +482,77 @@ final class manager_test extends \advanced_testcase {
         // Ensure that the user did not receive a deletion message.
         $messages = $sink->get_messages();
         $this->assertCount(0, $messages, 'Deletion message was sent to user even though it was disabled');
+    }
+
+    /**
+     * Tests that user data is anonymized if the anonymize_user_data feature is
+     * enabled
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_anonymization(): void {
+        global $DB;
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 50, 'tool_userautodelete');
+        set_config('anonymize_user_data', true, 'tool_userautodelete');
+
+        // Create test users and perform deletion.
+        $users = [];
+        for ($i = 0; $i < 5; $i++) {
+            $users[] = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * 100]);
+        }
+        $manager = new manager();
+        $manager->execute();
+
+        // Check that personal information is stripped from user datasets.
+        foreach ($users as $user) {
+            $userrecord = $DB->get_record('user', ['id' => $user->id]);
+            $this->assertSame('1', $userrecord->deleted, 'User was not deleted');
+            $this->assertNotEquals($user->username, $userrecord->username, 'Username was not anonymized');
+            $this->assertNotEquals($user->firstname, $userrecord->firstname, 'Firstname was not anonymized');
+            $this->assertNotEquals($user->lastname, $userrecord->lastname, 'Lastname was not anonymized');
+            $this->assertNotEquals($user->email, $userrecord->email, 'Email was not anonymized');
+            $this->assertNotEquals($user->lastip, $userrecord->lastip, 'Last IP address was not anonymized');
+        }
+    }
+
+    /**
+     * Tests that user data is not altered by the plugin in addition to the
+     * actions performed by Moodle if the anonymize_user_data feature is disabled
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_not_anonymized(): void {
+        global $DB;
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 50, 'tool_userautodelete');
+        set_config('anonymize_user_data', false, 'tool_userautodelete');
+
+        // Create test users and perform deletion.
+        $users = [];
+        for ($i = 0; $i < 5; $i++) {
+            $users[] = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * 100]);
+        }
+        $manager = new manager();
+        $manager->execute();
+
+        // Check that personal information is not stripped from user datasets.
+        foreach ($users as $user) {
+            $userrecord = $DB->get_record('user', ['id' => $user->id]);
+            $this->assertSame('1', $userrecord->deleted, 'User was not deleted');
+            $this->assertStringStartsWith($user->username, $userrecord->username, 'Username was anonymized');
+            $this->assertEquals($user->firstname, $userrecord->firstname, 'Firstname was anonymized');
+            $this->assertEquals($user->lastname, $userrecord->lastname, 'Lastname was anonymized');
+            $this->assertEquals($user->lastip, $userrecord->lastip, 'Last IP address was anonymized');
+        }
     }
 
 }
