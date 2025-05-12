@@ -272,8 +272,150 @@ final class manager_test extends \advanced_testcase {
         ), 'User entry was not removed from mail table');
     }
 
-    // TODO (MDL-0): Test all the mail stuff (warning + deletion).#
-    // See: https://docs.moodle.org/dev/Writing_PHPUnit_tests#Testing_sending_of_emails .
+    /**
+     * Tests that a user that is eligible for receiving a warning message
+     * actually receives it
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_receives_warning_message(): void {
+        global $DB;
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 10, 'tool_userautodelete');
+        set_config('warning_threshold_days', 5, 'tool_userautodelete');
+
+        // Prepare mail sink.
+        unset_config('noemailever');
+        $sink = $this->redirectEmails();
+
+        // Create a user that is eligible for receiving a warning message.
+        $user = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * 6]);
+        $manager = new manager();
+        $manager->execute();
+
+        // Ensure that the user received a warning message.
+        $messages = $sink->get_messages();
+        $this->assertCount(1, $messages, 'Warning message was not sent to user');
+        $this->assertEquals(
+            $user->email,
+            $messages[0]->to,
+            'Warning message recipient does not match'
+        );
+        $this->assertStringContainsString(
+            get_string('setting_warning_email_subject_default', 'tool_userautodelete'),
+            $messages[0]->subject,
+            'Warning message subject does not match'
+        );
+
+        // Check that only a single warning message is sent.
+        $DB->set_field('user', 'lastaccess', time() - DAYSECS * 5, ['id' => $user->id]);
+        $manager->execute();
+        $this->assertCount(1, $sink->get_messages(), 'Multiple warning messages were sent to user');
+
+        $DB->set_field('user', 'lastaccess', time() - DAYSECS * 7, ['id' => $user->id]);
+        $manager->execute();
+        $this->assertCount(1, $sink->get_messages(), 'Multiple warning messages were sent to user');
+    }
+
+    /**
+     * Tests that a user does not receive a warning message if warnings are
+     * disabled
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_receives_no_warning_message(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 10, 'tool_userautodelete');
+        set_config('warning_threshold_days', 5, 'tool_userautodelete');
+        set_config('warning_email_enable', false, 'tool_userautodelete');
+
+        // Prepare mail sink.
+        unset_config('noemailever');
+        $sink = $this->redirectEmails();
+
+        // Create a user that is eligible for receiving a warning message.
+        $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * 6]);
+        $manager = new manager();
+        $manager->execute();
+
+        // Ensure that the user did not receive a warning message.
+        $messages = $sink->get_messages();
+        $this->assertCount(0, $messages, 'Warning message was sent to user even though it was disabled');
+    }
+
+    /**
+     * Tests that a user that was deleted receives a deletion message if
+     * deletion messages are enabled
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_receives_deletion_message(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 10, 'tool_userautodelete');
+        set_config('warning_threshold_days', 5, 'tool_userautodelete');
+        set_config('delete_email_enable', true, 'tool_userautodelete');
+
+        // Prepare mail sink.
+        unset_config('noemailever');
+        $sink = $this->redirectEmails();
+
+        // Create a user that is eligible for receiving a deletion message.
+        $user = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * 11]);
+        $manager = new manager();
+        $manager->execute();
+
+        // Ensure that the user received a deletion message.
+        $messages = $sink->get_messages();
+        $this->assertCount(1, $messages, 'Deletion message was not sent to user');
+        $this->assertEquals(
+            $user->email,
+            $messages[0]->to,
+            'Deletion message recipient does not match'
+        );
+        $this->assertStringContainsString(
+            get_string('setting_delete_email_subject_default', 'tool_userautodelete'),
+            $messages[0]->subject,
+            'Deletion message subject does not match'
+        );
+    }
+
+    /**
+     * Tests that a user that was deleted does not receive a deletion message if
+     * deletion messages are disabled
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_receives_no_deletion_message(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 10, 'tool_userautodelete');
+        set_config('warning_threshold_days', 5, 'tool_userautodelete');
+        set_config('delete_email_enable', false, 'tool_userautodelete');
+
+        // Prepare mail sink.
+        unset_config('noemailever');
+        $sink = $this->redirectEmails();
+
+        // Create a user that is eligible for receiving a deletion message.
+        $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * 11]);
+        $manager = new manager();
+        $manager->execute();
+
+        // Ensure that the user did not receive a deletion message.
+        $messages = $sink->get_messages();
+        $this->assertCount(0, $messages, 'Deletion message was sent to user even though it was disabled');
+    }
 
     // TODO (MDL-0): Implement & test role ignoring.
 
