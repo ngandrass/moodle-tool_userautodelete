@@ -31,9 +31,42 @@ namespace tool_userautodelete;
 final class logger_test extends \advanced_testcase {
 
     /**
+     * This method is called before each test.
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        logger::enable();
+    }
+
+    /**
+     * Tests that the logger can be globally enabled
+     *
+     * @covers \tool_userautodelete\logger::enable
+     *
+     * @return void
+     */
+    public function test_enable_logging(): void {
+        logger::debug("test foo bar baz 42");
+        $this->expectOutputRegex("/.*test foo bar baz 42.*/");
+    }
+
+    /**
+     * Tests that the logger can be globally disabled
+     *
+     * @covers \tool_userautodelete\logger::disable
+     *
+     * @return void
+     */
+    public function test_disable_logging(): void {
+        logger::disable();
+        logger::debug("test foo bar baz 42");
+        $this->expectOutputString('');
+    }
+
+    /**
      * Tests logging different messages using different log levels
      *
-     * @covers       \tool_userautodelete\logger_test::test_true
+     * @covers       \tool_userautodelete\logger
      * @dataProvider mtrace_logging_dataprovider
      *
      * @param string $logfn Name of the logging function to call
