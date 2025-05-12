@@ -218,6 +218,11 @@ class manager {
             'notifytime2' => $notifytime,
         ]);
 
+        if (empty($userstonotify)) {
+            logger::info(get_string('no_users_to_warn', 'tool_userautodelete'));
+            return;
+        }
+
         // Notify users.
         foreach ($userstonotify as $user) {
             if (!email_to_user(
@@ -279,6 +284,12 @@ class manager {
             'deletetime1' => $deletetime,
             'deletetime2' => $deletetime,
         ]);
+
+        // No users to delete.
+        if (empty($userstodelete)) {
+            logger::info(get_string('no_users_to_delete', 'tool_userautodelete'));
+            return;
+        }
 
         // Delete users.
         foreach ($userstodelete as $user) {

@@ -38,6 +38,8 @@ $string['warning_email_sent_to_user'] = 'Warning email sent to user with ID {$a}
 $string['delete_email_sent_to_user'] = 'Deletion notification email sent to user with ID {$a}';
 $string['user_deleted'] = 'User with ID {$a} was deleted';
 $string['user_recovered'] = 'User with ID {$a} was previously flagged as inactive but returned. User will not be deleted.';
+$string['no_users_to_warn'] = 'No users eligible for a warning email found.';
+$string['no_users_to_delete'] = 'No users eligible for deletion found.';
 
 // Admin settings.
 $string['setting_enable'] = 'Enable plugin';
