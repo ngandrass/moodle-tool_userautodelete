@@ -23,6 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $OUTPUT;
+
 use tool_userautodelete\local\admin\admin_setting_configcheckbox_alwaystrue;
 
 // @codingStandardsIgnoreLine
@@ -60,6 +62,31 @@ if ($hassiteconfig) {
             get_string('setting_ignore_roles', 'tool_userautodelete'),
             get_string('setting_ignore_roles_desc', 'tool_userautodelete'),
             []
+        ));
+
+        // Task execution interval.
+        $crontaskconfigurl = new moodle_url('/admin/tool/task/scheduledtasks.php', [
+            'action' => 'edit',
+            'task' => 'tool_userautodelete\task\check_and_delete_users',
+        ]);
+        $settings->add(new admin_setting_description('tool_userautodelete/task_execution_interval',
+            get_string('setting_task_execution_interval', 'tool_userautodelete'),
+            get_string('setting_task_execution_interval_desc', 'tool_userautodelete').
+            '<br><a href="'.$crontaskconfigurl.'" class="btn btn-primary my-2" role="button" target="_blank">'.
+                get_string('setting_task_execution_interval_button', 'tool_userautodelete').
+            '</a>'
+        ));
+
+        // Task logs.
+        $tasklogsurl = new moodle_url('/admin/tasklogs.php', [
+            'filter' => 'tool_userautodelete\task\check_and_delete_users',
+        ]);
+        $settings->add(new admin_setting_description('tool_userautodelete/task_logs',
+            get_string('setting_task_logs', 'tool_userautodelete'),
+            get_string('setting_task_logs_desc', 'tool_userautodelete').
+            '<br><a href="'.$tasklogsurl.'" class="btn btn-primary my-2" role="button" target="_blank">'.
+                get_string('setting_task_logs_button', 'tool_userautodelete').
+            '</a>'
         ));
 
         // Header: Automatic user deletion.

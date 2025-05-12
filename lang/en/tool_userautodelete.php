@@ -51,6 +51,12 @@ $string['setting_ignore_siteadmins'] = 'Ignore site admins';
 $string['setting_ignore_siteadmins_desc'] = 'Global site admins can not be deleted. Revoke the admin role to include in automatic deletion process.';
 $string['setting_ignore_roles'] = 'Ignored roles';
 $string['setting_ignore_roles_desc'] = 'All users that have at least one of the selected roles assigned will never be deleted.';
+$string['setting_task_execution_interval'] = 'Check interval';
+$string['setting_task_execution_interval_desc'] = 'The check for inactive users is performed using a scheduled task that is executed via the Moodle cron. You can configure the interval at which it runs by clicking the following button.';
+$string['setting_task_execution_interval_button'] = 'Configure check interval';
+$string['setting_task_logs'] = 'Logs';
+$string['setting_task_logs_desc'] = 'This plugin logs all actions it performs inside the respective scheduled task logs. You can access the logs from all previous runs by clicking the following button.';
+$string['setting_task_logs_button'] = 'View logs';
 
 $string['setting_header_user_deletion'] = 'User Deletion';
 $string['setting_header_user_deletion_desc'] = 'Configuration of the automatic user deletion. Users that have not logged in for at least the configured number of days and are not ignored by the above settings will be automatically deleted.';
