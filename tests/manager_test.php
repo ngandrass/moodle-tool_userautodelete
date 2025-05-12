@@ -265,6 +265,8 @@ final class manager_test extends \advanced_testcase {
     /**
      * Tests that users do not receive warning messages prematurely or are deleted too eraly
      *
+     * @covers \tool_userautodelete\manager
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -426,6 +428,8 @@ final class manager_test extends \advanced_testcase {
      * Tests that a user that was deleted receives a deletion message if
      * deletion messages are enabled
      *
+     * @covers \tool_userautodelete\manager
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -463,6 +467,8 @@ final class manager_test extends \advanced_testcase {
     /**
      * Tests that a user that was deleted does not receive a deletion message if
      * deletion messages are disabled
+     *
+     * @covers \tool_userautodelete\manager
      *
      * @return void
      * @throws \coding_exception
