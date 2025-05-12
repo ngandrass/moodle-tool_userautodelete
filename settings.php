@@ -35,6 +35,12 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
+        // Header description text.
+        $settings->add(new admin_setting_heading('tool_userautodelete/header_common',
+            "",
+            get_string('setting_plugin_desc', 'tool_userautodelete')
+        ));
+
         // Enable plugin globally.
         $settings->add(new admin_setting_configcheckbox('tool_userautodelete/enable',
             get_string('setting_enable', 'tool_userautodelete'),

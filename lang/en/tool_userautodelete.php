@@ -43,15 +43,16 @@ $string['no_users_to_warn'] = 'No users eligible for a warning email found.';
 $string['no_users_to_delete'] = 'No users eligible for deletion found.';
 
 // Admin settings.
+$string['setting_plugin_desc'] = 'This plugin automatically deletes users that have not logged in for a configurable number of days. This is useful to keep your database clean and remove old accounts that are no longer needed. The plugin can be configured to send warning emails a number of days before the user is deleted. This gives users the chance to log back in and keep their accounts active. It furthermore supports deleting users in a GDPR-compliant way, leaving no trace of personally identifiable information (PII) inside the user record.';
 $string['setting_enable'] = 'Enable plugin';
 $string['setting_enable_desc'] = 'Enables or disables the plugin globally. If this is disabled, no action will be performed.';
 $string['setting_ignore_siteadmins'] = 'Ignore site admins';
-$string['setting_ignore_siteadmins_desc'] = 'If enabled, all users that are global site admins will never be deleted.';
+$string['setting_ignore_siteadmins_desc'] = 'Global site admins can not be deleted. Revoke the admin role to include in automatic deletion process.';
 $string['setting_ignore_roles'] = 'Ignored roles';
-$string['setting_ignore_roles_desc'] = 'If enabled, all users that have one of the selected roles will never be deleted.';
+$string['setting_ignore_roles_desc'] = 'All users that have at least one of the selected roles assigned will never be deleted.';
 
 $string['setting_header_user_deletion'] = 'User Deletion';
-$string['setting_header_user_deletion_desc'] = 'Configuration of the automatic user deletion.';
+$string['setting_header_user_deletion_desc'] = 'Configuration of the automatic user deletion. Users that have not logged in for at least the configured number of days and are not ignored by the above settings will be automatically deleted.';
 $string['setting_delete_threshold_days'] = 'Deletion threshold';
 $string['setting_delete_threshold_days_desc'] = 'The number of days of inactivity after which a user will be deleted. The deletion will only be performed if the user has not logged in for this number of days.';
 $string['setting_delete_email_enable'] = 'Deletion notifications';
