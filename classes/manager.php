@@ -314,7 +314,55 @@ class manager {
                 continue;
             }
 
+            // Anonymize user record if enabled.
+            if ($this->config->anonymize_user_data) {
+                $this->anonymize_user_record($user->id);
+            }
+
             logger::info(get_string('user_deleted', 'tool_userautodelete', $user->id));
+        }
+    }
+
+    /**
+     * Anonymizes an user record fully.
+     *
+     * @param int $userid ID of the user record to anonymize
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function anonymize_user_record(int $userid): void {
+        global $DB;
+
+        if ($DB->update_record('user', [
+            'id' => $userid,
+            'username' => "DELETED-USER-{$userid}",
+            'password' => '',
+            'idnumber' => '',
+            'firstname' => 'DELETED',
+            'lastname' => 'DELETED',
+            'email' => "DELETED-USER-{$userid}@localhost",
+            'phone1' => '',
+            'phone2' => '',
+            'institution' => '',
+            'department' => '',
+            'address' => '',
+            'city' => '',
+            'country' => '',
+            'lastip' => '',
+            'secret' => '',
+            'picture' => 0,
+            'description' => '',
+            'imagealt' => '',
+            'lastnamephonetic' => '',
+            'firstnamephonetic' => '',
+            'middlename' => '',
+            'alternatename' => '',
+            'moodlenetprofile' => '',
+        ])) {
+            logger::info(get_string('user_anonymized', 'tool_userautodelete', $userid));
+        } else {
+            logger::error(get_string('error_anonymizing_user', 'tool_userautodelete', $userid));
         }
     }
 
