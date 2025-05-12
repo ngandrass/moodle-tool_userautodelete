@@ -125,6 +125,17 @@ class manager {
             }
         }
 
+        // Ignored role IDs.
+        if ($this->config->ignore_roles) {
+            $ignoredroleids = explode(',', $this->config->ignore_roles);
+            foreach ($ignoredroleids as $roleid) {
+                if (!is_numeric($roleid)) {
+                    $isvalid = false;
+                    logger::error(get_string('error_invalid_role_id', 'tool_userautodelete', $roleid));
+                }
+            }
+        }
+
         return $isvalid;
     }
 

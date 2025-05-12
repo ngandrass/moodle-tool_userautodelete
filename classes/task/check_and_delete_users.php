@@ -25,7 +25,6 @@
 
 namespace tool_userautodelete\task;
 
-
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
@@ -49,6 +48,7 @@ class check_and_delete_users extends \core\task\scheduled_task {
     /**
      * Do the job.
      * Throw exceptions on errors (the job will be retried).
+     *
      * @throws \coding_exception
      */
     public function execute() {
