@@ -62,7 +62,7 @@ $string['setting_delete_email_subject_desc'] = 'The subject of the deletion noti
 $string['setting_delete_email_subject_default'] = 'Your account was deleted';
 $string['setting_delete_email_body'] = 'Mail body';
 $string['setting_delete_email_body_desc'] = 'The body of the deletion notification email.';
-$string['setting_delete_email_body_default'] = '<h1>TODO TODO TODO!</h1>Your account was deleted :(';
+$string['setting_delete_email_body_default'] = '<p>Hello,</p><p>your account on our site was deleted due to inactivity. If you wish to continue using our service, please create a new account.</p><p>Kind regards</p>';
 
 $string['setting_header_deletion_warning'] = 'Deletion Warnings';
 $string['setting_header_deletion_warning_desc'] = 'Configuration of the deletion warning emails. Warning emails are sent a number of days before the user is deleted. This informs users that their account will be deleted soon and gives them time to perform a login to keep their accounts active.';
@@ -72,10 +72,10 @@ $string['setting_warning_threshold_days'] = 'Warning threshold';
 $string['setting_warning_threshold_days_desc'] = 'The number of days before the user is deleted that the warning email will be sent. This is relative to the deletion threshold.';
 $string['setting_warning_email_subject'] = 'Mail subject';
 $string['setting_warning_email_subject_desc'] = 'The subject of the warning email.';
-$string['setting_warning_email_subject_default'] = 'Your account will be deleted soon';
+$string['setting_warning_email_subject_default'] = 'Your account will be deleted soon - Action required!';
 $string['setting_warning_email_body'] = 'Mail body';
 $string['setting_warning_email_body_desc'] = 'The body of the warning email.';
-$string['setting_warning_email_body_default'] = '<h1>TODO TODO TODO!</h1>Your account will be deleted soon! Please login to keep your account active.';
+$string['setting_warning_email_body_default'] = '<p>Hello,</p><p>your account on our site has been inactive for a long period of time. To keep your account, please <strong>log back in now to prevent your account from being deleted</strong> according to our data protection policy within the next days.</p><p>If you wish your account to be deleted, you can ignore this message.</p><p>Kind regards</p>';
 
 // Errors.
 $string['error_invalid_config_aborting'] = 'Invalid plugin configuration found. Aborting ...';
