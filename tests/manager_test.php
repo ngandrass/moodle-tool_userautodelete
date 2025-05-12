@@ -86,6 +86,85 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that an invalid config is detected and logged as an error
+     *
+     * @covers \tool_userautodelete\manager::validate_config
+     * @dataProvider error_on_invalid_config_data_provider
+     *
+     * @param string $configkey Key of the config entry to alter
+     * @param mixed $configvalue Value to set the config entry to
+     * @return void
+     * @throws \coding_exception
+     */
+    public function test_error_on_invalid_config(string $configkey, $configvalue): void {
+        $this->resetAfterTest();
+        logger::enable();
+        set_config('warning_email_enable', true, 'tool_userautodelete');
+        set_config('delete_email_enable', true, 'tool_userautodelete');
+        set_config($configkey, $configvalue, 'tool_userautodelete');
+
+        $manager = new manager();
+        $res = $manager->validate_config();
+
+        $this->assertSame(false, $res, 'Invalid config was found valid');
+        $this->expectOutputRegex('/\[ERROR\]/');
+    }
+
+    /**
+     * Data provider for test_error_on_invalid_config()
+     *
+     * @return array[] Test data
+     */
+    public static function error_on_invalid_config_data_provider(): array {
+        return [
+            'Invalid delete_threshold_days (zero)' => ['delete_threshold_days', 0],
+            'Invalid delete_threshold_days (negative)' => ['delete_threshold_days', -42],
+            'Invalid warning_threshold_days (zero)' => ['warning_threshold_days', 0],
+            'Invalid warning_threshold_days (negative)' => ['warning_threshold_days', -42],
+            'Invalid ignore_roles' => ['ignore_roles', 'roleshortname,anotherrole'],
+            'Invalid warning_email_subject' => ['warning_email_subject', ''],
+            'Invalid delete_email_subject' => ['delete_email_subject', ''],
+        ];
+    }
+
+    /**
+     * Tests that a warning is logged if the config is suspicious
+     *
+     * @covers \tool_userautodelete\manager::validate_config
+     * @dataProvider warning_on_invalid_config_data_provider
+     *
+     * @param string $configkey Key of the config entry to alter
+     * @param mixed $configvalue Value to set the config entry to
+     * @return void
+     * @throws \coding_exception
+     */
+    public function test_warning_on_invalid_config(string $configkey, $configvalue): void {
+        $this->resetAfterTest();
+        logger::enable();
+        set_config('warning_email_enable', true, 'tool_userautodelete');
+        set_config('delete_email_enable', true, 'tool_userautodelete');
+        set_config($configkey, $configvalue, 'tool_userautodelete');
+
+        $manager = new manager();
+        $res = $manager->validate_config();
+
+        $this->assertSame(true, $res, 'Valid config was found invalid');
+        $this->expectOutputRegex('/\[WARN\]/');
+    }
+
+    /**
+     * Data provider for test_warning_on_invalid_config()
+     *
+     * @return array[] Test data
+     */
+    public static function warning_on_invalid_config_data_provider(): array {
+        return [
+            'Invalid warning_email_body' => ['warning_email_body', ''],
+            'Invalid delete_email_body' => ['delete_email_body', ''],
+        ];
+    }
+
+    /**
      * Tests that inactive users are deleted
      *
      * @covers \tool_userautodelete\manager

@@ -82,6 +82,7 @@ $string['setting_warning_email_body_default'] = '<p>Hello,</p><p>your account on
 
 // Errors.
 $string['error_invalid_config_aborting'] = 'Invalid plugin configuration found. Aborting ...';
+$string['error_invalid_role_id'] = 'Invalid role ID {$a} found in the ignored roles list. This is most likely a bug in the plugin. Please report this to the plugin maintainer.';
 $string['error_delete_threshold_days_negative'] = 'The deletion threshold days must be greater than 0.';
 $string['error_warning_threshold_days_negative'] = 'The warning threshold days must be greater than 0.';
 $string['error_warning_threshold_days_geq_delete'] = 'The warning threshold days must be less than the deletion threshold days.';
