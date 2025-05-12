@@ -150,6 +150,23 @@ class manager {
     }
 
     /**
+     * Returns a list of role IDs that are always ignored
+     *
+     * @return array List of role IDs to ignore
+     * @throws \dml_exception
+     */
+    protected function get_ignored_role_ids(): array {
+        $ignoredroleids = [];
+        if ($ignoredroleidsraw = get_config('tool_userautodelete', 'ignore_roles')) {
+            foreach (explode(',', $ignoredroleidsraw) as $roleid) {
+                $ignoredroleids[] = (int) trim($roleid);
+            }
+        }
+
+        return $ignoredroleids;
+    }
+
+    /**
      * Searches for users that have been inactive and fall into the warning /
      * notification time period. Sends a warning mail and keeps track of mails
      * sent.
@@ -170,16 +187,24 @@ class manager {
         $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
         $notifytime = $deletetime + ($this->config->warning_threshold_days * DAYSECS);
 
-        $ignoreduseridssql = join(',', self::get_ignored_user_ids());
+        $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
+        $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
         $userstonotify = $DB->get_records_sql("
             SELECT u.*
             FROM {user} u
                 LEFT JOIN {tool_userautodelete_mail} m ON u.id = m.userid
             WHERE
-                u.deleted = 0 AND
-                u.id NOT IN ({$ignoreduseridssql}) AND
-                m.userid IS NULL AND
-                (
+                u.deleted = 0 AND                       --< User is not deleted.
+                m.userid IS NULL AND                    --< User has not been warned yet.
+                u.id NOT IN ({$ignoreduseridssql}) AND  --< User ID is not ignored.
+                --v User has not been assigned an ignored role.
+                NOT EXISTS (
+                    SELECT 1
+                    FROM {role_assignments} ra
+                    WHERE
+                        ra.userid = u.id AND
+                        ra.roleid IN ({$ignoredroleidssql})
+                ) AND (
                     --v Users that have never logged in (compare timecreated).
                     (u.lastaccess = 0 AND u.timecreated < :notifytime1 AND u.timecreated > :deletetime1)
                     OR
@@ -228,19 +253,27 @@ class manager {
 
         // Identify users to delete.
         $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
-        $ignoreduseridssql = join(',', self::get_ignored_user_ids());
+        $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
+        $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
         $userstodelete = $DB->get_records_sql("
             SELECT *
-            FROM {user}
+            FROM {user} u
             WHERE
-                id NOT IN ({$ignoreduseridssql}) AND
-                deleted = 0 AND
-                (
+                u.deleted = 0 AND                       --< User is not deleted.
+                u.id NOT IN ({$ignoreduseridssql}) AND  --< User ID is not ignored.
+                --v User has not been assigned an ignored role.
+                NOT EXISTS (
+                    SELECT 1
+                    FROM {role_assignments} ra
+                    WHERE
+                        ra.userid = u.id AND
+                        ra.roleid IN ({$ignoredroleidssql})
+                ) AND (
                     --v Users that have never logged in (compare timecreated).
-                    (lastaccess = 0 AND timecreated < :deletetime1)
+                    (u.lastaccess = 0 AND u.timecreated < :deletetime1)
                     OR
                     --v Users that have logged in at least one time (compare lastaccess).
-                    (lastaccess > 0 AND lastaccess < :deletetime2)
+                    (u.lastaccess > 0 AND u.lastaccess < :deletetime2)
                 )
         ", [
             'deletetime1' => $deletetime,
