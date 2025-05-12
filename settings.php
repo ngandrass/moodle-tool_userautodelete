@@ -91,10 +91,13 @@ if ($hassiteconfig) {
         ));
 
         // Deletion email body.
-        $settings->add(new admin_setting_configtextarea('tool_userautodelete/delete_email_body',
+        $settings->add(new admin_setting_confightmleditor('tool_userautodelete/delete_email_body',
             get_string('setting_delete_email_body', 'tool_userautodelete'),
             get_string('setting_delete_email_body_desc', 'tool_userautodelete'),
-            get_string('setting_delete_email_body_default', 'tool_userautodelete')
+            get_string('setting_delete_email_body_default', 'tool_userautodelete'),
+            PARAM_RAW,
+            80,
+            20
         ));
 
         // Header: Deletion warnings.
@@ -126,10 +129,13 @@ if ($hassiteconfig) {
         ));
 
         // Warning email body.
-        $settings->add(new admin_setting_configtextarea('tool_userautodelete/warning_email_body',
+        $settings->add(new admin_setting_confightmleditor('tool_userautodelete/warning_email_body',
             get_string('setting_warning_email_body', 'tool_userautodelete'),
             get_string('setting_warning_email_body_desc', 'tool_userautodelete'),
             get_string('setting_warning_email_body_default', 'tool_userautodelete'),
+            PARAM_RAW,
+            80,
+            20
         ));
     }
 }
