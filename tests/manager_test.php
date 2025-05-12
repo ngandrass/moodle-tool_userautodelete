@@ -192,6 +192,77 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that users that are excluded by role are not deleted
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_exclusion_by_role(): void {
+        global $DB;
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 60, 'tool_userautodelete');
+        set_config('warning_threshold_days', 30, 'tool_userautodelete');
+
+        // Create a nodelete role and assign users to it. Also create users that does not have this role.
+        $roleid = $this->getDataGenerator()->create_role(['shortname' => 'nodelete']);
+        $roleusers = [];
+        for ($i = 0; $i < 5; $i++) {
+            $user = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * (31 + $i)]);
+            $this->getDataGenerator()->role_assign($roleid, $user->id);
+            $roleusers[] = $user;
+        }
+
+        $noroleusers = [];
+        for ($i = 0; $i < 5; $i++) {
+            $noroleusers[] = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS * (31 + $i)]);
+        }
+
+        // Execute check routine and validate if excluded user did not receive a warning.
+        set_config('ignore_roles', $roleid, 'tool_userautodelete');
+        $manager = new manager();
+        $manager->execute();
+
+        // Ensure that the user with the role did not receive a warning message.
+        foreach ($roleusers as $roleuser) {
+            $this->assertFalse(
+                $DB->record_exists('tool_userautodelete_mail', ['userid' => $roleuser->id]),
+                'User with excluded role received a warning message'
+            );
+        }
+        foreach ($noroleusers as $noroleuser) {
+            $this->assertTrue(
+                $DB->record_exists('tool_userautodelete_mail', ['userid' => $noroleuser->id]),
+                'User without excluded role did not receive a warning message'
+            );
+        }
+
+        // Turn the clock and execute the deletion routine.
+        foreach (array_merge($roleusers, $noroleusers) as $user) {
+            $DB->set_field('user', 'lastaccess', time() - DAYSECS * 61, ['id' => $user->id]);
+        }
+        $manager->execute();
+
+        // Ensure that the user with the role was not deleted.
+        foreach ($roleusers as $roleuser) {
+            $this->assertSame(
+                '0',
+                $DB->get_field('user', 'deleted', ['id' => $roleuser->id]),
+                'User with excluded role was deleted'
+            );
+        }
+        foreach ($noroleusers as $noroleuser) {
+            $this->assertSame(
+                '1',
+                $DB->get_field('user', 'deleted', ['id' => $noroleuser->id]),
+                'User without excluded role was not deleted'
+            );
+        }
+    }
+
+    /**
      * Tests that users do not receive warning messages prematurely or are deleted too eraly
      *
      * @return void
@@ -416,7 +487,5 @@ final class manager_test extends \advanced_testcase {
         $messages = $sink->get_messages();
         $this->assertCount(0, $messages, 'Deletion message was sent to user even though it was disabled');
     }
-
-    // TODO (MDL-0): Implement & test role ignoring.
 
 }
