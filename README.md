@@ -37,9 +37,88 @@ leaving no trace of personally identifiable information (PII) inside the user re
 ## Configuration and Usage
 
 The plugin can be configured via the Moodle site administration under _Site administration > Plugins > Admin tools >
-Automatic user deletion_. After installation, the plugin will be disabled by default until you configure and enable it.
+Automatic user deletion_.
 
-### TODO
+After installation, the plugin will be disabled by default until you configure and enable it by checking the _Enable
+plugin_ checkbox (1) and saving the settings.
+
+![Plugin settings: Enable plugin](docs/assets/screenshots/settings_enable.png)
+
+
+### Automatic user deletion
+
+If the plugin is enabled as described above, users that have not logged in for at least the configured number of days
+will be deleted automatically. You can configure the number of days of inactivity via the _Deletion threshold_ setting (2).
+
+The plugin also supports sending users an email right before their account is deleted. This is useful to give users a
+final notice that their account is now deleted. You can enable sending such deletion notifications to users by checking
+the _Deletion notifications_ checkbox and optionally adjust the email sent (3). If you wish to send users a warning
+message a few days before their actual deletion to allow them to log back in and keep their account, please refer to
+[account deletion warnings](#deletion--inactivity-warnings) below.
+
+![Plugin settings: User deletion](docs/assets/screenshots/settings_user_deletion.png)
+
+
+### Deletion / inactivity warnings
+
+Warning emails can be sent a number of days before the user is deleted. This informs users that their account will be
+deleted soon and gives them time to perform a login to keep their account active.
+
+To enable this feature, check the _Deletion warnings_ checkbox (1) and set _Warning threshold_ (2) to the number of days
+before the _Deletion threshold_ when the warning email should be sent. You can also customize the email sent to users
+(3) if desired.
+
+Note on the warning threshold: The warning threshold is the number of days before the deletion threshold that a warning
+email is sent. So, for example, if you set your deletion threshold to 1095 days and your warning threshold to 30 days,
+users will receive a warning email after 1065 days of inactivity. If they do not log in within the next 30 days, their
+account will be deleted after the full 1095 days of inactivity. If, however, users log back in within the 30 days,
+their account will be kept until it has been inactive for another 1095 days, receiving a warning email again after 1065
+days of inactivity.
+
+![Plugin settings: Deletion warnings](docs/assets/screenshots/settings_deletion_warnings.png)
+
+
+### GDPR-compliant user deletion
+
+When deleting a user, Moodle keeps parts of the user record inside its database. This includes firstname, lastname,
+e-mail address, last IP address, and other sensitive information. This conflicts with the general data protection
+regulation (GDPR) of the EU.
+
+This plugin supports anonymizing the remaining user data when deleting a user. This means that all personally
+identifiable information (PII) is removed from the database and replaced with generic data. For example, the firstname
+and lastname are replaced with "DELETED" and their last IP address is replaced with "0.0.0.0".
+
+To enable this feature, check the _Anonymize deleted users_ checkbox (1) inside the plugin settings within the
+_User deletion_ section.
+
+![Plugin settings: GDPR-compliant deletion](docs/assets/screenshots/settings_user_anonymization.png)
+
+
+### Ignoring specific users
+
+The plugin supports excluding users based on their role assignments. This means that a user that has a specific role
+assigned to them will never be deleted nor receive any inactivity warning mails. Note that global site admins are always
+excluded from deletion.
+
+To exclude users with specific roles, mark the desired role in the _Ignored roles_ selector (1) and save your changes.
+
+![Plugin settings: Ignored roles](docs/assets/screenshots/settings_ignored_roles.png)
+
+
+### Changing the user check interval
+
+By default, all users are checked for inactivity once per day. You can change the check frequency and time by using the
+_Configure check interval_ button on the plugin settings page.
+
+![Plugin settings: Configure check interval](docs/assets/screenshots/settings_configure_check_interval.png)
+
+
+### Inspecting logs
+
+The plugin logs all actions it performs. You can inspect the logs on a per-check-interval basis by clicking the _View
+logs_ button on the plugin settings page.
+
+![Plugin settings: View logs](docs/assets/screenshots/settings_view_logs.png)
 
 
 ## Installation
@@ -47,12 +126,14 @@ Automatic user deletion_. After installation, the plugin will be disabled by def
 This plugin can be installed like any other Moodle plugin by placing its source code inside your Moodle installation and
 executing the upgrade routine afterward.
 
+
 ### Installing via the site administration (uploaded ZIP file)
 
 1. Download the latest release of this plugin.
 2. Log in to your Moodle site as an admin and go to _Site administration > Plugins > Install plugins_.
 3. Upload the ZIP file with the plugin code.
 4. Check the plugin validation report and finish the installation.
+
 
 ### Installing manually
 
@@ -66,6 +147,13 @@ Afterwards, log in to your Moodle site as an admin and go to _Site administratio
 installation.
 
 Alternatively, you can run `php admin/cli/upgrade.php` from the command line to complete the installation.
+
+
+## Reporting a bug or requesting a feature
+
+If you find a bug or have a feature request, please open an issue via the [GitHub issue tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues).
+
+Please do not use the comments section within the Moodle plugin directory. Thanks :)
 
 
 ## License
