@@ -323,14 +323,14 @@ class manager {
             if (!delete_user($user)) {
                 logger::error(get_string('error_deleting_user', 'tool_userautodelete', $user->id));
                 continue;
+            } else {
+                logger::info(get_string('user_deleted', 'tool_userautodelete', $user->id));
             }
 
             // Anonymize user record if enabled.
             if ($this->config->anonymize_user_data) {
                 $this->anonymize_user_record($user->id);
             }
-
-            logger::info(get_string('user_deleted', 'tool_userautodelete', $user->id));
         }
     }
 
