@@ -205,10 +205,10 @@ class manager {
             FROM {user} u
                 LEFT JOIN {tool_userautodelete_mail} m ON u.id = m.userid
             WHERE
-                u.deleted = 0 AND                       --< User is not deleted.
-                m.userid IS NULL AND                    --< User has not been warned yet.
-                u.id NOT IN ({$ignoreduseridssql}) AND  --< User ID is not ignored.
-                --v User has not been assigned an ignored role.
+                u.deleted = 0 AND                       -- < User is not deleted.
+                m.userid IS NULL AND                    -- < User has not been warned yet.
+                u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
+                -- v User has not been assigned an ignored role.
                 NOT EXISTS (
                     SELECT 1
                     FROM {role_assignments} ra
@@ -216,10 +216,10 @@ class manager {
                         ra.userid = u.id AND
                         ra.roleid IN ({$ignoredroleidssql})
                 ) AND (
-                    --v Users that have never logged in (compare timecreated).
+                    -- v Users that have never logged in (compare timecreated).
                     (u.lastaccess = 0 AND u.timecreated < :notifytime1 AND u.timecreated > :deletetime1)
                     OR
-                    --v Users that have logged in at least one time (compare lastaccess).
+                    -- v Users that have logged in at least one time (compare lastaccess).
                     (u.lastaccess > 0 AND u.lastaccess < :notifytime2 AND u.lastaccess > :deletetime2)
                 )
         ", [
@@ -275,9 +275,9 @@ class manager {
             SELECT *
             FROM {user} u
             WHERE
-                u.deleted = 0 AND                       --< User is not deleted.
-                u.id NOT IN ({$ignoreduseridssql}) AND  --< User ID is not ignored.
-                --v User has not been assigned an ignored role.
+                u.deleted = 0 AND                       -- < User is not deleted.
+                u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
+                -- v User has not been assigned an ignored role.
                 NOT EXISTS (
                     SELECT 1
                     FROM {role_assignments} ra
@@ -285,10 +285,10 @@ class manager {
                         ra.userid = u.id AND
                         ra.roleid IN ({$ignoredroleidssql})
                 ) AND (
-                    --v Users that have never logged in (compare timecreated).
+                    -- v Users that have never logged in (compare timecreated).
                     (u.lastaccess = 0 AND u.timecreated < :deletetime1)
                     OR
-                    --v Users that have logged in at least one time (compare lastaccess).
+                    -- v Users that have logged in at least one time (compare lastaccess).
                     (u.lastaccess > 0 AND u.lastaccess < :deletetime2)
                 )
         ", [
