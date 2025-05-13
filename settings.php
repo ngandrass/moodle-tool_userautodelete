@@ -23,7 +23,6 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-global $OUTPUT;
 
 use tool_userautodelete\local\admin\admin_setting_configcheckbox_alwaystrue;
 
