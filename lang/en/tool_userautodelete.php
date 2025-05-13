@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // General.
-$string['pluginname'] = 'Automatic User Deletion';
+$string['pluginname'] = 'Automatic user deletion';
 $string['privacy:metadata'] = 'TODO';
 $string['task_check_and_delete_users'] = 'Check and delete users';
 
@@ -58,7 +58,7 @@ $string['setting_task_logs'] = 'Logs';
 $string['setting_task_logs_desc'] = 'This plugin logs all actions it performs inside the respective scheduled task logs. You can access the logs from all previous runs by clicking the following button.';
 $string['setting_task_logs_button'] = 'View logs';
 
-$string['setting_header_user_deletion'] = 'User Deletion';
+$string['setting_header_user_deletion'] = 'User deletion';
 $string['setting_header_user_deletion_desc'] = 'Configuration of the automatic user deletion. Users that have not logged in for at least the configured number of days and are not ignored by the above settings will be automatically deleted.';
 $string['setting_delete_threshold_days'] = 'Deletion threshold';
 $string['setting_delete_threshold_days_desc'] = 'The number of days of inactivity after which a user will be deleted. The deletion will only be performed if the user has not logged in for this number of days.';
@@ -73,7 +73,7 @@ $string['setting_delete_email_body'] = 'Mail body';
 $string['setting_delete_email_body_desc'] = 'The body of the deletion notification email.';
 $string['setting_delete_email_body_default'] = '<p>Hello,</p><p>your account on our site was deleted due to inactivity. If you wish to continue using our service, please create a new account.</p><p>Kind regards</p>';
 
-$string['setting_header_deletion_warning'] = 'Deletion Warnings';
+$string['setting_header_deletion_warning'] = 'Deletion warnings';
 $string['setting_header_deletion_warning_desc'] = 'Configuration of the deletion warning emails. Warning emails are sent a number of days before the user is deleted. This informs users that their account will be deleted soon and gives them time to perform a login to keep their accounts active.';
 $string['setting_warning_email_enable'] = 'Deletion warnings';
 $string['setting_warning_email_enable_desc'] = 'If enabled, users will receive a warning email a configurable number of days before they are deleted.';
