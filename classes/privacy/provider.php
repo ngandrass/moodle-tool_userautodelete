@@ -37,12 +37,12 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 class provider implements \core_privacy\local\metadata\null_provider {
 
     /**
-     * Returns the reason for this provider.
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
      *
-     * @return string The reason for this provider.
+     * @return string Language string identifier
      */
     public static function get_reason(): string {
-        // FIXME: This is just a placeholder for unit test happiness. Implement properly if this plugin will store userdata!
         return 'privacy:metadata';
     }
 

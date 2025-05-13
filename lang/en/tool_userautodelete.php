@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // General.
 $string['pluginname'] = 'Automatic user deletion';
-$string['privacy:metadata'] = 'TODO';
+$string['privacy:metadata'] = 'This plugin does not store any data personal identifiable user information.';
 $string['task_check_and_delete_users'] = 'Check and delete users';
 
 // Task execution.
