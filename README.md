@@ -1,36 +1,58 @@
 # Automatic User Deletion
 
-TO-DO Describe the plugin shortly here.
+This plugin automatically deletes users that have not logged in for a configurable number of days.
 
-TO-DO Provide more detailed description here.
-
-
-## Installing via uploaded ZIP file
-
-1. Log in to your Moodle site as an admin and go to _Site administration >
-   Plugins > Install plugins_.
-2. Upload the ZIP file with the plugin code. You should only be prompted to add
-   extra details if your plugin type is not automatically detected.
-3. Check the plugin validation report and finish the installation.
+Automatically deleting users is useful to keep your database clean and remove old accounts that are no longer needed.
+The plugin can be configured to send warning emails a number of days before the user is deleted. This gives users the
+chance to log back in and keep their accounts active. It furthermore supports deleting users in a GDPR-compliant way,
+leaving no trace of personally identifiable information (PII) inside the user record.
 
 
-## Installing manually
+## Features
 
-The plugin can be also installed by putting the contents of this directory to
-
-    {your/moodle/dirroot}/admin/tool/userautodelete
-
-Afterwards, log in to your Moodle site as an admin and go to _Site administration >
-Notifications_ to complete the installation.
-
-Alternatively, you can run
-
-    $ php admin/cli/upgrade.php
-
-to complete the installation from the command line.
+- Automatically deleting inactive user accounts
+- Sending warning emails to users before deletion
+- GDPR-compliant deletion of user accounts
+- Ignoring users with specific roles
+- Highly configurable (deletion and warning thresholds, email templates, enabling/disabling of single features, etc.)
+- Logging of deletion events
 
 
-##License
+## Configuration and Usage
+
+The plugin can be configured via the Moodle site administration under _Site administration > Plugins > Admin tools >
+Automatic user deletion_. After installation, the plugin will be disabled by default until you configure and enable it.
+
+### TODO
+
+
+## Installation
+
+This plugin can be installed like any other Moodle plugin by placing its source code inside your Moodle installation and
+executing the upgrade routine afterward.
+
+### Installing via the site administration (uploaded ZIP file)
+
+1. Download the latest release of this plugin.
+2. Log in to your Moodle site as an admin and go to _Site administration > Plugins > Install plugins_.
+3. Upload the ZIP file with the plugin code.
+4. Check the plugin validation report and finish the installation.
+
+### Installing manually
+
+The plugin can be also installed by putting the contents of this directory into
+
+```
+{your/moodle/dirroot}/admin/tool/userautodelete
+```
+
+Afterwards, log in to your Moodle site as an admin and go to _Site administration > Notifications_ to complete the
+installation.
+
+Alternatively, you can run `php admin/cli/upgrade.php` from the command line to complete the installation.
+
+
+## License
 
 2025 Niels Gandraß <niels@gandrass.de>
 
