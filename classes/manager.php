@@ -232,6 +232,8 @@ class manager {
         if (empty($userstonotify)) {
             logger::info(get_string('no_users_to_warn', 'tool_userautodelete'));
             return;
+        } else {
+            logger::info(get_string('users_to_warn_a', 'tool_userautodelete', count($userstonotify)));
         }
 
         // Notify users.
@@ -300,6 +302,8 @@ class manager {
         if (empty($userstodelete)) {
             logger::info(get_string('no_users_to_delete', 'tool_userautodelete'));
             return;
+        } else {
+            logger::info(get_string('users_to_delete_a', 'tool_userautodelete', count($userstodelete)));
         }
 
         // Delete users.
