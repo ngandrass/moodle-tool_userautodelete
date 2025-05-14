@@ -22,6 +22,10 @@ The plugin can be configured to send warning emails a number of days before the 
 chance to log back in and keep their accounts active. It furthermore supports deleting users in a GDPR-compliant way,
 leaving no trace of personally identifiable information (PII) inside the user record.
 
+The automatic user deletion plugin plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
+
+[![Moodle plugin directory](docs/assets/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
+
 
 ## Features
 
@@ -129,7 +133,8 @@ executing the upgrade routine afterward.
 
 ### Installing via the site administration (uploaded ZIP file)
 
-1. Download the latest release of this plugin.
+1. Download the latest release of this plugin from the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete).
+
 2. Log in to your Moodle site as an admin and go to _Site administration > Plugins > Install plugins_.
 3. Upload the ZIP file with the plugin code.
 4. Check the plugin validation report and finish the installation.
