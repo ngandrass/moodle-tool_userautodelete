@@ -42,6 +42,7 @@ class manager {
         'deleted',
         'username',
         'email',
+        'timecreated',
         'lastaccess',
         'firstname',
         'middlename',
@@ -235,6 +236,7 @@ class manager {
                     -- v Users that have logged in at least one time (compare lastaccess).
                     (u.lastaccess > 0 AND u.lastaccess < :notifytime2 AND u.lastaccess > :deletetime2)
                 )
+        ORDER BY u.lastaccess ASC
         ", [
             'deletetime1' => $deletetime,
             'deletetime2' => $deletetime,
@@ -282,6 +284,7 @@ class manager {
                     -- v Users that have logged in at least one time (compare lastaccess).
                     (u.lastaccess > 0 AND u.lastaccess < :deletetime2)
                 )
+            ORDER BY u.lastaccess ASC
         ", [
             'deletetime1' => $deletetime,
             'deletetime2' => $deletetime,
