@@ -36,6 +36,21 @@ class manager {
     /** @var \stdClass Moodle config object for this plugin */
     protected \stdClass $config;
 
+    /** @var string[] User fields required to retrieve from DB */
+    const USER_RECORD_FIELDS = [
+        'id',
+        'deleted',
+        'username',
+        'email',
+        'lastaccess',
+        'firstname',
+        'middlename',
+        'lastname',
+        'firstnamephonetic',
+        'lastnamephonetic',
+        'alternatename',
+    ];
+
     /**
      * Creates a new manager instance
      *
@@ -145,7 +160,7 @@ class manager {
      * @return array List of user IDs to ignore
      * @throws \dml_exception
      */
-    protected function get_ignored_user_ids(): array {
+    public function get_ignored_user_ids(): array {
         global $CFG, $DB;
 
         // Always ignore site admins.
@@ -166,7 +181,7 @@ class manager {
      * @return array List of role IDs to ignore
      * @throws \dml_exception
      */
-    protected function get_ignored_role_ids(): array {
+    public function get_ignored_role_ids(): array {
         $ignoredroleids = [];
         if ($ignoredroleidsraw = get_config('tool_userautodelete', 'ignore_roles')) {
             foreach (explode(',', $ignoredroleidsraw) as $roleid) {
@@ -178,30 +193,28 @@ class manager {
     }
 
     /**
-     * Searches for users that have been inactive and fall into the warning /
-     * notification time period. Sends a warning mail and keeps track of mails
-     * sent.
+     * Searches for users that have been inactive long enough that they passed
+     * the warning threshold, have not yet been notified, but haven't been
+     * inactive long enough to be deleted right away.
      *
-     * @return void
-     * @throws \coding_exception
+     * @return \stdClass[] List of user records to warn
      * @throws \dml_exception
      */
-    protected function find_and_notify_inactive_users(): void {
+    public function get_users_to_warn(): array {
         global $DB;
 
-        if (!$this->config->warning_email_enable) {
-            logger::info(get_string('warning_email_disabled_skipping', 'tool_userautodelete'));
-            return;
-        }
-
-        // Get users that have been inactive for the configured time but have not been notified yet.
+        // Calculate unix timestamp thresholds.
         $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
         $notifytime = $deletetime + ($this->config->warning_threshold_days * DAYSECS);
 
+        // Prepare SQL segments.
+        $userfieldssql = join(', ', array_map(fn($name) => "u.{$name}", self::USER_RECORD_FIELDS));
         $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
         $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
-        $userstonotify = $DB->get_records_sql("
-            SELECT u.*
+
+        // Execute SQL query.
+        return $DB->get_records_sql("
+            SELECT {$userfieldssql}
             FROM {user} u
                 LEFT JOIN {tool_userautodelete_mail} m ON u.id = m.userid
             WHERE
@@ -228,7 +241,72 @@ class manager {
             'notifytime1' => $notifytime,
             'notifytime2' => $notifytime,
         ]);
+    }
 
+    /**
+     * Searches for users that have been inactive long enough that they should
+     * be deleted right away.
+     *
+     * @return \stdClass[] List of user records to delete
+     * @throws \dml_exception
+     */
+    public function get_users_to_delete(): array {
+        global $DB;
+
+        // Calculate unix timestamp threshold.
+        $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
+
+        // Prepare SQL segments.
+        $userfieldssql = join(', ', array_map(fn($name) => "u.{$name}", self::USER_RECORD_FIELDS));
+        $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
+        $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
+
+        // Execute SQL query.
+        return $DB->get_records_sql("
+            SELECT {$userfieldssql}
+            FROM {user} u
+            WHERE
+                u.deleted = 0 AND                       -- < User is not deleted.
+                u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
+                -- v User has not been assigned an ignored role.
+                NOT EXISTS (
+                    SELECT 1
+                    FROM {role_assignments} ra
+                    WHERE
+                        ra.userid = u.id AND
+                        ra.roleid IN ({$ignoredroleidssql})
+                ) AND (
+                    -- v Users that have never logged in (compare timecreated).
+                    (u.lastaccess = 0 AND u.timecreated < :deletetime1)
+                    OR
+                    -- v Users that have logged in at least one time (compare lastaccess).
+                    (u.lastaccess > 0 AND u.lastaccess < :deletetime2)
+                )
+        ", [
+            'deletetime1' => $deletetime,
+            'deletetime2' => $deletetime,
+        ]);
+    }
+
+    /**
+     * Searches for users that have been inactive and fall into the warning /
+     * notification time period. Sends a warning mail and keeps track of mails
+     * sent.
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected function find_and_notify_inactive_users(): void {
+        global $DB;
+
+        if (!$this->config->warning_email_enable) {
+            logger::info(get_string('warning_email_disabled_skipping', 'tool_userautodelete'));
+            return;
+        }
+
+        // Get users that have been inactive for the configured time but have not been notified yet.
+        $userstonotify = $this->get_users_to_warn();
         if (empty($userstonotify)) {
             logger::info(get_string('no_users_to_warn', 'tool_userautodelete'));
             return;
@@ -267,38 +345,8 @@ class manager {
      * @throws \dml_exception
      */
     protected function delete_inactive_users(): void {
-        global $DB;
-
-        // Identify users to delete.
-        $deletetime = time() - ($this->config->delete_threshold_days * DAYSECS);
-        $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
-        $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
-        $userstodelete = $DB->get_records_sql("
-            SELECT *
-            FROM {user} u
-            WHERE
-                u.deleted = 0 AND                       -- < User is not deleted.
-                u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
-                -- v User has not been assigned an ignored role.
-                NOT EXISTS (
-                    SELECT 1
-                    FROM {role_assignments} ra
-                    WHERE
-                        ra.userid = u.id AND
-                        ra.roleid IN ({$ignoredroleidssql})
-                ) AND (
-                    -- v Users that have never logged in (compare timecreated).
-                    (u.lastaccess = 0 AND u.timecreated < :deletetime1)
-                    OR
-                    -- v Users that have logged in at least one time (compare lastaccess).
-                    (u.lastaccess > 0 AND u.lastaccess < :deletetime2)
-                )
-        ", [
-            'deletetime1' => $deletetime,
-            'deletetime2' => $deletetime,
-        ]);
-
-        // No users to delete.
+        // Get users that have been inactive long enough that they should be deleted.
+        $userstodelete = $this->get_users_to_delete();
         if (empty($userstodelete)) {
             logger::info(get_string('no_users_to_delete', 'tool_userautodelete'));
             return;
