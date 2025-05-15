@@ -156,6 +156,16 @@ class manager {
     }
 
     /**
+     * Returns the requested configuration value
+     *
+     * @param string $key Key of the configuration entry to return
+     * @return mixed Value of the requested configuration entry
+     */
+    public function get_config(string $key): mixed {
+        return $this->config->{$key} ?? null;
+    }
+
+    /**
      * Returns a list of user IDs that are always ignored
      *
      * @return array List of user IDs to ignore
@@ -184,7 +194,7 @@ class manager {
      */
     public function get_ignored_role_ids(): array {
         $ignoredroleids = [];
-        if ($ignoredroleidsraw = get_config('tool_userautodelete', 'ignore_roles')) {
+        if ($ignoredroleidsraw = $this->config->ignore_roles) {
             foreach (explode(',', $ignoredroleidsraw) as $roleid) {
                 $ignoredroleids[] = (int) trim($roleid);
             }
