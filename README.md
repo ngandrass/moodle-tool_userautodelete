@@ -84,9 +84,9 @@ days of inactivity.
 
 ### GDPR-compliant user deletion
 
-When deleting a user, Moodle keeps parts of the user record inside its database. This includes firstname, lastname,
-e-mail address, last IP address, and other sensitive information. This conflicts with the general data protection
-regulation (GDPR) of the EU.
+When deleting a user, Moodle retains some parts of the user record inside the database by design. This includes
+first name, last name, e-mail address, last IP address, and other sensitive information. This may be a concern,
+depending on the specific data privacy policies of your organization or local legal interpretations.
 
 This plugin supports anonymizing the remaining user data when deleting a user. This means that all personally
 identifiable information (PII) is removed from the database and replaced with generic data. For example, the firstname
