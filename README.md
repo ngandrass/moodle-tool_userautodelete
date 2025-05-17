@@ -52,11 +52,11 @@ plugin_ checkbox (1) and saving the settings.
 ### Automatic user deletion
 
 If the plugin is enabled as described above, users that have not logged in for at least the configured number of days
-will be deleted automatically. You can configure the number of days of inactivity via the _Deletion threshold_ setting (2).
+will be deleted automatically. You can configure the number of days of inactivity via the _Deletion threshold_ setting (1).
 
 The plugin also supports sending users an email right before their account is deleted. This is useful to give users a
 final notice that their account is now deleted. You can enable sending such deletion notifications to users by checking
-the _Deletion notifications_ checkbox and optionally adjust the email sent (3). If you wish to send users a warning
+the _Deletion notifications_ checkbox and optionally adjust the email sent (2). If you wish to send users a warning
 message a few days before their actual deletion to allow them to log back in and keep their account, please refer to
 [account deletion warnings](#deletion--inactivity-warnings) below.
 
