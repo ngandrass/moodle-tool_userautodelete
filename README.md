@@ -33,6 +33,7 @@ The automatic user deletion plugin plugin is available via the [Moodle plugin di
 - Sending warning emails to users before deletion
 - GDPR-compliant deletion of user accounts
 - Ignoring users with specific roles
+- Dry-run mode for testing the configuration
 - Highly configurable (deletion and warning thresholds, email templates, enabling/disabling of single features, etc.)
 - Logging of deletion events
 - Automated testing and support for all active Moodle releases
@@ -107,6 +108,20 @@ excluded from deletion.
 To exclude users with specific roles, mark the desired role in the _Ignored roles_ selector (1) and save your changes.
 
 ![Plugin settings: Ignored roles](docs/assets/screenshots/settings_ignored_roles.png)
+
+
+### Performing a dry-run
+
+If you have configured the plugin to your liking, you can see which users would be affected by your current
+configuration by using the dry-run feature. You can perform a dry-run by clicking the _Perform dry-run_ button on the
+plugin settings page.
+
+![Plugin settings: Perform dry-run](docs/assets/screenshots/settings_dry_run.png)
+
+This will take you to a page that shows you all users that would be warned or deleted, based on your current
+configuration.
+
+![Dry-run results](docs/assets/screenshots/dry_run_results.png)
 
 
 ### Changing the user check interval
