@@ -93,7 +93,7 @@ final class manager_test extends \advanced_testcase {
      *
      * @return array[] Test data
      */
-    public function get_config_data_provider(): array {
+    public static function get_config_data_provider(): array {
         return [
             'Valid: delete_threshold_days' => ['delete_threshold_days', true],
             'Valid: warning_threshold_days' => ['warning_threshold_days', true],
