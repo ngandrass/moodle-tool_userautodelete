@@ -63,6 +63,16 @@ if ($hassiteconfig) {
             []
         ));
 
+        // Dry-run.
+        $dryrunurl = new moodle_url('/admin/tool/userautodelete/info.php');
+        $settings->add(new admin_setting_description('tool_userautodelete/dryrun',
+            get_string('setting_dryrun', 'tool_userautodelete'),
+            get_string('setting_dryrun_desc', 'tool_userautodelete').
+            '<br><a href="'.$dryrunurl.'" class="btn btn-primary my-2" role="button">'.
+                get_string('setting_dryrun_button', 'tool_userautodelete').
+            '</a>'
+        ));
+
         // Task execution interval.
         $crontaskconfigurl = new moodle_url('/admin/tool/task/scheduledtasks.php', [
             'action' => 'edit',
