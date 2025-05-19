@@ -30,18 +30,25 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 // General.
 $string['pluginname'] = 'Automatic user deletion';
 $string['privacy:metadata'] = 'This plugin does not store any data personal identifiable user information.';
+$string['back_to_settings'] = 'Back to settings';
 $string['task_check_and_delete_users'] = 'Check and delete users';
+$string['reltime_prefix_in'] = 'in';
+$string['next_check'] = 'Next check';
+$string['affected_users'] = 'Affected users';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';
+$string['warning_email_disabled'] = 'Warning emails are disabled.';
 $string['warning_email_disabled_skipping'] = 'Sending warning emails is disabled, skipping step ...';
 $string['warning_email_sent_to_user'] = 'Warning email sent to user with ID {$a}';
 $string['delete_email_sent_to_user'] = 'Deletion notification email sent to user with ID {$a}';
 $string['user_anonymized'] = 'User with ID {$a} was anonymized';
 $string['user_deleted'] = 'User with ID {$a} was deleted';
 $string['user_recovered'] = 'User with ID {$a} was previously flagged as inactive but returned. User will not be deleted.';
+$string['users_to_warn'] = 'Users to warn';
 $string['users_to_warn_a'] = 'Found {$a} users eligible for a warning email.';
 $string['no_users_to_warn'] = 'No users eligible for a warning email found.';
+$string['users_to_delete'] = 'Users to delete';
 $string['users_to_delete_a'] = 'Found {$a} users eligible for deletion.';
 $string['no_users_to_delete'] = 'No users eligible for deletion found.';
 
@@ -53,6 +60,9 @@ $string['setting_ignore_siteadmins'] = 'Ignore site admins';
 $string['setting_ignore_siteadmins_desc'] = 'Global site admins can not be deleted. Revoke the admin role to include in automatic deletion process.';
 $string['setting_ignore_roles'] = 'Ignored roles';
 $string['setting_ignore_roles_desc'] = 'All users that have at least one of the selected roles assigned will never be deleted.';
+$string['setting_dryrun'] = 'Dry-run';
+$string['setting_dryrun_desc'] = 'A dry-run allows you to list all users that would receive a warning message or would be deleted during the next check interval. This is useful to verify that the plugin is configured correctly and to see which users would be affected. The dry-run does not perform any actions and therefore is fully non-destructive!';
+$string['setting_dryrun_button'] = 'Perform dry-run';
 $string['setting_task_execution_interval'] = 'Check interval';
 $string['setting_task_execution_interval_desc'] = 'The check for inactive users is performed using a scheduled task that is executed via the Moodle cron. You can configure the interval at which it runs by clicking the following button.';
 $string['setting_task_execution_interval_button'] = 'Configure check interval';
@@ -87,6 +97,16 @@ $string['setting_warning_email_subject_default'] = 'Your account will be deleted
 $string['setting_warning_email_body'] = 'Mail body';
 $string['setting_warning_email_body_desc'] = 'The body of the warning email.';
 $string['setting_warning_email_body_default'] = '<p>Hello,</p><p>your account on our site has been inactive for a long period of time. To keep your account, please <strong>log back in now to prevent your account from being deleted</strong> according to our data protection policy within the next days.</p><p>If you wish your account to be deleted, you can ignore this message.</p><p>Kind regards</p>';
+
+// Page: info / dryrun
+$string['dry_run'] = 'Dry-run';
+$string['page_title_dryrun'] = 'Automatic user deletion (dry-run)';
+$string['dry_run_explanation'] = 'This page shows the actions that would be performed during the next check interval. None of the actions have been actually performed yet!';
+$string['current_configuration'] = 'Current configuration';
+$string['current_configuration_table_desc'] = 'This table lists the next time a check for inactive users would be executed in the background as well as the configured thresholds for warning e-mails and user deletions. Additionally, user roles that are excluded from the deletion process are listed here.';
+$string['dry_run_affected_users_desc'] = 'Users listed here will either receive a warning email or will be deleted right away. If no users are listed, no user has been inactive for longer than the configured thresholds, or the user is ignored according to the plugin configuration.';
+$string['a_users_would_be_deleted'] = 'The following {$a} users would be deleted';
+$string['a_users_would_be_warned'] = 'The following {$a} users would receive a warning email';
 
 // Errors.
 $string['error_invalid_config_aborting'] = 'Invalid plugin configuration found. Aborting ...';
