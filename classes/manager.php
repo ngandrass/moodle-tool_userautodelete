@@ -161,7 +161,7 @@ class manager {
      * @param string $key Key of the configuration entry to return
      * @return mixed Value of the requested configuration entry
      */
-    public function get_config(string $key): mixed {
+    public function get_config(string $key) {
         return $this->config->{$key} ?? null;
     }
 
