@@ -81,7 +81,9 @@ $tplctx['deletethreshold'] = [
 if ($manager->get_config('warning_email_enable')) {
     $tplctx['warningthreshold'] = [
         'days' => $manager->get_config('warning_threshold_days'),
-        'cutoff' => time() - ($manager->get_config('warning_threshold_days') * DAYSECS),
+        'cutoff' => time() - (
+            $manager->get_config('delete_threshold_days') - $manager->get_config('warning_threshold_days')
+        ) * DAYSECS,
     ];
 } else {
     $tplctx['warningthreshold'] = null;
