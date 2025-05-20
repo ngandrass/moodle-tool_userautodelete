@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.1.0 (2025052000)
+
+- Add dry-run feature to show which users would be warned and deleted without actually performing the actions
+
+
 ## Version 1.0.1 (2025051700)
 
 - Improve description of user record anonymization feature on plugin settings page
