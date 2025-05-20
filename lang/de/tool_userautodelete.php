@@ -30,18 +30,25 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 // General.
 $string['pluginname'] = 'Automatische Nutzerlöschung';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['back_to_settings'] = 'Zurück zu den Einstellungen';
 $string['task_check_and_delete_users'] = 'Inaktive Nutzer suchen und löschen';
+$string['reltime_prefix_in'] = 'in';
+$string['next_check'] = 'Nächste Prüfung';
+$string['affected_users'] = 'Betroffene Nutzer';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Das Plugin ist global deaktiviert, überspringe Ausführung.';
+$string['warning_email_disabled'] = 'Warn-E-Mails sind deaktiviert';
 $string['warning_email_disabled_skipping'] = 'Warn-E-Mails sind deaktiviert, überspringe ...';
 $string['warning_email_sent_to_user'] = 'Warn-E-Mail an Nutzer mit ID {$a} gesendet';
 $string['delete_email_sent_to_user'] = 'Löschungsbenachrichtigung an Nutzer mit ID {$a} gesendet';
 $string['user_anonymized'] = 'Nutzer mit ID {$a} wurde anonymisiert';
 $string['user_deleted'] = 'Nutzer mit ID {$a} wurde gelöscht';
 $string['user_recovered'] = 'Nutzer mit ID {$a} war zuvor als inaktiv markiert, ist aber zurückgekehrt. Nutzer wird nicht gelöscht.';
+$string['users_to_warn'] = 'Zu warnende Nutzer';
 $string['users_to_warn_a'] = '{$a} Nutzer für den Versand einer Warn-E-Mail gefunden.';
 $string['no_users_to_warn'] = 'Keine Nutzer für den Versand einer Warn-E-Mail gefunden.';
+$string['users_to_delete'] = 'Zu löschende Nutzer';
 $string['users_to_delete_a'] = '{$a} Nutzer zur Löschung gefunden.';
 $string['no_users_to_delete'] = 'Keine Nutzer zur Löschung gefunden.';
 
@@ -53,6 +60,9 @@ $string['setting_ignore_siteadmins'] = 'Administratoren ignorieren';
 $string['setting_ignore_siteadmins_desc'] = 'Globale Administratoren können nicht gelöscht werden. Entfernen Sie die Administratorrolle, um sie in den automatischen Löschprozess einzubeziehen.';
 $string['setting_ignore_roles'] = 'Ignorierte Rollen';
 $string['setting_ignore_roles_desc'] = 'Alle Nutzer die mindestens einer der ausgewählten Rollen zugewiesen sind werden niemals gelöscht.';
+$string['setting_dryrun'] = 'Probelauf';
+$string['setting_dryrun_desc'] = 'Ein Probelauf listet alle Benutzer auf, die bei der nächsten Inaktivitätsprüfung eine Warnmeldung erhalten oder gelöscht werden würden. Dies ist nützlich, um zu überprüfen, ob das Plugin korrekt konfiguriert ist und um zu sehen, welche Benutzer betroffen wären. Der Probelauf führt keinerlei Aktionen durch und ist daher zerstörungsfrei!';
+$string['setting_dryrun_button'] = 'Probelauf durchführen';
 $string['setting_task_execution_interval'] = 'Prüfintervall';
 $string['setting_task_execution_interval_desc'] = 'Die Überprüfung auf inaktive Nutzer wird über einen geplante Task durchgeführt, der über den Moodle-Cron ausgeführt wird. Sie können das Intervall, in dem dieser Task ausgeführt wird, über den folgenden Button konfigurieren.';
 $string['setting_task_execution_interval_button'] = 'Prüfintervall konfigurieren';
@@ -87,6 +97,16 @@ $string['setting_warning_email_subject_default'] = 'Ihr Konto wird bald gelösch
 $string['setting_warning_email_body'] = 'Inhalt';
 $string['setting_warning_email_body_desc'] = 'Der Inhalt der Warn-E-Mail.';
 $string['setting_warning_email_body_default'] = '<p>Hallo,</p><p>Ihr Konto auf unserer Seite war für einen langen Zeitraum inaktiv. Um Ihr Konto zu behalten, <strong>loggen Sie sich jetzt ein, um zu verhindern, dass Ihr Konto gemäß unserer Datenschutzrichtlinie in den nächsten Tagen gelöscht wird</strong>.</p><p>Wenn Sie möchten, dass Ihr Konto gelöscht wird, können Sie diese Nachricht ignorieren.</p><p>Mit freundlichen Grüßen</p>';
+
+// Page: info / dryrun
+$string['dry_run'] = 'Probelauf';
+$string['page_title_dryrun'] = 'Automatische Nutzerlöschung (Probelauf)';
+$string['dry_run_explanation'] = 'Diese Seite zeigt die Aktionen, die während der nächsten Inaktivitätsprüfung ausgeführt werden würden. Keine der Aktionen wurde tatsächlich ausgeführt!';
+$string['current_configuration'] = 'Aktuelle Konfiguration';
+$string['current_configuration_table_desc'] = 'Diese Tabelle listet den Zeitpunkt der nächsten Inaktivitätsprüfung die im Hintergrund ausgeführt werden würde, sowie die konfigurierten Schwellenwerte für Warn-E-Mails und Nutzerlöschungen auf. Außerdem ist angegeben, welche Nutzerrollen von der automatischen Löschung ausgeschlossen sind.';
+$string['dry_run_affected_users_desc'] = 'Die hier aufgeführten Nutzer würden entweder eine Warn-E-Mail erhalten oder gelöscht werden. Wenn keine Nutzer aufgelistet sind, hat sich kein Nutzer länger als die konfigurierten Schwellenwerte nicht eingeloggt oder der Nutzer ist gemäß der Plugin-Konfiguration ausgeschlossen.';
+$string['a_users_would_be_deleted'] = 'Die folgenden {$a} Nutzer würden gelöscht werden';
+$string['a_users_would_be_warned'] = 'Die folgenden {$a} Nutzer würden eine Warn-E-Mail erhalten';
 
 // Errors.
 $string['error_invalid_config_aborting'] = 'Ungültige Plugin-Konfiguration gefunden. Abbruch ...';

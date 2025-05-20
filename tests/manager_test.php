@@ -65,6 +65,46 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that the config values can be read
+     *
+     * @covers \tool_userautodelete\manager::get_config
+     *
+     * @dataProvider get_config_data_provider
+     *
+     * @param string $key Key of the config entry to check
+     * @param bool $expectvalue True if the config value is expected to be set
+     * @return void
+     */
+    public function test_get_config(string $key, bool $expectvalue): void {
+        $this->resetAfterTest();
+
+        $manager = new manager();
+        $value = $manager->get_config($key);
+
+        if ($expectvalue) {
+            $this->assertNotEmpty($value, 'Valid config value is empty');
+        } else {
+            $this->assertNull($value, 'Invalid config value was found');
+        }
+    }
+
+    /**
+     * Data provider for test_get_config()
+     *
+     * @return array[] Test data
+     */
+    public static function get_config_data_provider(): array {
+        return [
+            'Valid: delete_threshold_days' => ['delete_threshold_days', true],
+            'Valid: warning_threshold_days' => ['warning_threshold_days', true],
+            'Valid: ignore_siteadmins' => ['ignore_siteadmins', true],
+            'Invalid: foo' => ['foo', false],
+            'Invalid: bar' => ['bar', false],
+            'Invalid: lorem_ipsum' => ['lorem_ipsum', false],
+        ];
+    }
+
+    /**
      * Tests that the user deletion tasks are not executed when the config is invalid
      *
      * @covers \tool_userautodelete\manager

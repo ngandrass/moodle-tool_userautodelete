@@ -1,0 +1,241 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/dryrun
+
+    Dry-run and information page for too_userautodelete.
+
+    Example context (json):
+    {
+        "userstowarn": {
+            "count": 2,
+            "users": [
+                {
+                    "id": 1,
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "lastaccess": 1690000000,
+                    "timecreated": 1690000000
+                },
+                {
+                    "id": 2,
+                    "firstname": "Jane",
+                    "lastname": "Smith",
+                    "lastaccess": 1690000000,
+                    "timecreated": 1690000000
+                }
+            ]
+        },
+        "userstodelete": {
+            "count": 1,
+            "users": [
+                {
+                    "id": 3,
+                    "firstname": "Alice",
+                    "lastname": "Johnson",
+                    "lastaccess": 1680000000,
+                    "timecreated": 1680000000
+                }
+            ]
+        },
+        "pluginenabled": true,
+        "deletethreshold": {
+            "cutoff": 1690000000,
+            "days": 30
+        },
+        "warningthreshold": {
+            "cutoff": 1690000000,
+            "days": 15
+        },
+        "nextcheck": {
+            "absolute": 1690000000,
+            "relative": "in 2 days"
+        },
+        "ignoredroles": [
+            "admin",
+            "guest"
+        ],
+        "url": {
+            "back": "https://example.com/back",
+            "userprofilebase": "https://example.com/userprofilebase"
+        }
+    }
+}}
+
+<h2>{{#str}} dry_run, tool_userautodelete {{/str}}</h2>
+
+<div class="row">
+    <div class="col-sm-12">
+        <p>
+            {{#str}} dry_run_explanation, tool_userautodelete {{/str}}
+        </p>
+    </div>
+</div>
+
+<div>
+    <h5>{{#str}} current_configuration, tool_userautodelete {{/str}}</h5>
+    <p>{{#str}} current_configuration_table_desc, tool_userautodelete {{/str}}</p>
+    <table class="table" style="max-width: 700px;">
+        <tr>
+            <td>{{#str}} next_check, tool_userautodelete {{/str}}</td>
+            <td>
+                {{#nextcheck}}
+                    {{^pluginenabled}}
+                        Never (plugin disabled)<br>
+                        <i>Would check
+                    {{/pluginenabled}}
+
+                    {{#str}} reltime_prefix_in, tool_userautodelete {{/str}} {{nextcheck.relative}}
+                    ({{#userdate}} {{nextcheck.absolute}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+
+                    {{^pluginenabled}}
+                        </i>
+                    {{/pluginenabled}}
+                {{/nextcheck}}
+                {{^nextcheck}}
+                    {{#str}} disabled, admin {{/str}}
+                {{/nextcheck}}
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} setting_warning_threshold_days, tool_userautodelete {{/str}}</td>
+            <td>
+                {{#warningthreshold}}
+                    {{#userdate}} {{warningthreshold.cutoff}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                    ({{warningthreshold.days}}&nbsp;{{#str}} days {{/str}})
+                {{/warningthreshold}}
+                {{^warningthreshold}}
+                    {{#str}} disabled, admin {{/str}}
+                {{/warningthreshold}}
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} setting_delete_threshold_days, tool_userautodelete {{/str}}</td>
+            <td>
+                {{#userdate}} {{deletethreshold.cutoff}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                ({{deletethreshold.days}}&nbsp;{{#str}} days {{/str}})
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} setting_ignore_roles, tool_userautodelete {{/str}}</td>
+            <td>
+                {{#ignoredroles}}
+                    <span class="badge bg-secondary">
+                        {{.}}
+                    </span>
+                {{/ignoredroles}}
+                {{^ignoredroles}}
+                    {{#str}} none {{/str}}
+                {{/ignoredroles}}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <a href="{{{url.back}}}" class="btn btn-primary" role="button">
+            {{#str}} back_to_settings, tool_userautodelete {{/str}}
+        </a>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <h5>{{#str}} affected_users, tool_userautodelete {{/str}}</h5>
+        <p>{{#str}} dry_run_affected_users_desc, tool_userautodelete {{/str}}</p>
+    </div>
+    <div class="col-lg-6 my-3">
+        <div class="card">
+            <h5 class="card-header">
+                <i class="fa-solid fa-trash-can"></i>
+                &nbsp;
+                {{#str}} users_to_delete, tool_userautodelete {{/str}}
+            </h5>
+            <div class="card-body">
+                {{#userstodelete.count}}
+                    <p>
+                        {{#str}} a_users_would_be_deleted, tool_userautodelete, {{userstodelete.count}} {{/str}}:
+                    </p>
+                    <ul>
+                        {{#userstodelete.users}}
+                            <li>
+                                <a href="{{{url.userprofilebase}}}?id={{{id}}}" target="_blank">
+                                    {{firstname}} {{lastname}}
+                                </a>
+                                {{#lastaccess}}
+                                    ({{#str}} lastaccess {{/str}}: {{#userdate}} {{lastaccess}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+                                {{/lastaccess}}
+                                {{^lastaccess}}
+                                    ({{#str}} lastaccess {{/str}}: {{#userdate}} {{timecreated}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+                                {{/lastaccess}}
+                            </li>
+                        {{/userstodelete.users}}
+                    </ul>
+                {{/userstodelete.count}}
+                {{^userstodelete.count}}
+                    <p class="text-muted text-center my-4">
+                        {{#str}} no_users_to_delete, tool_userautodelete {{/str}}
+                    </p>
+                {{/userstodelete.count}}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 my-3">
+        <div class="card">
+            <h5 class="card-header">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                &nbsp;
+                {{#str}} users_to_warn, tool_userautodelete {{/str}}
+            </h5>
+            <div class="card-body">
+                {{#userstowarn}}
+                    {{#userstowarn.count}}
+                        <p>
+                            {{#str}} a_users_would_be_warned, tool_userautodelete, {{userstowarn.count}} {{/str}}:
+                        </p>
+                        <ul>
+                            {{#userstowarn.users}}
+                                <li>
+                                    <a href="{{{url.userprofilebase}}}?id={{{id}}}" target="_blank">
+                                        {{firstname}} {{lastname}}
+                                    </a>
+                                    {{#lastaccess}}
+                                        ({{#str}} lastaccess {{/str}}: {{#userdate}} {{lastaccess}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+                                    {{/lastaccess}}
+                                    {{^lastaccess}}
+                                        ({{#str}} lastaccess {{/str}}: {{#userdate}} {{timecreated}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+                                    {{/lastaccess}}
+                                </li>
+                            {{/userstowarn.users}}
+                        </ul>
+                    {{/userstowarn.count}}
+                    {{^userstowarn.count}}
+                        <p class="text-muted text-center my-4">
+                            {{#str}} no_users_to_warn, tool_userautodelete {{/str}}
+                        </p>
+                    {{/userstowarn.count}}
+                {{/userstowarn}}
+                {{^userstowarn}}
+                    <p class="text-muted text-center my-4">
+                        {{#str}} warning_email_disabled, tool_userautodelete {{/str}}
+                    </p>
+                {{/userstowarn}}
+            </div>
+        </div>
+    </div>
+</div>
