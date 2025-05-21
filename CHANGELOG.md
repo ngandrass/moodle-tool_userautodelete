@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 1.1.1 (2025052100)
 
 - Add warning email state table to privacy provider
 
