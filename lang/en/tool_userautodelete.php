@@ -34,6 +34,7 @@ $string['task_check_and_delete_users'] = 'Check and delete users';
 $string['reltime_prefix_in'] = 'in';
 $string['next_check'] = 'Next check';
 $string['affected_users'] = 'Affected users';
+$string['inactivity_warning'] = 'Inactivity warning';
 
 // Privacy.
 $string['privacy:metadata:tool_userautodelete_mail'] = 'Information about users that received an inactivity warning email.';
