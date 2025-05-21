@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Add warning email state table to privacy provider
+
+
 ## Version 1.1.0 (2025052000)
 
 - Add dry-run feature to show which users would be warned and deleted without actually performing the actions

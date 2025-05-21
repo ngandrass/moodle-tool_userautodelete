@@ -29,12 +29,16 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // General.
 $string['pluginname'] = 'Automatic user deletion';
-$string['privacy:metadata'] = 'This plugin does not store any data personal identifiable user information.';
 $string['back_to_settings'] = 'Back to settings';
 $string['task_check_and_delete_users'] = 'Check and delete users';
 $string['reltime_prefix_in'] = 'in';
 $string['next_check'] = 'Next check';
 $string['affected_users'] = 'Affected users';
+
+// Privacy.
+$string['privacy:metadata:tool_userautodelete_mail'] = 'Information about users that received an inactivity warning email.';
+$string['privacy:metadata:tool_userautodelete_mail:userid'] = 'The ID of the user that received the email.';
+$string['privacy:metadata:tool_userautodelete_mail:timesent'] = 'The time the email was sent.';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';

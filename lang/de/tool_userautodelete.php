@@ -29,12 +29,16 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // General.
 $string['pluginname'] = 'Automatische Nutzerlöschung';
-$string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
 $string['back_to_settings'] = 'Zurück zu den Einstellungen';
 $string['task_check_and_delete_users'] = 'Inaktive Nutzer suchen und löschen';
 $string['reltime_prefix_in'] = 'in';
 $string['next_check'] = 'Nächste Prüfung';
 $string['affected_users'] = 'Betroffene Nutzer';
+
+// Privacy.
+$string['privacy:metadata:tool_userautodelete_mail'] = 'Informationen über Nutzer die eine Inaktivitätswarnung per E-Mail erhalten haben.';
+$string['privacy:metadata:tool_userautodelete_mail:userid'] = 'Die ID des Nutzers der die E-Mail erhalten hat.';
+$string['privacy:metadata:tool_userautodelete_mail:timesent'] = 'Der Zeitpunkt zu dem die E-Mail gesendet wurde.';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Das Plugin ist global deaktiviert, überspringe Ausführung.';

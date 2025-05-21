@@ -24,6 +24,7 @@
 
 namespace tool_userautodelete\privacy;
 
+use core_privacy\local\metadata\collection;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -34,16 +35,25 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  *
  * @codeCoverageIgnore This is handled by Moodle core tests
  */
-class provider implements \core_privacy\local\metadata\null_provider {
+class provider implements \core_privacy\local\metadata\provider {
 
     /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
+     * Returns meta data about this plugin.
      *
-     * @return string Language string identifier
+     * @param collection $collection The initialised collection to add items to.
+     * @return collection A listing of user data stored through this system.
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public static function get_metadata(collection $collection): collection {
+        $collection->add_database_table(
+            'tool_userautodelete_mail',
+            [
+                'userid' => 'privacy:metadata:tool_userautodelete_mail:userid',
+                'timesent' => 'privacy:metadata:tool_userautodelete_mail:timesent',
+            ],
+            'privacy:metadata:tool_userautodelete_mail'
+        );
+
+        return $collection;
     }
 
 }
