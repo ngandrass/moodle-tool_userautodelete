@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $plugin->component = 'tool_userautodelete';
 $plugin->release = '1.1.1';
-$plugin->version = 2025052100;
+$plugin->version = 2025052600;
 $plugin->requires = 2022112800;
 $plugin->supported = [401, 500];
 $plugin->maturity = MATURITY_STABLE;

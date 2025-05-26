@@ -42,5 +42,28 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
     // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
 
+    if ($oldversion < 2025052600) {
+        // Define table tool_userautodelete_log to be created.
+        $table = new xmldb_table('tool_userautodelete_log');
+
+        // Adding fields to table tool_userautodelete_log.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('runtime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('warned', XMLDB_TYPE_INTEGER, '8', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('deleted', XMLDB_TYPE_INTEGER, '8', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('recovered', XMLDB_TYPE_INTEGER, '8', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_userautodelete_log.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_log.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Userautodelete savepoint reached.
+        upgrade_plugin_savepoint(true, 2025052600, 'tool', 'userautodelete');
+    }
+
     return true;
 }

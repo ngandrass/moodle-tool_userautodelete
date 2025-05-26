@@ -72,6 +72,8 @@ class manager {
      * @throws \dml_exception
      */
     public function execute(): bool {
+        global $DB;
+
         // Validate config and check if the plugin is enabled.
         if (!$this->validate_config()) {
             logger::error(get_string('error_invalid_config_aborting', 'tool_userautodelete'));
@@ -84,9 +86,19 @@ class manager {
         }
 
         // Execute the main workflow.
-        $this->warn_inactive_users();
-        $this->delete_inactive_users();
-        $this->cleanup();
+        $warned = $this->warn_inactive_users();
+        $deleted = $this->delete_inactive_users();
+        $recovered = $this->cleanup();
+
+        // Log execution results.
+        if ($warned > 0 || $deleted > 0 || $recovered > 0) {
+            $DB->insert_record('tool_userautodelete_log', [
+                'runtime' => time(),
+                'warned' => $warned,
+                'deleted' => $deleted,
+                'recovered' => $recovered,
+            ]);
+        }
 
         return true;
     }
@@ -306,28 +318,29 @@ class manager {
      * notification time period. Sends a warning mail and keeps track of mails
      * sent.
      *
-     * @return void
+     * @return int Number of users that were warned
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function warn_inactive_users(): void {
+    protected function warn_inactive_users(): int {
         global $DB;
 
         if (!$this->config->warning_email_enable) {
             logger::info(get_string('warning_email_disabled_skipping', 'tool_userautodelete'));
-            return;
+            return 0;
         }
 
         // Get users that have been inactive for the configured time but have not been notified yet.
         $userstowarn = $this->get_users_to_warn();
         if (empty($userstowarn)) {
             logger::info(get_string('no_users_to_warn', 'tool_userautodelete'));
-            return;
+            return 0;
         } else {
             logger::info(get_string('users_to_warn_a', 'tool_userautodelete', count($userstowarn)));
         }
 
         // Notify users.
+        $numwarnedusers = 0;
         foreach ($userstowarn as $user) {
             if (!email_to_user(
                 $user,
@@ -345,29 +358,33 @@ class manager {
                 'userid' => $user->id,
                 'timesent' => time(),
             ]);
+            $numwarnedusers++;
             logger::info(get_string('warning_email_sent_to_user', 'tool_userautodelete', $user->id));
         }
+
+        return $numwarnedusers;
     }
 
     /**
      * Identifies users that were inactive for at least the configured threshold
      * and deletes them.
      *
-     * @return void
+     * @return int Number of users that were deleted
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function delete_inactive_users(): void {
+    protected function delete_inactive_users(): int {
         // Get users that have been inactive long enough that they should be deleted.
         $userstodelete = $this->get_users_to_delete();
         if (empty($userstodelete)) {
             logger::info(get_string('no_users_to_delete', 'tool_userautodelete'));
-            return;
+            return 0;
         } else {
             logger::info(get_string('users_to_delete_a', 'tool_userautodelete', count($userstodelete)));
         }
 
         // Delete users.
+        $numdeletedusers = 0;
         foreach ($userstodelete as $user) {
             // Send deletion mail if enabled.
             if ($this->config->delete_email_enable) {
@@ -389,6 +406,7 @@ class manager {
                 logger::error(get_string('error_deleting_user', 'tool_userautodelete', $user->id));
                 continue;
             } else {
+                $numdeletedusers++;
                 logger::info(get_string('user_deleted', 'tool_userautodelete', $user->id));
             }
 
@@ -397,6 +415,8 @@ class manager {
                 $this->anonymize_user_record($user->id);
             }
         }
+
+        return $numdeletedusers;
     }
 
     /**
@@ -445,11 +465,12 @@ class manager {
     /**
      * Performs all necessary cleanup tasks
      *
-     * @return void
+     * @return int Number of users that back in since the last run and were
+     * therefore prevented from being deleted.
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function cleanup(): void {
+    protected function cleanup(): int {
         global $DB;
 
         // Remove all users from the mail table that have been deleted or have signed in in the meantime.
@@ -467,12 +488,16 @@ class manager {
         ]);
 
         // Drop recovered users from the internal state table and log.
+        $numrecoveredusers = 0;
         foreach ($recoveredusers as $user) {
             $DB->delete_records('tool_userautodelete_mail', ['userid' => $user->id]);
             if (!$user->deleted) {
+                $numrecoveredusers++;
                 logger::info(get_string('user_recovered', 'tool_userautodelete', $user->id));
             }
         }
+
+        return $numrecoveredusers;
     }
 
 }
