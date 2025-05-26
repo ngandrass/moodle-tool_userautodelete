@@ -674,4 +674,77 @@ final class manager_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Tests that the action log is created and contains the correct number of
+     * warnings, deletions and recoveries.
+     *
+     * @covers \tool_userautodelete\manager
+     * @dataProvider action_log_data_provider
+     *
+     * @param int $numwarnings
+     * @param int $numdeleted
+     * @param int $numrecovered
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_action_log(int $numwarnings, int $numdeleted, int $numrecovered): void {
+        global $DB;
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 10, 'tool_userautodelete');
+        set_config('warning_threshold_days', 5, 'tool_userautodelete');
+
+        // Create users to receive warnings.
+        for ($i = 0; $i < $numwarnings; $i++) {
+            $this->getDataGenerator()->create_user(['lastaccess' => time() - 6 * DAYSECS]);
+        }
+
+        // Create users to be deleted.
+        for ($i = 0; $i < $numdeleted; $i++) {
+            $this->getDataGenerator()->create_user(['lastaccess' => time() - 11 * DAYSECS]);
+        }
+
+        // Create users to be recovered.
+        for ($i = 0; $i < $numrecovered; $i++) {
+            $user = $this->getDataGenerator()->create_user(['lastaccess' => time() - DAYSECS]);
+            $DB->insert_record('tool_userautodelete_mail', [
+                'userid' => $user->id,
+                'timesent' => time() - 2 * DAYSECS,
+            ]);
+        }
+
+        // Execute deletion routine.
+        $manager = new manager();
+        $manager->execute();
+
+        // Check action log.
+        $logentry = $DB->get_record('tool_userautodelete_log', [], '*', IGNORE_MISSING);
+        if ($numwarnings > 0 || $numdeleted > 0 || $numrecovered > 0) {
+            $this->assertNotEmpty($logentry, 'Action log entry was not created');
+            $this->assertEquals($numwarnings, $logentry->warned, 'Wrong number of warnings logged');
+            $this->assertEquals($numdeleted, $logentry->deleted, 'Wrong number of deletions logged');
+            $this->assertEquals($numrecovered, $logentry->recovered, 'Wrong number of recoveries logged');
+        } else {
+            $this->assertFalse($logentry, 'Action log entry was created even though no actions were performed');
+        }
+    }
+
+    /**
+     * Data provider for test_action_log()
+     *
+     * @return array Test data
+     */
+    public static function action_log_data_provider(): array {
+        return [
+            'No warnings, no deletions, no recoveries' => [0, 0, 0],
+            'One warning, no deletions, no recoveries' => [1, 0, 0],
+            'No warnings, one deletion, no recoveries' => [0, 1, 0],
+            'No warnings, no deletions, one recovery' => [0, 0, 1],
+            'One warning, one deletion, one recovery' => [1, 1, 1],
+            'Multiple warnings, multiple deletions, multiple recoveries' => [3, 3, 3],
+            'Multiple warnings, no deletions, some recoveries' => [10, 0, 5],
+            'No warnings, multiple deletions, some recoveries' => [0, 10, 5],
+        ];
+    }
+
 }
