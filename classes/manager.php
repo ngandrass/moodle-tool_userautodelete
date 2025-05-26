@@ -84,7 +84,7 @@ class manager {
         }
 
         // Execute the main workflow.
-        $this->find_and_notify_inactive_users();
+        $this->warn_inactive_users();
         $this->delete_inactive_users();
         $this->cleanup();
 
@@ -310,7 +310,7 @@ class manager {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function find_and_notify_inactive_users(): void {
+    protected function warn_inactive_users(): void {
         global $DB;
 
         if (!$this->config->warning_email_enable) {
@@ -319,16 +319,16 @@ class manager {
         }
 
         // Get users that have been inactive for the configured time but have not been notified yet.
-        $userstonotify = $this->get_users_to_warn();
-        if (empty($userstonotify)) {
+        $userstowarn = $this->get_users_to_warn();
+        if (empty($userstowarn)) {
             logger::info(get_string('no_users_to_warn', 'tool_userautodelete'));
             return;
         } else {
-            logger::info(get_string('users_to_warn_a', 'tool_userautodelete', count($userstonotify)));
+            logger::info(get_string('users_to_warn_a', 'tool_userautodelete', count($userstowarn)));
         }
 
         // Notify users.
-        foreach ($userstonotify as $user) {
+        foreach ($userstowarn as $user) {
             if (!email_to_user(
                 $user,
                 get_admin(),
