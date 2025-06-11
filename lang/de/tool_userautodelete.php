@@ -124,13 +124,11 @@ $string['a_users_would_be_warned'] = 'Die folgenden {$a} Nutzer würden eine War
 
 // Page: action logs
 $string['action_log'] = 'Aktionsprotokoll';
-$string['action_log_explanation'] = 'This page lists all actions that have been performed by the automatic user deletion plugin. Every time a warning e-mail is sent, a user is finally deleted, or a user was marked as recovered after a previously sent warning e-mail, an entry in this action log is created. User inactivity checks that did not perform any actions are not logged.';
 $string['action_log_explanation'] = 'Diese Seite listet alle Aktionen auf, die von diesem Plugin durchgeführt wurden. Jedes Mal, wenn eine Warn-E-Mail gesendet wird, ein Nutzer endgültig gelöscht wird oder ein Nutzer nach einer Warn-E-Mail zurückgekehrt ist, wird ein Eintrag im Aktionsprotokoll erstellt. Inaktivitätsprüfungen bei denen keinerlei Aktionen durchgeführt wurden, werden nicht protokolliert.';
 $string['inspecting_raw_logs'] = 'Technische Logdaten anzeigen';
 $string['latest_actions'] = 'Letzte Aktionen';
 $string['latest_actions_desc'] = 'Diese Tabelle listet die Aktionen auf, die zuletzt von diesem Plugin durchgeführt wurden. Inaktivitätsprüfungen bei denen keine Aktionen durchgeführt wurden werden nicht aufgeführt.';
 $string['page_title_action_log'] = 'Automatische Nutzerlöschung (Aktionsprotokoll)';
-$string['view_scheduled_task_logs'] = 'View raw scheduled task logs';
 $string['view_scheduled_task_logs'] = 'Technische Logdaten anzeigen';
 $string['view_scheduled_task_logs_desc'] = 'Die Überprüfung auf inaktive Nutzer wird von einem Moodle-Task im Hintergrund durchgeführt. Sollten Probleme mit dem Plugin auftrefen, können die technischen Logdaten der Moodle-Task-Ausführungen über den folgenden Button inspiziert werden.';
 
