@@ -48,7 +48,7 @@ you can run the tests using the following commands:
   ```text
   vendor/bin/phpunit --colors --testdox -v admin/tool/userautodelete/tests/manager_test.php
   ```
-  
+
 - Running data privacy compliance test suites:
   ```text
   vendor/bin/phpunit --colors --testdox -v --testsuite tool_dataprivacy_testsuite,tool_policy_testsuite,core_privacy_testsuite
