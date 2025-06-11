@@ -176,6 +176,11 @@ If you find a bug or have a feature request, please open an issue via the [GitHu
 Please do not use the comments section within the Moodle plugin directory. Thanks :)
 
 
+## Testing
+
+You can find testing instructions for developers in the [TESTING.md](TESTING.md) file.
+
+
 ## License
 
 2025 Niels Gandraß <niels@gandrass.de>
