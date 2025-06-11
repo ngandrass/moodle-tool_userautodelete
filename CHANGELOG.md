@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDNN)
 
+- Add action log that keeps track of sent user warnings, user deletions, and user recoveries
 - Fix missing translation of next check info on dry-run page
 - Improve language support for relative time specifications
 

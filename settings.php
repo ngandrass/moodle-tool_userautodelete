@@ -87,13 +87,11 @@ if ($hassiteconfig) {
         ));
 
         // Task logs.
-        $tasklogsurl = new moodle_url('/admin/tasklogs.php', [
-            'filter' => 'tool_userautodelete\task\check_and_delete_users',
-        ]);
+        $tasklogsurl = new moodle_url('/admin/tool/userautodelete/log.php');
         $settings->add(new admin_setting_description('tool_userautodelete/task_logs',
             get_string('setting_task_logs', 'tool_userautodelete'),
             get_string('setting_task_logs_desc', 'tool_userautodelete').
-            '<br><a href="'.$tasklogsurl.'" class="btn btn-primary my-2" role="button" target="_blank">'.
+            '<br><a href="'.$tasklogsurl.'" class="btn btn-primary my-2" role="button">'.
                 get_string('setting_task_logs_button', 'tool_userautodelete').
             '</a>'
         ));
