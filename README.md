@@ -134,10 +134,21 @@ _Configure check interval_ button on the plugin settings page.
 
 ### Inspecting logs
 
-The plugin logs all actions it performs. You can inspect the logs on a per-check-interval basis by clicking the _View
-logs_ button on the plugin settings page.
+The plugin logs all actions it performs. Every time a warning e-mail is sent, a user is finally deleted, or a user was
+marked as recovered after a previously sent warning e-mail, an entry in this action log is created. User inactivity
+checks that did not perform any actions are not logged.
+
+You can inspect the action log by clicking the _View action log_ button on the plugin settings page.
 
 ![Plugin settings: View logs](docs/assets/screenshots/settings_view_logs.png)
+
+This will take you to a page that shows you all performed actions in a sortable table. If no actions have been performed
+yet, only an informational message will be displayed.
+
+![Action log](docs/assets/screenshots/action_log.png)
+
+You can use the _View raw scheduled task logs_ button at the bottom of the page to quickly access the raw logs of the
+scheduled task within the Moodle website administration for debugging purposes.
 
 
 ## Installation
