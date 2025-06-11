@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 1.2.0 (2025061100)
 
 - Add action log that keeps track of sent user warnings, user deletions, and user recoveries
 - Fix missing translation of next check info on dry-run page
