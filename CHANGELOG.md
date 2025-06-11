@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Fix missing translation of next check info on dry-run page
+
+
 ## Version 1.1.1 (2025052100)
 
 - Add warning email state table to privacy provider

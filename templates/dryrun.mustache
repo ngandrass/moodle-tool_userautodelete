@@ -95,8 +95,8 @@
             <td>
                 {{#nextcheck}}
                     {{^pluginenabled}}
-                        Never (plugin disabled)<br>
-                        <i>Would check
+                        {{#str}} next_check_never, tool_userautodelete{{/str}}<br>
+                        <i>{{#str}} next_check_would, tool_userautodelete {{/str}}
                     {{/pluginenabled}}
 
                     {{#str}} reltime_prefix_in, tool_userautodelete {{/str}} {{nextcheck.relative}}
