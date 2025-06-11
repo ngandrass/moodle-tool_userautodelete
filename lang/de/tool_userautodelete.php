@@ -35,11 +35,15 @@ $string['reltime_prefix_ago'] = 'vor';
 $string['reltime_suffix_ago'] = '';
 $string['reltime_prefix_in'] = 'in';
 $string['reltime_suffix_in'] = '';
+$string['last_check'] = 'Letzte Prüfung';
 $string['next_check'] = 'Nächste Prüfung';
 $string['next_check_never'] = 'Nie (Plugin deaktiviert)';
 $string['next_check_would'] = 'Würde prüfen';
 $string['affected_users'] = 'Betroffene Nutzer';
 $string['inactivity_warning'] = 'Inaktivitätswarnung';
+$string['warned'] = 'Gewarnt';
+$string['deleted'] = 'Gelöscht';
+$string['recovered'] = 'Zurückgekehrt';
 
 // Privacy.
 $string['privacy:metadata:tool_userautodelete_mail'] = 'Informationen über Nutzer die eine Inaktivitätswarnung per E-Mail erhalten haben.';
@@ -77,7 +81,7 @@ $string['setting_task_execution_interval'] = 'Prüfintervall';
 $string['setting_task_execution_interval_desc'] = 'Die Überprüfung auf inaktive Nutzer wird über einen geplante Task durchgeführt, der über den Moodle-Cron ausgeführt wird. Sie können das Intervall, in dem dieser Task ausgeführt wird, über den folgenden Button konfigurieren.';
 $string['setting_task_execution_interval_button'] = 'Prüfintervall konfigurieren';
 $string['setting_task_logs'] = 'Logdaten';
-$string['setting_task_logs_desc'] = 'Dieses Plugin protokolliert alle Aktionen die es ausführt. Sie können die Protokolle aller vergangenen Task-Ausführungen über den folgenden Button einsehen.';
+$string['setting_task_logs_desc'] = 'Dieses Plugin protokolliert alle Aktionen, z.B. Nutzerlöschung, die es ausführt. Die Protokolle aller Aktionen die bei vorherigen Prüfungen durchgeführt wurden, können über den folgenden Button eingesehen werden.';
 $string['setting_task_logs_button'] = 'Logdaten anzeigen';
 
 $string['setting_header_user_deletion'] = 'Nutzerlöschung';
@@ -117,6 +121,18 @@ $string['current_configuration_table_desc'] = 'Diese Tabelle listet den Zeitpunk
 $string['dry_run_affected_users_desc'] = 'Die hier aufgeführten Nutzer würden entweder eine Warn-E-Mail erhalten oder gelöscht werden. Wenn keine Nutzer aufgelistet sind, hat sich kein Nutzer länger als die konfigurierten Schwellenwerte nicht eingeloggt oder der Nutzer ist gemäß der Plugin-Konfiguration ausgeschlossen.';
 $string['a_users_would_be_deleted'] = 'Die folgenden {$a} Nutzer würden gelöscht werden';
 $string['a_users_would_be_warned'] = 'Die folgenden {$a} Nutzer würden eine Warn-E-Mail erhalten';
+
+// Page: action logs
+$string['action_log'] = 'Aktionsprotokoll';
+$string['action_log_explanation'] = 'This page lists all actions that have been performed by the automatic user deletion plugin. Every time a warning e-mail is sent, a user is finally deleted, or a user was marked as recovered after a previously sent warning e-mail, an entry in this action log is created. User inactivity checks that did not perform any actions are not logged.';
+$string['action_log_explanation'] = 'Diese Seite listet alle Aktionen auf, die von diesem Plugin durchgeführt wurden. Jedes Mal, wenn eine Warn-E-Mail gesendet wird, ein Nutzer endgültig gelöscht wird oder ein Nutzer nach einer Warn-E-Mail zurückgekehrt ist, wird ein Eintrag im Aktionsprotokoll erstellt. Inaktivitätsprüfungen bei denen keinerlei Aktionen durchgeführt wurden, werden nicht protokolliert.';
+$string['inspecting_raw_logs'] = 'Technische Logdaten anzeigen';
+$string['latest_actions'] = 'Letzte Aktionen';
+$string['latest_actions_desc'] = 'Diese Tabelle listet die Aktionen auf, die zuletzt von diesem Plugin durchgeführt wurden. Inaktivitätsprüfungen bei denen keine Aktionen durchgeführt wurden werden nicht aufgeführt.';
+$string['page_title_action_log'] = 'Automatische Nutzerlöschung (Aktionsprotokoll)';
+$string['view_scheduled_task_logs'] = 'View raw scheduled task logs';
+$string['view_scheduled_task_logs'] = 'Technische Logdaten anzeigen';
+$string['view_scheduled_task_logs_desc'] = 'Die Überprüfung auf inaktive Nutzer wird von einem Moodle-Task im Hintergrund durchgeführt. Sollten Probleme mit dem Plugin auftrefen, können die technischen Logdaten der Moodle-Task-Ausführungen über den folgenden Button inspiziert werden.';
 
 // Errors.
 $string['error_invalid_config_aborting'] = 'Ungültige Plugin-Konfiguration gefunden. Abbruch ...';

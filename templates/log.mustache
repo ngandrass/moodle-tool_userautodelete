@@ -1,0 +1,119 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/log
+
+    Task run action logs page.
+
+    Example context (json):
+    {
+        "logtablehtml": "<table>...</table>",
+        "lastcheck": {
+            "absolute": 1690000000,
+            "relative": "2 hours and 42 minutes"
+        },
+        "nextcheck": {
+            "absolute": 1690000000,
+            "relative": "19 hours and 18 minutes"
+        },
+        "pluginenabled": true,
+        "url": {
+            "back": "https://mymoodle.local/admin/",
+            "tasklogs": "https://mymoodle.local/admin/tasklogs.php",
+        }
+    }
+}}
+
+<h2>{{#str}} action_log, tool_userautodelete {{/str}}</h2>
+
+<div class="row">
+    <div class="col-sm-12">
+        <p>
+            {{#str}} action_log_explanation, tool_userautodelete {{/str}}
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table" style="max-width: 700px;">
+            <tr>
+                <td>{{#str}} last_check, tool_userautodelete {{/str}}</td>
+                <td>
+                    {{#lastcheck}}
+                        {{#str}} reltime_prefix_ago, tool_userautodelete {{/str}} {{lastcheck.relative}} {{#str}} reltime_suffix_ago, tool_userautodelete {{/str}}
+                        ({{#userdate}} {{lastcheck.absolute}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+                    {{/lastcheck}}
+                    {{^lastcheck}}
+                        {{#str}} never, tool_userautodelete {{/str}}
+                    {{/lastcheck}}
+                </td>
+            </tr>
+            <tr>
+                <td>{{#str}} next_check, tool_userautodelete {{/str}}</td>
+                <td>
+                    {{#nextcheck}}
+                        {{^pluginenabled}}
+                            {{#str}} next_check_never, tool_userautodelete{{/str}}<br>
+                        <i>{{#str}} next_check_would, tool_userautodelete {{/str}}
+                        {{/pluginenabled}}
+
+                        {{#str}} reltime_prefix_in, tool_userautodelete {{/str}} {{nextcheck.relative}} {{#str}} reltime_suffix_in, tool_userautodelete {{/str}}
+                        ({{#userdate}} {{nextcheck.absolute}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
+
+                        {{^pluginenabled}}
+                        </i>
+                        {{/pluginenabled}}
+                    {{/nextcheck}}
+                    {{^nextcheck}}
+                        {{#str}} disabled, admin {{/str}}
+                    {{/nextcheck}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <a href="{{{url.back}}}" class="btn btn-primary mb-2" role="button">
+            {{#str}} back_to_settings, tool_userautodelete {{/str}}
+        </a>
+    </div>
+</div>
+
+<h5 class="mt-3">{{#str}} latest_actions, tool_userautodelete {{/str}}</h5>
+<div class="row">
+    <div class="col-sm-12">
+        <p>
+            {{#str}} latest_actions_desc, tool_userautodelete {{/str}}
+        </p>
+        {{{logtablehtml}}}
+    </div>
+</div>
+
+<h5 class="mt-3">{{#str}} inspecting_raw_logs, tool_userautodelete {{/str}}</h5>
+<div class="row">
+    <div class="col-sm-12">
+        <p>
+            {{#str}} view_scheduled_task_logs_desc, tool_userautodelete {{/str}}
+        </p>
+        <a href="{{{url.tasklogs}}}" target="_blank" class="btn btn-secondary" role="button">
+            {{#str}} view_scheduled_task_logs, tool_userautodelete {{/str}}
+        </a>
+    </div>
+</div>

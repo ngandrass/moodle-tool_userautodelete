@@ -35,11 +35,15 @@ $string['reltime_prefix_ago'] = '';
 $string['reltime_suffix_ago'] = 'ago';
 $string['reltime_prefix_in'] = 'in';
 $string['reltime_suffix_in'] = '';
+$string['last_check'] = 'Last check';
 $string['next_check'] = 'Next check';
 $string['next_check_never'] = 'Never (plugin disabled)';
 $string['next_check_would'] = 'Would check';
 $string['affected_users'] = 'Affected users';
 $string['inactivity_warning'] = 'Inactivity warning';
+$string['warned'] = 'Warned';
+$string['deleted'] = 'Deleted';
+$string['recovered'] = 'Recovered';
 
 // Privacy.
 $string['privacy:metadata:tool_userautodelete_mail'] = 'Information about users that received an inactivity warning email.';
@@ -76,9 +80,9 @@ $string['setting_dryrun_button'] = 'Perform dry-run';
 $string['setting_task_execution_interval'] = 'Check interval';
 $string['setting_task_execution_interval_desc'] = 'The check for inactive users is performed using a scheduled task that is executed via the Moodle cron. You can configure the interval at which it runs by clicking the following button.';
 $string['setting_task_execution_interval_button'] = 'Configure check interval';
-$string['setting_task_logs'] = 'Logs';
-$string['setting_task_logs_desc'] = 'This plugin logs all actions it performs inside the respective scheduled task logs. You can access the logs from all previous runs by clicking the following button.';
-$string['setting_task_logs_button'] = 'View logs';
+$string['setting_task_logs'] = 'Action Log';
+$string['setting_task_logs_desc'] = 'This plugin logs all actions it performs (e.g., user deletion). You can access the logs of all previously performed actions by clicking the following button.';
+$string['setting_task_logs_button'] = 'View action log';
 
 $string['setting_header_user_deletion'] = 'User deletion';
 $string['setting_header_user_deletion_desc'] = 'Configuration of the automatic user deletion. Users that have not logged in for at least the configured number of days and are not ignored by the above settings will be automatically deleted.';
@@ -117,6 +121,16 @@ $string['current_configuration_table_desc'] = 'This table lists the next time a 
 $string['dry_run_affected_users_desc'] = 'Users listed here will either receive a warning email or will be deleted right away. If no users are listed, no user has been inactive for longer than the configured thresholds, or the user is ignored according to the plugin configuration.';
 $string['a_users_would_be_deleted'] = 'The following {$a} users would be deleted';
 $string['a_users_would_be_warned'] = 'The following {$a} users would receive a warning email';
+
+// Page: action logs
+$string['action_log'] = 'Action log';
+$string['action_log_explanation'] = 'This page lists all actions that have been performed by the automatic user deletion plugin. Every time a warning e-mail is sent, a user is finally deleted, or a user was marked as recovered after a previously sent warning e-mail, an entry in this action log is created. User inactivity checks that did not perform any actions are not logged.';
+$string['inspecting_raw_logs'] = 'Inspecting raw logs';
+$string['latest_actions'] = 'Latest actions';
+$string['latest_actions_desc'] = 'This table lists the latest actions that have been performed by the automatic user deletion plugin. Checks without any action are excluded.';
+$string['page_title_action_log'] = 'Automatic user deletion (action log)';
+$string['view_scheduled_task_logs'] = 'View raw scheduled task logs';
+$string['view_scheduled_task_logs_desc'] = 'The checks for inactive users are performed by a Moodle scheduled task, running in the background. If you experience problems with this plugin, you can inspect the raw logs of the scheduled task runs by clicking the button below.';
 
 // Errors.
 $string['error_invalid_config_aborting'] = 'Invalid plugin configuration found. Aborting ...';
