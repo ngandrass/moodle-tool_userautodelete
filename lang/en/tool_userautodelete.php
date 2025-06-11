@@ -31,7 +31,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Automatic user deletion';
 $string['back_to_settings'] = 'Back to settings';
 $string['task_check_and_delete_users'] = 'Check and delete users';
+$string['reltime_prefix_ago'] = '';
+$string['reltime_suffix_ago'] = 'ago';
 $string['reltime_prefix_in'] = 'in';
+$string['reltime_suffix_in'] = '';
 $string['next_check'] = 'Next check';
 $string['next_check_never'] = 'Never (plugin disabled)';
 $string['next_check_would'] = 'Would check';

@@ -31,7 +31,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Automatische Nutzerlöschung';
 $string['back_to_settings'] = 'Zurück zu den Einstellungen';
 $string['task_check_and_delete_users'] = 'Inaktive Nutzer suchen und löschen';
+$string['reltime_prefix_ago'] = 'vor';
+$string['reltime_suffix_ago'] = '';
 $string['reltime_prefix_in'] = 'in';
+$string['reltime_suffix_in'] = '';
 $string['next_check'] = 'Nächste Prüfung';
 $string['next_check_never'] = 'Nie (Plugin deaktiviert)';
 $string['next_check_would'] = 'Würde prüfen';

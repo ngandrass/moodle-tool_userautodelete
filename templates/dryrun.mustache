@@ -99,7 +99,7 @@
                         <i>{{#str}} next_check_would, tool_userautodelete {{/str}}
                     {{/pluginenabled}}
 
-                    {{#str}} reltime_prefix_in, tool_userautodelete {{/str}} {{nextcheck.relative}}
+                    {{#str}} reltime_prefix_in, tool_userautodelete {{/str}} {{nextcheck.relative}} {{#str}} reltime_suffix_in, tool_userautodelete {{/str}}
                     ({{#userdate}} {{nextcheck.absolute}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
 
                     {{^pluginenabled}}

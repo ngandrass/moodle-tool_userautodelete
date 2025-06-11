@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDNN)
 
 - Fix missing translation of next check info on dry-run page
+- Improve language support for relative time specifications
 
 
 ## Version 1.1.1 (2025052100)
