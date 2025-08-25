@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDHH)
+## Version 1.2.1 (2025082500)
 
 - Fix translations on log page (thanks to @jboulen)
 
