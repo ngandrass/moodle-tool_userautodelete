@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDHH)
+
+- Fix translations on log page (thanks to @jboulen)
+
+
 ## Version 1.2.0 (2025061100)
 
 - Add action log that keeps track of sent user warnings, user deletions, and user recoveries
