@@ -382,6 +382,106 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that users that have an auth that is ignored are excluded from receiving warning messages.
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_warning_exclusion_by_auth(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 60, 'tool_userautodelete');
+        set_config('warning_threshold_days', 30, 'tool_userautodelete');
+
+        // Create users to warn with different auth methods.
+        $usermanual = $this->getDataGenerator()->create_user(['auth' => 'manual', 'lastaccess' => time() - DAYSECS * 31]);
+        $useremail = $this->getDataGenerator()->create_user(['auth' => 'email', 'lastaccess' => time() - DAYSECS * 31]);
+        $usernologin = $this->getDataGenerator()->create_user(['auth' => 'nologin', 'lastaccess' => time() - DAYSECS * 31]);
+
+        // Ensure that all users are considered if no auth method is ignored.
+        set_config('ignore_auths', '', 'tool_userautodelete');
+        $manager = new manager();
+        $useridstowarn = array_map(fn($u) => $u->id, $manager->get_users_to_warn());
+        $this->assertEqualsCanonicalizing(
+            [$usermanual->id, $useremail->id, $usernologin->id],
+            $useridstowarn,
+           'Expected all users to be warned if no auth is ignored'
+        );
+
+        // Ignore the manual user.
+        set_config('ignore_auths', 'manual', 'tool_userautodelete');
+        $manager = new manager();
+        $useridstowarn = array_map(fn($u) => $u->id, $manager->get_users_to_warn());
+        $this->assertEqualsCanonicalizing(
+            [$useremail->id, $usernologin->id],
+            $useridstowarn,
+            'Expected the manual auth user to be ignored when warning'
+        );
+
+        // Ignore maunal and nologin users.
+        set_config('ignore_auths', 'manual,nologin', 'tool_userautodelete');
+        $manager = new manager();
+        $useridstowarn = array_map(fn($u) => $u->id, $manager->get_users_to_warn());
+        $this->assertEqualsCanonicalizing(
+            [$useremail->id],
+            $useridstowarn,
+            'Expected the manual and nologin auth users to be ignored when warning'
+        );
+    }
+
+    /**
+     * Tests that users that have an auth that is ignored are excluded from deletion.
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_user_deletion_exclusion_by_auth(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 30, 'tool_userautodelete');
+        set_config('warning_threshold_days', 15, 'tool_userautodelete');
+
+        // Create users to warn with different auth methods.
+        $usermanual = $this->getDataGenerator()->create_user(['auth' => 'manual', 'lastaccess' => time() - DAYSECS * 31]);
+        $useremail = $this->getDataGenerator()->create_user(['auth' => 'email', 'lastaccess' => time() - DAYSECS * 31]);
+        $usernologin = $this->getDataGenerator()->create_user(['auth' => 'nologin', 'lastaccess' => time() - DAYSECS * 31]);
+
+        // Ensure that all users are considered if no auth method is ignored.
+        set_config('ignore_auths', '', 'tool_userautodelete');
+        $manager = new manager();
+        $useridstodelete = array_map(fn($u) => $u->id, $manager->get_users_to_delete());
+        $this->assertEqualsCanonicalizing(
+            [$usermanual->id, $useremail->id, $usernologin->id],
+            $useridstodelete,
+            'Expected all users to be deleted if no auth is ignored'
+        );
+
+        // Ignore the manual user.
+        set_config('ignore_auths', 'manual', 'tool_userautodelete');
+        $manager = new manager();
+        $useridstodelete = array_map(fn($u) => $u->id, $manager->get_users_to_delete());
+        $this->assertEqualsCanonicalizing(
+            [$useremail->id, $usernologin->id],
+            $useridstodelete,
+            'Expected the manual auth user to be ignored during deletion'
+        );
+
+        // Ignore maunal and nologin users.
+        set_config('ignore_auths', 'manual,nologin', 'tool_userautodelete');
+        $manager = new manager();
+        $useridstodelete = array_map(fn($u) => $u->id, $manager->get_users_to_delete());
+        $this->assertEqualsCanonicalizing(
+            [$useremail->id],
+            $useridstodelete,
+            'Expected the manual and nologin auth users to be ignored during deletion'
+        );
+    }
+
+    /**
      * Tests that users do not receive warning messages prematurely or are deleted too eraly
      *
      * @covers \tool_userautodelete\manager
