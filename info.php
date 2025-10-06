@@ -111,6 +111,12 @@ if ($ignoredroleids = $manager->get_ignored_role_ids()) {
     $tplctx['ignoredroles'] = array_values(array_merge($tplctx['ignoredroles'], $rolenames));
 }
 
+// Config: Ignored auths.
+$tplctx['ignoredauths'] = array_map(
+    fn($auth) => get_string('pluginname', "auth_{$auth}"),
+    $manager->get_ignored_auths()
+);
+
 // Render main output.
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('tool_userautodelete/dryrun', array_merge($tplctx, [

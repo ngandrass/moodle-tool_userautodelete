@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/userautodelete/db" VERSION="2025052600" COMMENT="XMLDB file for Moodle admin/tool/userautodelete">
+<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" COMMENT="XMLDB file for Moodle admin/tool/userautodelete" PATH="admin/tool/userautodelete/db" VERSION="2025052600" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
   <TABLES>
     <TABLE NAME="tool_userautodelete_mail" COMMENT="Keeps track of notifications mails sent to users that are about to be deleted">
       <FIELDS>

@@ -202,7 +202,6 @@ class manager {
      * Returns a list of role IDs that are always ignored
      *
      * @return array List of role IDs to ignore
-     * @throws \dml_exception
      */
     public function get_ignored_role_ids(): array {
         $ignoredroleids = [];
@@ -216,11 +215,25 @@ class manager {
     }
 
     /**
+     * Returns a list of auth plugins that are always ignored
+     *
+     * @return array List of auth plugins to ignore
+     */
+    public function get_ignored_auths(): array {
+        if (!$this->config->ignore_auths) {
+            return [];
+        }
+
+        return explode(',', $this->config->ignore_auths);
+    }
+
+    /**
      * Searches for users that have been inactive long enough that they passed
      * the warning threshold, have not yet been notified, but haven't been
      * inactive long enough to be deleted right away.
      *
      * @return \stdClass[] List of user records to warn
+     * @throws \coding_exception
      * @throws \dml_exception
      */
     public function get_users_to_warn(): array {
@@ -235,6 +248,12 @@ class manager {
         $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
         $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
 
+        $ignoredauths = $this->get_ignored_auths();
+        if (empty($ignoredauths)) {
+            $ignoredauths = [''];
+        }
+        [$ignoreauthsql, $ignoreauthparams] = $DB->get_in_or_equal($ignoredauths, SQL_PARAMS_NAMED, 'auth', false);
+
         // Execute SQL query.
         return $DB->get_records_sql("
             SELECT {$userfieldssql}
@@ -244,6 +263,7 @@ class manager {
                 u.deleted = 0 AND                       -- < User is not deleted.
                 m.userid IS NULL AND                    -- < User has not been warned yet.
                 u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
+                u.auth {$ignoreauthsql} AND             -- < User auth plugin is not ignored.
                 -- v User has not been assigned an ignored role.
                 NOT EXISTS (
                     SELECT 1
@@ -259,12 +279,12 @@ class manager {
                     (u.lastaccess > 0 AND u.lastaccess < :notifytime2 AND u.lastaccess > :deletetime2)
                 )
         ORDER BY u.lastaccess ASC
-        ", [
+        ", array_merge([
             'deletetime1' => $deletetime,
             'deletetime2' => $deletetime,
             'notifytime1' => $notifytime,
             'notifytime2' => $notifytime,
-        ]);
+        ], $ignoreauthparams));
     }
 
     /**
@@ -272,6 +292,7 @@ class manager {
      * be deleted right away.
      *
      * @return \stdClass[] List of user records to delete
+     * @throws \coding_exception
      * @throws \dml_exception
      */
     public function get_users_to_delete(): array {
@@ -285,6 +306,12 @@ class manager {
         $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
         $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
 
+        $ignoredauths = $this->get_ignored_auths();
+        if (empty($ignoredauths)) {
+            $ignoredauths = [''];
+        }
+        [$ignoreauthsql, $ignoreauthparams] = $DB->get_in_or_equal($ignoredauths, SQL_PARAMS_NAMED, 'auth', false);
+
         // Execute SQL query.
         return $DB->get_records_sql("
             SELECT {$userfieldssql}
@@ -292,6 +319,7 @@ class manager {
             WHERE
                 u.deleted = 0 AND                       -- < User is not deleted.
                 u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
+                u.auth {$ignoreauthsql} AND             -- < User auth plugin is not ignored.
                 -- v User has not been assigned an ignored role.
                 NOT EXISTS (
                     SELECT 1
@@ -307,10 +335,10 @@ class manager {
                     (u.lastaccess > 0 AND u.lastaccess < :deletetime2)
                 )
             ORDER BY u.lastaccess ASC
-        ", [
+        ", array_merge([
             'deletetime1' => $deletetime,
             'deletetime2' => $deletetime,
-        ]);
+        ], $ignoreauthparams));
     }
 
     /**
