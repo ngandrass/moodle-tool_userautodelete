@@ -66,8 +66,11 @@
             "relative": "in 2 days"
         },
         "ignoredroles": [
-            "admin",
-            "guest"
+            "Site administrators",
+            "Guest user"
+        ],
+        "ignoredauths": [
+            "Manual accounts"
         ],
         "url": {
             "back": "https://example.com/back",
@@ -141,6 +144,19 @@
                 {{^ignoredroles}}
                     {{#str}} none {{/str}}
                 {{/ignoredroles}}
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} setting_ignore_auths, tool_userautodelete {{/str}}</td>
+            <td>
+                {{#ignoredauths}}
+                    <span class="badge bg-secondary">
+                        {{.}}
+                    </span>
+                {{/ignoredauths}}
+                {{^ignoredauths}}
+                    {{#str}} none {{/str}}
+                {{/ignoredauths}}
             </td>
         </tr>
     </table>
