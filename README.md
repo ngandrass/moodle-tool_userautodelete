@@ -33,6 +33,7 @@ The automatic user deletion plugin plugin is available via the [Moodle plugin di
 - Sending warning emails to users before deletion
 - GDPR-compliant deletion of user accounts
 - Ignoring users with specific roles
+- Ignore specific authentication plugins
 - Dry-run mode for testing the configuration
 - Highly configurable (deletion and warning thresholds, email templates, enabling/disabling of single features, etc.)
 - Logging of deletion events
@@ -101,13 +102,19 @@ _User deletion_ section.
 
 ### Ignoring specific users
 
-The plugin supports excluding users based on their role assignments. This means that a user that has a specific role
+The plugin supports excluding users based on their **role assignments**. This means that a user that has a specific role
 assigned to them will never be deleted nor receive any inactivity warning mails. Note that global site admins are always
 excluded from deletion.
 
 To exclude users with specific roles, mark the desired role in the _Ignored roles_ selector (1) and save your changes.
 
 ![Plugin settings: Ignored roles](docs/assets/screenshots/settings_ignored_roles.png)
+
+This plugin furthermore allows you to exclude all users that use a specified **authentication plugin**. To exclude users
+with a specific authentication method mark the desired authentication plugins in the _Ignored auths_ selector (2) and
+save your changes.
+
+![Plugin settings: Ignored auths](docs/assets/screenshots/settings_ignored_auths.png)
 
 
 ### Performing a dry-run

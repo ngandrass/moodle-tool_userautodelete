@@ -1,5 +1,11 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Allow to ignore users based on their authentication method (e.g., ignore all users authenticated via LDAP)
+- Show ignored auth plugins on dry-run page
+
+
 ## Version 1.2.1 (2025082500)
 
 - Fix translations on log page (thanks to @jboulen)
