@@ -63,6 +63,17 @@ if ($hassiteconfig) {
             []
         ));
 
+        // Excluded auths.
+        $settings->add(new admin_setting_configmulticheckbox('tool_userautodelete/ignore_auths',
+            get_string('setting_ignore_auths', 'tool_userautodelete'),
+            get_string('setting_ignore_auths_desc', 'tool_userautodelete'),
+            [],
+            array_reduce(get_enabled_auth_plugins(), function($carry, $auth) {
+                $carry[$auth] = get_string('pluginname', "auth_{$auth}");
+                return $carry;
+            }, [])
+        ));
+
         // Dry-run.
         $dryrunurl = new moodle_url('/admin/tool/userautodelete/info.php');
         $settings->add(new admin_setting_description('tool_userautodelete/dryrun',
