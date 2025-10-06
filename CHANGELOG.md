@@ -4,6 +4,7 @@
 
 - Allow to ignore users based on their authentication method (e.g., ignore all users authenticated via LDAP)
 - Show ignored auth plugins on dry-run page
+- Fix MoodleXML definition meta attributes for XML schema validation
 
 
 ## Version 1.2.1 (2025082500)
