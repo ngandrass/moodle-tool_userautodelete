@@ -35,7 +35,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * of the logging system.
  */
 class logger {
-
     /** @var bool If true, all logging operations are suppressed */
     protected static bool $suppresslogs = false;
 
@@ -104,5 +103,4 @@ class logger {
             mtrace("[ERROR] $message");
         }
     }
-
 }

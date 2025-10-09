@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // @codeCoverageIgnoreStart
 global $CFG;
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/tablelib.php');
 // @codeCoverageIgnoreEnd
 
 
@@ -39,7 +39,6 @@ require_once($CFG->libdir.'/tablelib.php');
  * Table renderer for the log table
  */
 class log_table extends \table_sql {
-
     /**
      * Constructor
      *
@@ -116,5 +115,4 @@ class log_table extends \table_sql {
         $color = $values->deleted > 0 ? 'danger' : 'secondary';
         return html_writer::span($values->deleted, "badge badge-{$color} text-bg-{$color} p-2");
     }
-
 }

@@ -34,7 +34,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * and finally deletes eligible users
  */
 class check_and_delete_users extends \core\task\scheduled_task {
-
     /**
      * Get a descriptive name for the task (shown to admins)
      *
@@ -50,10 +49,10 @@ class check_and_delete_users extends \core\task\scheduled_task {
      * Throw exceptions on errors (the job will be retried).
      *
      * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function execute() {
         $manager = new \tool_userautodelete\manager();
         $manager->execute();
     }
-
 }

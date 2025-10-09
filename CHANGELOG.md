@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Fix background color of Bootstrap badges on dry-run page with Moodle 5.1
+- Add Moodle 5.1 and all supported PHP versions to CI test matrix
+- Comply with Moodle coding style version 3.6
+
+
 ## Version 1.3.0 (2025100600)
 
 - Allow to ignore users based on their authentication method (e.g., ignore all users authenticated via LDAP)

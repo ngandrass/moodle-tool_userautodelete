@@ -32,7 +32,6 @@ namespace tool_userautodelete\output;
  * to check if they throw warnings or errors on specific PHP / Moodle versions.
  */
 final class log_table_test extends \advanced_testcase {
-
     /**
      * Tests that the log table displays a message when no log data is present.
      *
@@ -95,5 +94,4 @@ final class log_table_test extends \advanced_testcase {
         $this->assertStringNotContainsString(get_string('nothingtodisplay'), $html);
         $this->assertStringContainsString(1234567890, $html);
     }
-
 }

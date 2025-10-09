@@ -31,6 +31,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  *
  * @param int $oldversion
  * @return bool
+ * @throws ddl_exception
+ * @throws downgrade_exception
+ * @throws moodle_exception
+ * @throws upgrade_exception
  */
 function xmldb_tool_userautodelete_upgrade($oldversion) {
     global $DB;

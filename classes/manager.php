@@ -32,7 +32,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * Manages the user notification and deletion workflow
  */
 class manager {
-
     /** @var \stdClass Moodle config object for this plugin */
     protected \stdClass $config;
 
@@ -370,13 +369,15 @@ class manager {
         // Notify users.
         $numwarnedusers = 0;
         foreach ($userstowarn as $user) {
-            if (!email_to_user(
-                $user,
-                get_admin(),
-                $this->config->warning_email_subject,
-                html_to_text(nl2br($this->config->warning_email_body)),
-                $this->config->warning_email_body
-            )) {
+            if (
+                !email_to_user(
+                    $user,
+                    get_admin(),
+                    $this->config->warning_email_subject,
+                    html_to_text(nl2br($this->config->warning_email_body)),
+                    $this->config->warning_email_body
+                )
+            ) {
                 logger::error(get_string('error_sending_warning_mail_to_user', 'tool_userautodelete', $user->id));
                 continue;
             }
@@ -416,13 +417,15 @@ class manager {
         foreach ($userstodelete as $user) {
             // Send deletion mail if enabled.
             if ($this->config->delete_email_enable) {
-                if (!email_to_user(
-                    $user,
-                    get_admin(),
-                    $this->config->delete_email_subject,
-                    html_to_text(nl2br($this->config->delete_email_body)),
-                    $this->config->delete_email_body
-                )) {
+                if (
+                    !email_to_user(
+                        $user,
+                        get_admin(),
+                        $this->config->delete_email_subject,
+                        html_to_text(nl2br($this->config->delete_email_body)),
+                        $this->config->delete_email_body
+                    )
+                ) {
                     logger::error(get_string('error_sending_delete_mail_to_user', 'tool_userautodelete', $user->id));
                 } else {
                     logger::info(get_string('delete_email_sent_to_user', 'tool_userautodelete', $user->id));
@@ -458,32 +461,34 @@ class manager {
     protected function anonymize_user_record(int $userid): void {
         global $DB;
 
-        if ($DB->update_record('user', [
-            'id' => $userid,
-            'username' => "DELETED-USER-{$userid}",
-            'password' => '',
-            'idnumber' => '',
-            'firstname' => 'DELETED',
-            'lastname' => 'DELETED',
-            'email' => "DELETED-USER-{$userid}@localhost",
-            'phone1' => '',
-            'phone2' => '',
-            'institution' => '',
-            'department' => '',
-            'address' => '',
-            'city' => '',
-            'country' => '',
-            'lastip' => '',
-            'secret' => '',
-            'picture' => 0,
-            'description' => '',
-            'imagealt' => '',
-            'lastnamephonetic' => '',
-            'firstnamephonetic' => '',
-            'middlename' => '',
-            'alternatename' => '',
-            'moodlenetprofile' => '',
-        ])) {
+        if (
+            $DB->update_record('user', [
+                'id' => $userid,
+                'username' => "DELETED-USER-{$userid}",
+                'password' => '',
+                'idnumber' => '',
+                'firstname' => 'DELETED',
+                'lastname' => 'DELETED',
+                'email' => "DELETED-USER-{$userid}@localhost",
+                'phone1' => '',
+                'phone2' => '',
+                'institution' => '',
+                'department' => '',
+                'address' => '',
+                'city' => '',
+                'country' => '',
+                'lastip' => '',
+                'secret' => '',
+                'picture' => 0,
+                'description' => '',
+                'imagealt' => '',
+                'lastnamephonetic' => '',
+                'firstnamephonetic' => '',
+                'middlename' => '',
+                'alternatename' => '',
+                'moodlenetprofile' => '',
+            ])
+        ) {
             logger::info(get_string('user_anonymized', 'tool_userautodelete', $userid));
         } else {
             logger::error(get_string('error_anonymizing_user', 'tool_userautodelete', $userid));
@@ -527,5 +532,4 @@ class manager {
 
         return $numrecoveredusers;
     }
-
 }
