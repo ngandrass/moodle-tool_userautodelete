@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDXX)
 
 - Fix background color of Bootstrap badges on dry-run page with Moodle 5.1
+- Add Moodle 5.1 and all supported PHP versions to CI test matrix
 
 
 ## Version 1.3.0 (2025100600)
