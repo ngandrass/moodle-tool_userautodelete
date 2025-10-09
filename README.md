@@ -34,6 +34,7 @@ The automatic user deletion plugin plugin is available via the [Moodle plugin di
 - GDPR-compliant deletion of user accounts
 - Ignoring users with specific roles
 - Ignore specific authentication plugins
+- Select users based on suspension status
 - Dry-run mode for testing the configuration
 - Highly configurable (deletion and warning thresholds, email templates, enabling/disabling of single features, etc.)
 - Logging of deletion events
@@ -115,6 +116,12 @@ with a specific authentication method mark the desired authentication plugins in
 save your changes.
 
 ![Plugin settings: Ignored auths](docs/assets/screenshots/settings_ignored_auths.png)
+
+You can also choose to limit the user selection to users that are already suspended. This can be useful if your user
+lifecycle is externally managed (e.g., via SSO) or contains a suspension phase before the user is finally deleted. To
+enable this feature, check the _Suspended users only_ checkbox (3) and save your changes.
+
+![Plugin settings: Suspended users only](docs/assets/screenshots/settings_suspended_only.png)
 
 
 ### Performing a dry-run
