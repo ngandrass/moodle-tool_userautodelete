@@ -40,11 +40,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  *
  * @codeCoverageIgnore This is handled by Moodle core tests
  */
-class provider implements
+class provider implements // phpcs:ignore
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Returns meta data about this plugin.
      *
@@ -99,7 +98,7 @@ class provider implements
                     writer::with_context($context)->export_data(
                         [
                             get_string('pluginname', 'tool_userautodelete'),
-                            get_string('inactivity_warning', 'tool_userautodelete')." #{$row->id}",
+                            get_string('inactivity_warning', 'tool_userautodelete') . " #{$row->id}",
                         ],
                         (object) [
                             'userid' => $row->userid,
@@ -184,5 +183,4 @@ class provider implements
         [$insql, $inparams] = $DB->get_in_or_equal($userlist->get_userids());
         $DB->delete_records_select('tool_userautodelete_mail', "userid {$insql}", $inparams);
     }
-
 }

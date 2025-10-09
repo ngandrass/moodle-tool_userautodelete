@@ -29,7 +29,6 @@ namespace tool_userautodelete\task;
  * Tests for the logger class
  */
 final class check_and_delete_users_test extends \advanced_testcase {
-
     /**
      * Tests that the task name getter does not throw any exceptions
      *
@@ -52,6 +51,7 @@ final class check_and_delete_users_test extends \advanced_testcase {
      *
      * @return void
      * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function test_execute(): void {
         $this->resetAfterTest();
@@ -59,5 +59,4 @@ final class check_and_delete_users_test extends \advanced_testcase {
         $task = new check_and_delete_users();
         $task->execute();
     }
-
 }

@@ -29,7 +29,6 @@ namespace tool_userautodelete;
  * Tests for the manager class
  */
 final class manager_test extends \advanced_testcase {
-
     /**
      * This method is called before each test.
      */
@@ -60,7 +59,7 @@ final class manager_test extends \advanced_testcase {
         $manager = new manager();
         $res = $manager->execute();
 
-        $this->expectOutputString('[INFO] '.get_string('plugin_disabled_skipping_execution', 'tool_userautodelete')."\n");
+        $this->expectOutputString('[INFO] ' . get_string('plugin_disabled_skipping_execution', 'tool_userautodelete') . "\n");
         $this->assertSame(false, $res, 'Execution was not prevented');
     }
 
@@ -290,11 +289,11 @@ final class manager_test extends \advanced_testcase {
         $admins = [];
         foreach (range(1, 3) as $i) {
             $admins[] = $this->getDataGenerator()->create_user([
-                'username' => 'anotheradmin'.$i,
+                'username' => "anotheradmin{$i}",
                 'lastaccess' => time() - DAYSECS * 101,
             ]);
         }
-        $newsiteadmins = $CFG->siteadmins.','.implode(',', array_map(fn($admin) => $admin->id, $admins));
+        $newsiteadmins = $CFG->siteadmins . ',' . implode(',', array_map(fn($admin) => $admin->id, $admins));
         set_config('siteadmins', $newsiteadmins);
         $CFG->siteadmins = $newsiteadmins;
 
@@ -407,7 +406,7 @@ final class manager_test extends \advanced_testcase {
         $this->assertEqualsCanonicalizing(
             [$usermanual->id, $useremail->id, $usernologin->id],
             $useridstowarn,
-           'Expected all users to be warned if no auth is ignored'
+            'Expected all users to be warned if no auth is ignored'
         );
 
         // Ignore the manual user.
@@ -846,5 +845,4 @@ final class manager_test extends \advanced_testcase {
             'No warnings, multiple deletions, some recoveries' => [0, 10, 5],
         ];
     }
-
 }

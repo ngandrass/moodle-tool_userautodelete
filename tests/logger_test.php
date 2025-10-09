@@ -29,7 +29,6 @@ namespace tool_userautodelete;
  * Tests for the logger class
  */
 final class logger_test extends \advanced_testcase {
-
     /**
      * This method is called before each test.
      */
@@ -93,5 +92,4 @@ final class logger_test extends \advanced_testcase {
             "ERROR" => ['logfn' => 'error', 'loglevelname' => 'ERROR'],
         ];
     }
-
 }
