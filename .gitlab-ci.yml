@@ -23,7 +23,7 @@ stages:
   stage: pluginci
   image: moodlehq/moodle-php-apache:${PHP_VERSION}
   services:
-    - name: postgres:14
+    - name: postgres:15
       alias: postgres
       variables:
         POSTGRES_USER: "postgres"
@@ -109,6 +109,13 @@ moodle-plugin-ci-M405:
     DB: "pgsql"
 
 moodle-plugin-ci-M500:
+  <<: *stage-pluginci-common
+  variables:
+    MOODLE_BRANCH: "MOODLE_500_STABLE"
+    PHP_VERSION: "8.2"
+    DB: "pgsql"
+
+moodle-plugin-ci-M501:
   <<: *stage-pluginci-common
   variables:
     MOODLE_BRANCH: "MOODLE_500_STABLE"
