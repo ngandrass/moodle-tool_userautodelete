@@ -59,6 +59,14 @@ if ($hassiteconfig) {
             '1'
         ));
 
+        // Affect suspended users only.
+        $settings->add(new admin_setting_configcheckbox(
+            'tool_userautodelete/suspended_only',
+            get_string('setting_suspended_only', 'tool_userautodelete'),
+            get_string('setting_suspended_only_desc', 'tool_userautodelete'),
+            '0'
+        ));
+
         // Excluded roles.
         $settings->add(new admin_setting_pickroles(
             'tool_userautodelete/ignore_roles',

@@ -431,6 +431,84 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that only suspended users are warned if the config is set accordingly
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_limit_warning_to_suspended_users(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 60, 'tool_userautodelete');
+        set_config('warning_threshold_days', 30, 'tool_userautodelete');
+
+        // Create users to warn with different suspension states.
+        $usersuspended = $this->getDataGenerator()->create_user(['suspended' => 1, 'lastaccess' => time() - DAYSECS * 31]);
+        $useractive = $this->getDataGenerator()->create_user(['suspended' => 0, 'lastaccess' => time() - DAYSECS * 31]);
+
+        // Ensure that all users are considered if no suspension filter is applied.
+        set_config('suspended_only', false, 'tool_userautodelete');
+        $manager = new manager();
+        $useridstowarn = array_map(fn($u) => $u->id, $manager->get_users_to_warn());
+        $this->assertEqualsCanonicalizing(
+            [$usersuspended->id, $useractive->id],
+            $useridstowarn,
+            'Expected all users to be warned if no suspension filter is applied'
+        );
+
+        // Only warn suspended users.
+        set_config('suspended_only', true, 'tool_userautodelete');
+        $manager = new manager();
+        $useridstowarn = array_map(fn($u) => $u->id, $manager->get_users_to_warn());
+        $this->assertEqualsCanonicalizing(
+            [$usersuspended->id],
+            $useridstowarn,
+            'Expected only the suspended user to be warned'
+        );
+    }
+
+    /**
+     * Tests that only suspended users are deleted if the config is set accordingly
+     *
+     * @covers \tool_userautodelete\manager
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_limit_deletion_to_suspended_users(): void {
+        $this->resetAfterTest();
+        set_config('delete_threshold_days', 60, 'tool_userautodelete');
+        set_config('warning_threshold_days', 30, 'tool_userautodelete');
+
+        // Create users to delete with different suspension states.
+        $usersuspended = $this->getDataGenerator()->create_user(['suspended' => 1, 'lastaccess' => time() - DAYSECS * 61]);
+        $useractive = $this->getDataGenerator()->create_user(['suspended' => 0, 'lastaccess' => time() - DAYSECS * 61]);
+
+        // Ensure that all users are considered if no suspension filter is applied.
+        set_config('suspended_only', false, 'tool_userautodelete');
+        $manager = new manager();
+        $useridstodelete = array_map(fn($u) => $u->id, $manager->get_users_to_delete());
+        $this->assertEqualsCanonicalizing(
+            [$usersuspended->id, $useractive->id],
+            $useridstodelete,
+            'Expected all users to be deleted if no suspension filter is applied'
+        );
+
+        // Only delete suspended users.
+        set_config('suspended_only', true, 'tool_userautodelete');
+        $manager = new manager();
+        $useridstodelete = array_map(fn($u) => $u->id, $manager->get_users_to_delete());
+        $this->assertEqualsCanonicalizing(
+            [$usersuspended->id],
+            $useridstodelete,
+            'Expected only the suspended user to be deleted'
+        );
+    }
+
+    /**
      * Tests that users that have an auth that is ignored are excluded from deletion.
      *
      * @covers \tool_userautodelete\manager
