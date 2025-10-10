@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 1.4.0 (2025101000)
 
 - Add setting to limit user selection to users that are already suspended. This can be useful if your user lifecycle is
   externally managed (e.g., via SSO) or contains a suspension phase before the user is finally deleted.
