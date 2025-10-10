@@ -246,6 +246,7 @@ class manager {
         $userfieldssql = join(', ', array_map(fn($name) => "u.{$name}", self::USER_RECORD_FIELDS));
         $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
         $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
+        $usersuspendsql = $this->config->suspended_only ? 'u.suspended = 1 AND' : '';
 
         $ignoredauths = $this->get_ignored_auths();
         if (empty($ignoredauths)) {
@@ -263,6 +264,7 @@ class manager {
                 m.userid IS NULL AND                    -- < User has not been warned yet.
                 u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
                 u.auth {$ignoreauthsql} AND             -- < User auth plugin is not ignored.
+                {$usersuspendsql}                       -- < User suspension status based on config.
                 -- v User has not been assigned an ignored role.
                 NOT EXISTS (
                     SELECT 1
@@ -304,6 +306,7 @@ class manager {
         $userfieldssql = join(', ', array_map(fn($name) => "u.{$name}", self::USER_RECORD_FIELDS));
         $ignoreduseridssql = join(',', self::get_ignored_user_ids() ?: [-1]);
         $ignoredroleidssql = join(',', self::get_ignored_role_ids() ?: [-1]);
+        $usersuspendsql = $this->config->suspended_only ? 'u.suspended = 1 AND' : '';
 
         $ignoredauths = $this->get_ignored_auths();
         if (empty($ignoredauths)) {
@@ -319,6 +322,7 @@ class manager {
                 u.deleted = 0 AND                       -- < User is not deleted.
                 u.id NOT IN ({$ignoreduseridssql}) AND  -- < User ID is not ignored.
                 u.auth {$ignoreauthsql} AND             -- < User auth plugin is not ignored.
+                {$usersuspendsql}                       -- < User suspension status based on config.
                 -- v User has not been assigned an ignored role.
                 NOT EXISTS (
                     SELECT 1

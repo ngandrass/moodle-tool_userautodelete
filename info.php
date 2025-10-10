@@ -117,6 +117,9 @@ $tplctx['ignoredauths'] = array_map(
     $manager->get_ignored_auths()
 );
 
+// Config: Suspended users.
+$tplctx['suspendedonly'] = $manager->get_config('suspended_only');
+
 // Render main output.
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('tool_userautodelete/dryrun', array_merge($tplctx, [

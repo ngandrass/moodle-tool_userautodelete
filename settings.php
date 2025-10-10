@@ -79,6 +79,14 @@ if ($hassiteconfig) {
             }, [])
         ));
 
+        // Affect suspended users only.
+        $settings->add(new admin_setting_configcheckbox(
+            'tool_userautodelete/suspended_only',
+            get_string('setting_suspended_only', 'tool_userautodelete'),
+            get_string('setting_suspended_only_desc', 'tool_userautodelete'),
+            '0'
+        ));
+
         // Dry-run.
         $dryrunurl = new moodle_url('/admin/tool/userautodelete/info.php');
         $settings->add(new admin_setting_description(

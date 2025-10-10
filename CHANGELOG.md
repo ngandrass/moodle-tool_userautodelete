@@ -2,6 +2,9 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Add setting to limit user selection to users that are already suspended. This can be useful if your user lifecycle is
+  externally managed (e.g., via SSO) or contains a suspension phase before the user is finally deleted.
+- Ensure compatibility with Moodle 5.1
 - Fix background color of Bootstrap badges on dry-run page with Moodle 5.1
 - Add Moodle 5.1 and all supported PHP versions to CI test matrix
 - Comply with Moodle coding style version 3.6
