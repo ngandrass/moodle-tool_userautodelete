@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDHH)
+
+- Improve plugin config validation routine
+- Display reason for failed plugin config validation on dry-run page
+- Fix missing language string on dry-run page if plugin config is invalid
+
+
 ## Version 1.4.0 (2025101000)
 
 - Add setting to limit user selection to users that are already suspended. This can be useful if your user lifecycle is

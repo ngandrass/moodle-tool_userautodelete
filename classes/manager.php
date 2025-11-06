@@ -106,57 +106,98 @@ class manager {
      * Validates the current plugin config, logs errors and returns false if any
      * errors are found.
      *
+     * @param bool $throwexceptiononerror If true, a moodle_exception is thrown
+     * upon encountering the first error.
+     *
      * @return bool True if the config is valid, false otherwise.
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
-    public function validate_config(): bool {
+    public function validate_config(bool $throwexceptiononerror = false): bool {
         $isvalid = true;
 
-        // User deletion.
+        // User deletion threshold days.
         if ($this->config->delete_threshold_days <= 0) {
+            if ($throwexceptiononerror) {
+                throw new \moodle_exception('error_delete_threshold_days_negative', 'tool_userautodelete');
+            }
+
             $isvalid = false;
             logger::error(get_string('error_delete_threshold_days_negative', 'tool_userautodelete'));
         }
 
         // Warning mails.
         if ($this->config->warning_email_enable) {
+            // Warning threshold days must be positive.
             if ($this->config->warning_threshold_days <= 0) {
+                if ($throwexceptiononerror) {
+                    throw new \moodle_exception('error_warning_threshold_days_negative', 'tool_userautodelete');
+                }
+
                 $isvalid = false;
                 logger::error(get_string('error_warning_threshold_days_negative', 'tool_userautodelete'));
             }
 
+            // Warning threshold days must be less than deletion threshold days.
             if ($this->config->warning_threshold_days >= $this->config->delete_threshold_days) {
+                if ($throwexceptiononerror) {
+                    throw new \moodle_exception('error_warning_threshold_days_geq_delete', 'tool_userautodelete');
+                }
+
                 $isvalid = false;
                 logger::error(get_string('error_warning_threshold_days_geq_delete', 'tool_userautodelete'));
             }
 
+            // Warning email subject must not be empty.
             if ($this->config->warning_email_subject == '') {
+                if ($throwexceptiononerror) {
+                    throw new \moodle_exception('error_warning_email_subject_empty', 'tool_userautodelete');
+                }
+
                 $isvalid = false;
                 logger::error(get_string('error_warning_email_subject_empty', 'tool_userautodelete'));
             }
 
+            // Warning email body should contain content.
             if ($this->config->warning_email_body == '') {
+                if ($throwexceptiononerror) {
+                    throw new \moodle_exception('error_warning_email_body_empty', 'tool_userautodelete');
+                }
+
                 logger::warning(get_string('error_warning_email_body_empty', 'tool_userautodelete'));
             }
         }
 
         // Deletion mails.
         if ($this->config->delete_email_enable) {
+            // Deletion email subject must not be empty.
             if ($this->config->delete_email_subject == '') {
+                if ($throwexceptiononerror) {
+                    throw new \moodle_exception('error_delete_email_subject_empty', 'tool_userautodelete');
+                }
+
                 $isvalid = false;
                 logger::error(get_string('error_delete_email_subject_empty', 'tool_userautodelete'));
             }
 
+            // Deletion email body should contain content.
             if ($this->config->delete_email_body == '') {
+                if ($throwexceptiononerror) {
+                    throw new \moodle_exception('error_delete_email_body_empty', 'tool_userautodelete');
+                }
+
                 logger::warning(get_string('error_delete_email_body_empty', 'tool_userautodelete'));
             }
         }
 
-        // Ignored role IDs.
+        // Ignored role IDs must be valid.
         if ($this->config->ignore_roles) {
             $ignoredroleids = explode(',', $this->config->ignore_roles);
             foreach ($ignoredroleids as $roleid) {
                 if (!is_numeric($roleid)) {
+                    if ($throwexceptiononerror) {
+                        throw new \moodle_exception('error_invalid_role_id', 'tool_userautodelete', $roleid);
+                    }
+
                     $isvalid = false;
                     logger::error(get_string('error_invalid_role_id', 'tool_userautodelete', $roleid));
                 }
