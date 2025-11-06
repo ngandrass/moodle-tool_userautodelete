@@ -137,6 +137,7 @@ $string['view_scheduled_task_logs'] = 'Technische Logdaten anzeigen';
 $string['view_scheduled_task_logs_desc'] = 'Die Überprüfung auf inaktive Nutzer wird von einem Moodle-Task im Hintergrund durchgeführt. Sollten Probleme mit dem Plugin auftrefen, können die technischen Logdaten der Moodle-Task-Ausführungen über den folgenden Button inspiziert werden.';
 
 // Errors.
+$string['error_invalid_config'] = 'Ungültige Plugin-Konfiguration gefunden.';
 $string['error_invalid_config_aborting'] = 'Ungültige Plugin-Konfiguration gefunden. Abbruch ...';
 $string['error_invalid_role_id'] = 'Ungültige Rollen-ID {$a} in der Liste der ignorierten Rollen gefunden. Dies ist höchstwahrscheinlich ein Fehler im Plugin. Bitte melden Sie dies dem Plugin-Maintainer.';
 $string['error_delete_threshold_days_negative'] = 'Die Löschschwelle muss größer als 0 sein.';

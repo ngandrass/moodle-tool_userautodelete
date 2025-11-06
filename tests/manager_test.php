@@ -150,6 +150,30 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that an invalid config is detected and throws an exception if this
+     * is requested by the caller
+     *
+     * @covers \tool_userautodelete\manager::validate_config
+     * @dataProvider error_on_invalid_config_data_provider
+     *
+     * @param string $configkey Key of the config entry to alter
+     * @param mixed $configvalue Value to set the config entry to
+     * @return void
+     * @throws \moodle_exception
+     */
+    public function test_exception_on_invalid_config(string $configkey, $configvalue): void {
+        $this->resetAfterTest();
+        set_config('warning_email_enable', true, 'tool_userautodelete');
+        set_config('delete_email_enable', true, 'tool_userautodelete');
+        set_config($configkey, $configvalue, 'tool_userautodelete');
+
+        $manager = new manager();
+
+        $this->expectException(\moodle_exception::class);
+        $manager->validate_config(true);
+    }
+
+    /**
      * Data provider for test_error_on_invalid_config()
      *
      * @return array[] Test data
