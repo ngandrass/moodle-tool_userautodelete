@@ -137,6 +137,7 @@ $string['view_scheduled_task_logs'] = 'View raw scheduled task logs';
 $string['view_scheduled_task_logs_desc'] = 'The checks for inactive users are performed by a Moodle scheduled task, running in the background. If you experience problems with this plugin, you can inspect the raw logs of the scheduled task runs by clicking the button below.';
 
 // Errors.
+$string['error_invalid_config'] = 'Invalid plugin configuration found.';
 $string['error_invalid_config_aborting'] = 'Invalid plugin configuration found. Aborting ...';
 $string['error_invalid_role_id'] = 'Invalid role ID {$a} found in the ignored roles list. This is most likely a bug in the plugin. Please report this to the plugin maintainer.';
 $string['error_delete_threshold_days_negative'] = 'The deletion threshold days must be greater than 0.';

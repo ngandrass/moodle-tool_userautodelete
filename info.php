@@ -42,9 +42,19 @@ $PAGE->set_url(new moodle_url('/admin/tool/userautodelete/info.php'));
 // Prepare template context and manager.
 $tplctx = [];
 $manager = new manager();
-if (!$manager->validate_config()) {
+try {
+    $manager->validate_config(true);
+} catch (moodle_exception $e) {
+    // Prepare error notification with link back to settings.
+    $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'tool_userautodelete_settings']);
+    $notificationcontent = get_string('error_invalid_config', 'tool_userautodelete') . " " . $e->getMessage();
+    $notificationcontent .= '<br><br>';
+    $notificationcontent .= '<a href="' . $settingsurl . '" class="btn btn-primary text-light">' .
+        get_string('back_to_settings', 'tool_userautodelete') . '</a>';
+
+    // Render error notification and exit.
     echo $OUTPUT->header();
-    echo $OUTPUT->notification(get_string('error_config', 'tool_userautodelete'), 'error');
+    echo $OUTPUT->notification($notificationcontent, 'error', false);
     echo $OUTPUT->footer();
     exit;
 }
