@@ -156,8 +156,8 @@ final class manager_test extends \advanced_testcase {
      * @covers \tool_userautodelete\manager::validate_config
      * @dataProvider error_on_invalid_config_data_provider
      *
-     * @param string $configkey
-     * @param $configvalue
+     * @param string $configkey Key of the config entry to alter
+     * @param mixed $configvalue Value to set the config entry to
      * @return void
      * @throws \moodle_exception
      */
