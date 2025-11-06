@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDHH)
+## Version 1.4.1 (2025110600)
 
 - Improve plugin config validation routine
 - Display reason for failed plugin config validation on dry-run page
