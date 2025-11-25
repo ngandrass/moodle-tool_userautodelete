@@ -122,7 +122,7 @@ $string['page_title_dryrun'] = 'Automatische Nutzerlöschung (Probelauf)';
 $string['dry_run_explanation'] = 'Diese Seite zeigt die Aktionen, die während der nächsten Inaktivitätsprüfung ausgeführt werden würden. Keine der Aktionen wurde tatsächlich ausgeführt!';
 $string['current_configuration'] = 'Aktuelle Konfiguration';
 $string['current_configuration_table_desc'] = 'Diese Tabelle listet den Zeitpunkt der nächsten Inaktivitätsprüfung die im Hintergrund ausgeführt werden würde, sowie die konfigurierten Schwellenwerte für Warn-E-Mails und Nutzerlöschungen auf. Außerdem ist angegeben, welche Nutzerrollen von der automatischen Löschung ausgeschlossen sind.';
-$string['dry_run_affected_users_desc'] = 'Die hier aufgeführten Nutzer würden entweder eine Warn-E-Mail erhalten oder gelöscht werden. Wenn keine Nutzer aufgelistet sind, hat sich kein Nutzer länger als die konfigurierten Schwellenwerte nicht eingeloggt oder der Nutzer ist gemäß der Plugin-Konfiguration ausgeschlossen.';
+$string['dry_run_affected_users_desc'] = 'Die hier aufgeführten Nutzer würden entweder eine Warn-E-Mail erhalten oder gelöscht werden. Wenn keine Nutzer aufgelistet sind, hat sich kein Nutzer länger als die konfigurierten Schwellenwerte nicht eingeloggt oder der Nutzer ist gemäß der Plugin-Konfiguration ausgeschlossen. Konten die zwar erstellt wurden, bei denen sich jedoch noch nie ein Benutzer angemeldet hat, werden mit ihrem Erstellungsdatum <i>„Erstellungsdatum“</i> anstelle des letzten Anmeldedatums <i>„Letzter Zugriff“</i> gelistet.';
 $string['a_users_would_be_deleted'] = 'Die folgenden {$a} Nutzer würden gelöscht werden';
 $string['a_users_would_be_warned'] = 'Die folgenden {$a} Nutzer würden eine Warn-E-Mail erhalten';
 
