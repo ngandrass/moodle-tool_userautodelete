@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 1.5.0 (2025112500)
 
 - List accounts that were created but to which no user ever logged into with their "Time created" instead of "Last
   access" date on dry-run page
