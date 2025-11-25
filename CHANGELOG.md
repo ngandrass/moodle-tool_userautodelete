@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- List accounts that were created but to which no user ever logged into with their "Time created" instead of "Last
+  access" date on dry-run page
+- Add informational text about differentiation of inactive and never-used accounts on the dry run page
+
+
 ## Version 1.4.1 (2025110600)
 
 - Improve plugin config validation routine
