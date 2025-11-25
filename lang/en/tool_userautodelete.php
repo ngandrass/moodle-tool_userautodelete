@@ -122,7 +122,7 @@ $string['page_title_dryrun'] = 'Automatic user deletion (dry-run)';
 $string['dry_run_explanation'] = 'This page shows the actions that would be performed during the next check interval. None of the actions have been actually performed yet!';
 $string['current_configuration'] = 'Current configuration';
 $string['current_configuration_table_desc'] = 'This table lists the next time a check for inactive users would be executed in the background as well as the configured thresholds for warning e-mails and user deletions. Additionally, user roles that are excluded from the deletion process are listed here.';
-$string['dry_run_affected_users_desc'] = 'Users listed here will either receive a warning email or will be deleted right away. If no users are listed, no user has been inactive for longer than the configured thresholds, or the user is ignored according to the plugin configuration.';
+$string['dry_run_affected_users_desc'] = 'Users listed here will either receive a warning email or will be deleted right away. If no users are listed, no user has been inactive for longer than the configured thresholds, or the user is ignored according to the plugin configuration. Accounts that have been created but to which no user ever logged in are listed with their creation date <i>"Time created"</i> instead of the last login date <i>"Last access"</i>.';
 $string['a_users_would_be_deleted'] = 'The following {$a} users would be deleted';
 $string['a_users_would_be_warned'] = 'The following {$a} users would receive a warning email';
 
