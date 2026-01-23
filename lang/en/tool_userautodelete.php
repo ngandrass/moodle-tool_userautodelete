@@ -45,6 +45,12 @@ $string['warned'] = 'Warned';
 $string['deleted'] = 'Deleted';
 $string['recovered'] = 'Recovered';
 
+// Subplugins.
+$string['subplugintype_userdeleteaction'] = 'User lifecycle action';
+$string['subplugintype_userdeleteaction_plural'] = 'User lifecycle actions';
+$string['subplugintype_userdeletefilter'] = 'User lifecycle filter';
+$string['subplugintype_userdeletefilter_plural'] = 'User lifecycle filters';
+
 // Privacy.
 $string['privacy:metadata:tool_userautodelete_mail'] = 'Information about users that received an inactivity warning email.';
 $string['privacy:metadata:tool_userautodelete_mail:userid'] = 'The ID of the user that received the email.';

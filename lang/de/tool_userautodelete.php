@@ -45,6 +45,12 @@ $string['warned'] = 'Gewarnt';
 $string['deleted'] = 'Gelöscht';
 $string['recovered'] = 'Zurückgekehrt';
 
+// Subplugins.
+$string['subplugintype_userdeleteaction'] = 'Nutzerzyklus Aktion';
+$string['subplugintype_userdeleteaction_plural'] = 'Nutzerzyklus Aktionen';
+$string['subplugintype_userdeletefilter'] = 'Nutzerzyklus Filter';
+$string['subplugintype_userdeletefilter_plural'] = 'Nutzerzyklus Filter';
+
 // Privacy.
 $string['privacy:metadata:tool_userautodelete_mail'] = 'Informationen über Nutzer die eine Inaktivitätswarnung per E-Mail erhalten haben.';
 $string['privacy:metadata:tool_userautodelete_mail:userid'] = 'Die ID des Nutzers der die E-Mail erhalten hat.';
