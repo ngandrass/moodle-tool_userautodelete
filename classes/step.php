@@ -148,4 +148,52 @@ class step {
         return $steps;
     }
 
+    /**
+     * Moves this workflow step up or down in the sort order.
+     *
+     * @param sort_move_direction $direction Direction to move the workflow step in
+     * @return void
+     * @throws \dml_exception
+     */
+    public function move(sort_move_direction $direction): void {
+        global $DB;
+
+        // Prevent moving beyond upper/lower bounds.
+        if ($direction === sort_move_direction::UP && $this->sort <= 1) {
+            return;
+        }
+
+        if ($direction === sort_move_direction::DOWN && $this->sort >= $this->workflow->get_step_count()) {
+            return;
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+
+        // Find the workflow step to swap the current sort index with.
+        $othersteprecord = $DB->get_record(
+            db_table::WORKFLOW_STEP->value,
+            ['workflowid' => $this->workflow->id, 'sort' => match ($direction) {
+                sort_move_direction::UP => $this->sort - 1,
+                sort_move_direction::DOWN => $this->sort + 1,
+            }],
+            'id, sort',
+            MUST_EXIST
+        );
+
+        // Swap sort indexes.
+        $DB->update_record(db_table::WORKFLOW_STEP->value, [
+            'id' => $othersteprecord->id,
+            'sort' => $this->sort,
+        ]);
+        $DB->update_record(db_table::WORKFLOW_STEP->value, [
+            'id' => $this->id,
+            'sort' => $othersteprecord->sort,
+        ]);
+
+        $this->workflow->touch();
+        $transaction->allow_commit();
+
+        // Update this object.
+        $this->sort = $othersteprecord->sort;
+    }
 }
