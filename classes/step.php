@@ -24,10 +24,10 @@
 
 namespace tool_userautodelete;
 
-use tool_userautodelete\filter\userdeleteaction_base;
+use tool_userautodelete\action\userdeleteaction_base;
 use tool_userautodelete\filter\userdeletefilter_base;
-use tool_userautodelete\type\db_table;
-use tool_userautodelete\type\sort_move_direction;
+use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\sort_move_direction;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore

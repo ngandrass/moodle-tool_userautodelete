@@ -25,8 +25,8 @@
 
 namespace tool_userautodelete\filter;
 
-use tool_userautodelete\trait\subplugin_instance_settings;
-use tool_userautodelete\type\userfilter_clause;
+use tool_userautodelete\local\trait\subplugin_instance_settings;
+use tool_userautodelete\local\type\userfilter_clause;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore

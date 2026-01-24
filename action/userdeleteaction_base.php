@@ -23,7 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_userautodelete\filter;
+namespace tool_userautodelete\action;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -45,9 +45,9 @@ abstract class userdeleteaction_base {
     }
 
     /**
-     * Returns the name of this filter sub-plugin, e.g., 'suspend' for 'userdeleteaction_suspend'
+     * Returns the name of this action sub-plugin, e.g., 'suspend' for 'userdeleteaction_suspend'
      *
-     * @return string The name of this filter sub-plugin
+     * @return string The name of this action sub-plugin
      */
     abstract public function get_plugin_name(): string;
 

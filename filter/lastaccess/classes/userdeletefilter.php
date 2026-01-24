@@ -24,8 +24,8 @@
 
 namespace userdeletefilter_lastaccess;
 
-use tool_userautodelete\type\instance_setting_descriptor;
-use tool_userautodelete\type\userfilter_clause;
+use tool_userautodelete\local\type\instance_setting_descriptor;
+use tool_userautodelete\local\type\userfilter_clause;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore

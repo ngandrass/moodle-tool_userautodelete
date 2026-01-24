@@ -14,35 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+// phpcs:disable moodle.Commenting.InlineComment.DocBlock
+
 /**
- * SQL where clause with parameters to be used for filtering user datasets
+ * Directions a sort move operation can take
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_userautodelete\type;
+namespace tool_userautodelete\local\type;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
- * SQL where clause with parameters to be used for filtering user datasets
+ * Directions a sort move operation can take
  */
-class userfilter_clause {
-    /**
-     * Creates a new userfilter_clause instance
-     *
-     * @param string $sql SQL statement to be used as part of a WHERE clause when querying the Moodle user table
-     * @param array $params Array of parameter-value combinations used within SQL statement
-     */
-    public function __construct(
-        /** @var string SQL statement to be used as part of a WHERE clause when querying the Moodle user table */
-        public readonly string $sql,
-        /** @var array Array of parameter-value combinations used within SQL statement */
-        public readonly array $params,
-    ) {
-    }
+enum sort_move_direction {
+    case UP;
+    case DOWN;
 }

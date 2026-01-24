@@ -24,9 +24,9 @@
 
 namespace userdeleteaction_suspend;
 
-use tool_userautodelete\filter\userdeleteaction_base;
-use tool_userautodelete\trait\subplugin_instance_settings;
-use tool_userautodelete\type\instance_setting_descriptor;
+use tool_userautodelete\action\userdeleteaction_base;
+use tool_userautodelete\local\trait\subplugin_instance_settings;
+use tool_userautodelete\local\type\instance_setting_descriptor;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore

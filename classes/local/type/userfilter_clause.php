@@ -15,40 +15,34 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Bundles function required for storing custom settings of subplugin instances
+ * SQL where clause with parameters to be used for filtering user datasets
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_userautodelete\trait;
-
-use tool_userautodelete\type\instance_setting_descriptor;
+namespace tool_userautodelete\local\type;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
- * Allows to get all values of a backed enum as an array
+ * SQL where clause with parameters to be used for filtering user datasets
  */
-trait subplugin_instance_settings {
+class userfilter_clause {
     /**
-     * Returns an array of descriptors for every setting this filter sub-plugin
-     * defines and exposes.
+     * Creates a new userfilter_clause instance
      *
-     * @return instance_setting_descriptor[] An array of setting descriptors
+     * @param string $sql SQL statement to be used as part of a WHERE clause when querying the Moodle user table
+     * @param array $params Array of parameter-value combinations used within SQL statement
      */
-    abstract public function instance_setting_descriptors(): array;
-
-    public function get_instance_setting(string $key): mixed {
-        // TODO (MDL-0): Implement
-        return null;
-    }
-
-    public function set_instance_setting(string $key, mixed $value): void {
-        // TODO (MDL-0): Implement
-        return;
+    public function __construct(
+        /** @var string SQL statement to be used as part of a WHERE clause when querying the Moodle user table */
+        public readonly string $sql,
+        /** @var array Array of parameter-value combinations used within SQL statement */
+        public readonly array $params,
+    ) {
     }
 }
