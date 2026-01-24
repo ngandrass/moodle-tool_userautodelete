@@ -205,6 +205,27 @@ class workflow {
     }
 
     /**
+     * Updates the last modified data values of this workflow to the current
+     * user and timestamp.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function touch(): void {
+        global $DB, $USER;
+
+        $now = time();
+        $DB->update_record(db_table::WORKFLOW->value, [
+            'id' => $this->id,
+            'modifiedby' => $USER->id,
+            'timemodified' => $now,
+        ]);
+
+        $this->modifiedby = $USER->id;
+        $this->timemodified = $now;
+    }
+
+    /**
      * Updates the title of this workflow.
      *
      * @param string $title New title of the workflow
