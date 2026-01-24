@@ -27,7 +27,7 @@ namespace userdeletefilter_lastaccess;
 use tool_userautodelete\type\instance_setting_descriptor;
 use tool_userautodelete\type\userfilter_clause;
 
-// @codingStandardsIgnoreFile
+// phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
@@ -74,8 +74,8 @@ class userdeletefilter extends \tool_userautodelete\filter\userdeletefilter_base
                 type: PARAM_INT,
                 required: true,
                 default: YEARSECS * 3,
-                readonly: false,
-            )
+                readonly: false
+            ),
         ];
     }
 }
