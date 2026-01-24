@@ -193,6 +193,18 @@ class workflow {
     }
 
     /**
+     * Returns the total number of steps in this workflow.
+     *
+     * @return int Total number of steps in this workflow
+     * @throws \dml_exception
+     */
+    public function get_step_count(): int {
+        global $DB;
+
+        return $DB->count_records(db_table::WORKFLOW_STEP->value, ['workflowid' => $this->id]);
+    }
+
+    /**
      * Updates the title of this workflow.
      *
      * @param string $title New title of the workflow
@@ -298,7 +310,7 @@ class workflow {
                 sort_move_direction::UP => $this->sort - 1,
                 sort_move_direction::DOWN => $this->sort + 1,
             }],
-            'id',
+            'id, sort',
             MUST_EXIST
         );
 
