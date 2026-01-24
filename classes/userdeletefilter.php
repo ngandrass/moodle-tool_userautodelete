@@ -25,7 +25,9 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\trait\subplugin_instance_settings;
+use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\userfilter_clause;
+use tool_userautodelete\local\util\plugin_util;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -42,10 +44,50 @@ abstract class userdeletefilter {
      *
      * @param int $id The ID of this filter sub-plugin instance
      */
-    public function __construct(
+    private function __construct(
         /** @var int The ID of this filter sub-plugin instance */
         public readonly int $id,
     ) {
+    }
+
+    /**
+     * Retrieves an user filter instance from the database and creates a local
+     * instance of the respective filter sub-plugin class.
+     *
+     * @param int $filterid The ID of the filter instance to retrieve
+     * @return self An instance of the respective userdeletefilter sub-plugin
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function get_instance_by_id(int $filterid): self {
+        global $DB;
+
+        // Fetch filter instance record and sub-plugin class to instantiate.
+        $record = $DB->get_record(db_table::WORKFLOW_FILTER->value, ['id' => $filterid], '*', MUST_EXIST);
+        $filtercls = plugin_util::get_subplugin_class('userdeletefilter', $record->pluginname);
+
+        return new $filtercls($filterid);
+    }
+
+    /**
+     * Creates a new filter instance associated with the given step.
+     *
+     * @param step $step The step to associate the new filter instance with
+     * @param string $pluginname The name of the filter sub-plugin to use
+     * @return self
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function create_instance(step $step, string $pluginname): self {
+        global $DB;
+
+        // Create filter instance record.
+        $filterid = $DB->insert_record(db_table::WORKFLOW_FILTER->value, [
+            'stepid' => $step->id,
+            'pluginname' => $pluginname,
+        ]);
+
+        return self::get_instance_by_id($filterid);
     }
 
     /**

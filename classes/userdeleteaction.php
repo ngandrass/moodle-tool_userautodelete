@@ -25,6 +25,8 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\trait\subplugin_instance_settings;
+use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\util\plugin_util;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -41,10 +43,52 @@ abstract class userdeleteaction {
      *
      * @param int $id The ID of this action sub-plugin instance
      */
-    public function __construct(
+    private function __construct(
         /** @var int The ID of this action sub-plugin instance */
         public readonly int $id,
     ) {
+    }
+
+    /**
+     * Retrieves an user action instance from the database and creates a local
+     * instance of the respective action sub-plugin class.
+     *
+     * @param int $actionid The ID of the action instance to retrieve
+     * @return self An instance of the respective userdeleteaction sub-plugin
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function get_instance_by_id(int $actionid): self {
+        global $DB;
+
+        // Fetch action instance record and determine class to instantiate.
+        $record = $DB->get_record(db_table::WORKFLOW_ACTION->value, ['id' => $actionid], '*', MUST_EXIST);
+        $actioncls = plugin_util::get_subplugin_class('userdeleteaction', $record->pluginname);
+
+        // Instantiate.
+        return new $actioncls($actionid);
+    }
+
+    /**
+     * Creates a new action instance record in the database and returns
+     * the respective action sub-plugin instance.
+     *
+     * @param step $step The step this action instance belongs to
+     * @param string $pluginname The name of the action sub-plugin to instantiate
+     * @return self An instance of the respective userdeleteaction sub-plugin
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function create_instance(step $step, string $pluginname): self {
+        global $DB;
+
+        // Create action instance record.
+        $actionid = $DB->insert_record(db_table::WORKFLOW_ACTION->value, [
+            'stepid' => $step->id,
+            'pluginname' => $pluginname,
+        ]);
+
+        return self::get_instance_by_id($actionid);
     }
 
     /**
