@@ -102,14 +102,14 @@ class workflow {
     /**
      * Retrieves an existing workflow from the database, identified by its internal ID.
      *
-     * @param int $id Internal ID of the workflow to retrieve
+     * @param int $workflowid Internal ID of the workflow to retrieve
      * @return self The workflow object
      * @throws \dml_exception
      */
-    public static function get_by_id(int $id): self {
+    public static function get_by_id(int $workflowid): self {
         global $DB;
 
-        $record = $DB->get_record(db_table::WORKFLOW->value, ['id' => $id], '*', MUST_EXIST);
+        $record = $DB->get_record(db_table::WORKFLOW->value, ['id' => $workflowid], '*', MUST_EXIST);
 
         return new self(
             id: $record->id,
