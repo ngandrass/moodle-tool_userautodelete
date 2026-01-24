@@ -28,6 +28,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $plugin->component = 'userdeletefilter_lastaccess';
 $plugin->release = '0.0.1';
 $plugin->version = 2026012300;
-$plugin->requires = 2022112800;
+$plugin->requires = 2024100700;
 $plugin->supported = [405, 501]; // X meta-supported-moodle{4.5 - 5.1} meta-supported-php{8.1 - 8.4}.
 $plugin->maturity = MATURITY_ALPHA;
