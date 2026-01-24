@@ -24,7 +24,6 @@
 
 namespace userdeleteaction_suspend;
 
-use tool_userautodelete\local\trait\subplugin_instance_settings;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 
 // phpcs:ignore
@@ -35,8 +34,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * User action that (un-)suspends users.
  */
 class userdeleteaction extends \tool_userautodelete\userdeleteaction {
-    use subplugin_instance_settings;
-
     /**
      * Returns the name of this filter sub-plugin, e.g., 'suspend' for 'userdeleteaction_suspend'
      *

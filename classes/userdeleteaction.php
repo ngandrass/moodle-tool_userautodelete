@@ -24,6 +24,8 @@
 
 namespace tool_userautodelete;
 
+use tool_userautodelete\local\trait\subplugin_instance_settings;
+
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
@@ -32,6 +34,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * Interface for userdeleteaction sub-plugins
  */
 abstract class userdeleteaction {
+    use subplugin_instance_settings;
+
     /**
      * Creates a new instance of this action sub-plugin
      *
@@ -58,5 +62,4 @@ abstract class userdeleteaction {
      * @return void
      */
     abstract public function execute(int $processid): void;
-
 }
