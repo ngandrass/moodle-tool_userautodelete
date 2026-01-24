@@ -24,8 +24,6 @@
 
 namespace tool_userautodelete;
 
-use tool_userautodelete\action\userdeleteaction_base;
-use tool_userautodelete\filter\userdeletefilter_base;
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\sort_move_direction;
 
@@ -46,8 +44,8 @@ class step {
      *
      * @param int $id ID of this workflow step
      * @param workflow $workflow The workflow this step belongs to
-     * @param userdeletefilter_base|null $filter The user filter linked to this step
-     * @param userdeleteaction_base|null $action The user action linked to this step
+     * @param userdeletefilter|null $filter The user filter linked to this step
+     * @param userdeleteaction|null $action The user action linked to this step
      * @param int $sort Position of this step in relation to the steps of the same workflow
      * @param string|null $title Optional custom title for this step
      * @param string|null $description Optional custom description for this step
@@ -57,10 +55,10 @@ class step {
         protected readonly int $id,
         /** @var workflow $workflow The workflow this step belongs to */
         protected workflow $workflow,
-        /** @var userdeletefilter_base|null $filter The user filter linked to this step */
-        protected ?userdeletefilter_base $filter,
-        /** @var userdeleteaction_base|null $action The user action linked to this step */
-        protected ?userdeleteaction_base $action,
+        /** @var userdeletefilter|null $filter The user filter linked to this step */
+        protected ?userdeletefilter $filter,
+        /** @var userdeleteaction|null $action The user action linked to this step */
+        protected ?userdeleteaction $action,
         /** @var int $sort Position of this step in relation to the steps of the same workflow */
         protected int $sort,
         /** @var string|null $title Optional custom title for this step */

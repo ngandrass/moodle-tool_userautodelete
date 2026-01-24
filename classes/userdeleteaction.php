@@ -15,54 +15,48 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Interface for userdeletefilter sub-plugins
+ * Interface for userdeleteaction sub-plugins
  *
  * @package     tool_userautodelete
- * @subpackage  filter
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_userautodelete\filter;
-
-use tool_userautodelete\local\trait\subplugin_instance_settings;
-use tool_userautodelete\local\type\userfilter_clause;
+namespace tool_userautodelete;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
- * Interface for userdeletefilter sub-plugins
+ * Interface for userdeleteaction sub-plugins
  */
-abstract class userdeletefilter_base {
-    use subplugin_instance_settings;
-
+abstract class userdeleteaction {
     /**
-     * Creates a new instance of this filter sub-plugin
+     * Creates a new instance of this action sub-plugin
      *
-     * @param int $id The ID of this filter sub-plugin instance
+     * @param int $id The ID of this action sub-plugin instance
      */
     public function __construct(
-        /** @var int The ID of this filter sub-plugin instance */
+        /** @var int The ID of this action sub-plugin instance */
         public readonly int $id,
     ) {
     }
 
     /**
-     * Returns the name of this filter sub-plugin, e.g., 'lastaccess' for 'userdeletefilter_lastaccess'
+     * Returns the name of this action sub-plugin, e.g., 'suspend' for 'userdeleteaction_suspend'
      *
-     * @return string The name of this filter sub-plugin
+     * @return string The name of this action sub-plugin
      */
     abstract public function get_plugin_name(): string;
 
     /**
-     * Returns a userfilter_clause object defining the SQL where clause and parameters
-     * to be used when querying user datasets that match this filter's criteria.
+     * Executes this action for a given user deletion process
      *
-     * Multiple filter clauses will be concatenated using a SQL 'AND' operator.
+     * @param int $processid The ID of the user deletion process to execute this action for
      *
-     * @return userfilter_clause The SQL where clause and parameters for filtering user datasets
+     * @return void
      */
-    abstract public function user_records_filter_clause(): userfilter_clause;
+    abstract public function execute(int $processid): void;
+
 }

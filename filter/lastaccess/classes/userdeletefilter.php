@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 /**
  * User delete filter based on last access time
  */
-class userdeletefilter extends \tool_userautodelete\filter\userdeletefilter_base {
+class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     /**
      * Returns the name of this filter sub-plugin, e.g., 'lastaccess' for 'userdeletefilter_lastaccess'
      *
