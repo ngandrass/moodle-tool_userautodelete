@@ -36,6 +36,14 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  *
  * Each step consists of an incoming filter transition and an action to be
  * performed when users enter the step.
+ *
+ * @property-read int $id ID of this workflow step
+ * @property-read workflow $workflow The workflow this step belongs to
+ * @property-read userdeletefilter|null $filter The user filter linked to this step
+ * @property-read userdeleteaction|null $action The user action linked to this step
+ * @property-read int $sort Position of this step in relation to the steps of the same workflow
+ * @property-read string|null $title Optional custom title for this step
+ * @property-read string|null $description Optional custom description for this step
  */
 class step {
     /**
@@ -69,11 +77,27 @@ class step {
     }
 
     /**
+     * Allows read-only access to object properties
+     *
+     * @param string $name Name of the property to access
+     * @return mixed Value of the requested property
+     * @throws \coding_exception
+     */
+    public function __get(string $name): mixed {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+
+        throw new \coding_exception('Invalid property: ' . $name);
+    }
+
+    /**
      * Retrieves a workflow step by its ID.
      *
      * @param int $stepid ID of the workflow step to retrieve
      * @return step The workflow step object
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function get_by_id(int $stepid): step {
         global $DB;
@@ -83,8 +107,8 @@ class step {
         return new step(
             id: $record->id,
             workflow: workflow::get_by_id($record->workflowid),
-            filter: null, // TODO (MDL-0): Implement filter retrieval.
-            action: null, // TODO (MDL-0): Implement action retrieval.
+            filter: $record->filterid ? userdeletefilter::get_instance_by_id($record->filterid) : null,
+            action: $record->actionid ? userdeleteaction::get_instance_by_id($record->actionid) : null,
             sort: $record->sort,
             title: $record->title,
             description: $record->description
@@ -97,6 +121,7 @@ class step {
      * @param workflow $workflow The workflow to retrieve the steps for
      * @return step[] An array of workflow step objects
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function get_all_workflow_steps(workflow $workflow): array {
         global $DB;
@@ -112,8 +137,8 @@ class step {
             $steps[] = new step(
                 id: $record->id,
                 workflow: $workflow,
-                filter: null, // TODO (MDL-0): Implement filter retrieval.
-                action: null, // TODO (MDL-0): Implement action retrieval.
+                filter: $record->filterid ? userdeletefilter::get_instance_by_id($record->filterid) : null,
+                action: $record->actionid ? userdeleteaction::get_instance_by_id($record->actionid) : null,
                 sort: $record->sort,
                 title: $record->title,
                 description: $record->description
