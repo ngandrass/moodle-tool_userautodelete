@@ -29,6 +29,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the targeted user"/>
         <FIELD NAME="stepid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the step the user is currently in"/>
+        <FIELD NAME="finished" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="True if this process was finished and will no longer be processed"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time the user entered the workflow for the first time"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time the user state within the workflow was last updated"/>
       </FIELDS>
