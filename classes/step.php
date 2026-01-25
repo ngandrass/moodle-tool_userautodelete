@@ -118,6 +118,9 @@ class step {
     /**
      * Retrieves all workflow steps for a given workflow.
      *
+     * Retrieved steps will be sorted by their order in the workflow, from first
+     * step to last step.
+     *
      * @param workflow $workflow The workflow to retrieve the steps for
      * @return step[] An array of workflow step objects
      * @throws \dml_exception
@@ -146,6 +149,79 @@ class step {
         }
 
         return $steps;
+    }
+
+    /**
+     * Retrieves the next step in the workflow associated workflow
+     *
+     * @return step|null The next workflow step or null if this is the final step
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function next(): ?step {
+        global $DB;
+
+        // Find the next step in the workflow based on the sort order.
+        $record = $DB->get_record(
+            db_table::WORKFLOW_STEP->value,
+            ['workflowid' => $this->workflow->id, 'sort' => $this->sort + 1],
+            'id',
+            IGNORE_MISSING
+        );
+
+        if (!$record) {
+            return null;
+        }
+
+        return self::get_by_id($record->id);
+    }
+
+    /**
+     * Retrieves the previous step in the workflow associated workflow
+     *
+     * @return step|null The previous workflow step or null if this is the first step
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function previous(): ?step {
+        global $DB;
+
+        // Fail early if this is the first step.
+        if ($this->sort <= 1) {
+            return null;
+        }
+
+        // Find the previous step in the workflow based on the sort order.
+        $record = $DB->get_record(
+            db_table::WORKFLOW_STEP->value,
+            ['workflowid' => $this->workflow->id, 'sort' => $this->sort - 1],
+            'id',
+            MUST_EXIST
+        );
+
+        return self::get_by_id($record->id);
+    }
+
+    /**
+     * Checks whether this step is the final step in the workflow.
+     *
+     * @return bool True if this is the final step, false otherwise
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function is_final(): bool {
+        return $this->next() === null;
+    }
+
+    /**
+     * Checks whether this step is the first step in the workflow.
+     *
+     * @return bool True if this is the first step, false otherwise
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function is_first(): bool {
+        return $this->previous() === null;
     }
 
     /**
