@@ -181,8 +181,7 @@ class process {
 
         // Determine and validate initial step if not given.
         if (!$initialstep) {
-            $steps = step::get_all_workflow_steps($workflow);
-            $initialstep = reset($steps);
+            $initialstep = $workflow->steps[0] ?? null;
         }
 
         if (!$initialstep || $initialstep->workflow->id !== $workflow->id) {
@@ -203,7 +202,7 @@ class process {
                 throw new \moodle_exception('user_already_in_workflow', 'tool_userautodelete');
             }
 
-            // Create process record.
+            // Create process.
             $now = time();
             $processid = $DB->insert_record(db_table::USER_PROCESS->value, [
                 'userid' => $userid,
@@ -212,9 +211,20 @@ class process {
                 'timecreated' => $now,
                 'timemodified' => $now,
             ]);
+            $process = new process(
+                id: $processid,
+                userid: $userid,
+                workflowid: $workflow->id,
+                stepid: $initialstep->id,
+                finished: false,
+                timecreated: $now,
+                timemodified: $now
+            );
 
-            // Execute initial step action.
-            $initialstep->action->execute($processid);
+            // Execute initial step actions.
+            foreach ($initialstep->actions as $action) {
+                $action->execute($process);
+            }
 
             // Commit everything if all the above went well.
             $transaction->allow_commit();
@@ -222,7 +232,7 @@ class process {
             $transaction->rollback($e);
         }
 
-        return self::get_by_id($processid);
+        return $process;
     }
 
     /**
@@ -267,16 +277,19 @@ class process {
                 throw new \moodle_exception('workflow_inactive', 'tool_userautodelete');
             }
 
-            // Update process record.
+            // Update process record and internal representation.
             $DB->update_record(db_table::USER_PROCESS->value, [
                 'id' => $this->id,
                 'stepid' => $targetstep->id,
                 'finished' => $targetstep->is_final() ? 1 : 0,
                 'timemodified' => time(),
             ]);
+            $this->stepid = $targetstep->id;
 
-            // Execute target step action.
-            $targetstep->action->execute($this->id);
+            // Execute target step actions.
+            foreach ($targetstep->actions as $action) {
+                $action->execute($this);
+            }
 
             // Commit everything if all the above went well.
             $transaction->allow_commit();
