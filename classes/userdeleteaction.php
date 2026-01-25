@@ -103,9 +103,9 @@ abstract class userdeleteaction {
     /**
      * Executes this action for a given user deletion process
      *
-     * @param int $processid The ID of the user deletion process to execute this action for
+     * @param process $process The user deletion process to execute this action for
      *
      * @return void
      */
-    abstract public function execute(int $processid): void;
+    abstract public function execute(process $process): void;
 }

@@ -25,6 +25,7 @@
 namespace userdeleteaction_suspend;
 
 use tool_userautodelete\local\type\instance_setting_descriptor;
+use tool_userautodelete\process;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -46,11 +47,11 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     /**
      * Executes this action for a given user deletion process
      *
-     * @param int $processid The ID of the user deletion process to execute this action for
+     * @param process $process The user deletion process to execute this action for
      *
      * @return void
      */
-    public function execute(int $processid): void {
+    public function execute(process $process): void {
         // TODO (MDL-0): Implement execute() method.
     }
 
