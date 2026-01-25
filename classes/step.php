@@ -34,26 +34,30 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 /**
  * A single step that is part of a workflow.
  *
- * Each step consists of an incoming filter transition and an action to be
- * performed when users enter the step.
+ * Each step consists of incoming filters that decide which users will transition
+ * to this step and a set of actions to be performed when users enter this step.
  *
  * @property-read int $id ID of this workflow step
  * @property-read workflow $workflow The workflow this step belongs to
- * @property-read userdeletefilter|null $filter The user filter linked to this step
- * @property-read userdeleteaction|null $action The user action linked to this step
+ * @property-read userdeletefilter[] $filters The user filters linked to this step
+ * @property-read userdeleteaction[] $actions The user actions linked to this step
  * @property-read int $sort Position of this step in relation to the steps of the same workflow
  * @property-read string|null $title Optional custom title for this step
  * @property-read string|null $description Optional custom description for this step
  */
 class step {
+    /** @var userdeletefilter[]|null Lazy-loaded user filter instances linked to this step */
+    protected ?array $filters = null;
+
+    /** @var userdeleteaction[]|null Lazy-loaded user action instances linked to this step */
+    protected ?array $actions = null;
+
     /**
      * Internal constructor to create an actual workflow step object. Used only
      * by the public static factory methods.
      *
      * @param int $id ID of this workflow step
      * @param workflow $workflow The workflow this step belongs to
-     * @param userdeletefilter|null $filter The user filter linked to this step
-     * @param userdeleteaction|null $action The user action linked to this step
      * @param int $sort Position of this step in relation to the steps of the same workflow
      * @param string|null $title Optional custom title for this step
      * @param string|null $description Optional custom description for this step
@@ -63,10 +67,6 @@ class step {
         protected readonly int $id,
         /** @var workflow $workflow The workflow this step belongs to */
         protected workflow $workflow,
-        /** @var userdeletefilter|null $filter The user filter linked to this step */
-        protected ?userdeletefilter $filter,
-        /** @var userdeleteaction|null $action The user action linked to this step */
-        protected ?userdeleteaction $action,
         /** @var int $sort Position of this step in relation to the steps of the same workflow */
         protected int $sort,
         /** @var string|null $title Optional custom title for this step */
@@ -74,6 +74,8 @@ class step {
         /** @var string|null $description Optional custom description for this step */
         protected ?string $description
     ) {
+        $this->filters = null;
+        $this->actions = null;
     }
 
     /**
@@ -84,11 +86,68 @@ class step {
      * @throws \coding_exception
      */
     public function __get(string $name): mixed {
+        // Handle lazy-loaded props.
+        switch ($name) {
+            case 'filters':
+                return $this->get_filters();
+            case 'actions':
+                return $this->get_actions();
+        }
+
+        // Generic fallback.
         if (property_exists($this, $name)) {
             return $this->$name;
         }
 
         throw new \coding_exception('Invalid property: ' . $name);
+    }
+
+    /**
+     * Retrieves the user filters linked to this workflow step.
+     *
+     * @return userdeletefilter[] An array of user filter instances
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function get_filters(): array {
+        global $DB;
+
+        if ($this->filters === null) {
+            $this->filters = array_map(
+                fn($filterid) => userdeletefilter::get_instance_by_id($filterid),
+                $DB->get_fieldset(
+                    db_table::WORKFLOW_FILTER->value,
+                    'id',
+                    ['stepid' => $this->id]
+                )
+            );
+        }
+
+        return $this->filters;
+    }
+
+    /**
+     * Retrieves the user actions linked to this workflow step.
+     *
+     * @return userdeleteaction[] An array of user action instances
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function get_actions(): array {
+        global $DB;
+
+        if ($this->actions === null) {
+            $this->actions = array_map(
+                fn($actionid) => userdeleteaction::get_instance_by_id($actionid),
+                $DB->get_fieldset(
+                    db_table::WORKFLOW_ACTION->value,
+                    'id',
+                    ['stepid' => $this->id]
+                )
+            );
+        }
+
+        return $this->actions;
     }
 
     /**
@@ -107,8 +166,6 @@ class step {
         return new step(
             id: $record->id,
             workflow: workflow::get_by_id($record->workflowid),
-            filter: $record->filterid ? userdeletefilter::get_instance_by_id($record->filterid) : null,
-            action: $record->actionid ? userdeleteaction::get_instance_by_id($record->actionid) : null,
             sort: $record->sort,
             title: $record->title,
             description: $record->description
@@ -140,8 +197,6 @@ class step {
             $steps[] = new step(
                 id: $record->id,
                 workflow: $workflow,
-                filter: $record->filterid ? userdeletefilter::get_instance_by_id($record->filterid) : null,
-                action: $record->actionid ? userdeleteaction::get_instance_by_id($record->actionid) : null,
                 sort: $record->sort,
                 title: $record->title,
                 description: $record->description

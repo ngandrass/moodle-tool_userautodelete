@@ -57,7 +57,7 @@
         <KEY NAME="modifiedby" TYPE="foreign" FIELDS="modifiedby" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="tool_userautodelete_step" COMMENT="Steps that make up a workflow, consisting of an incoming filter (transition) and an action to be executed upon state entry">
+    <TABLE NAME="tool_userautodelete_step" COMMENT="Steps that make up a workflow, consisting of incoming filters and an actions to be executed upon state entry">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the workflow this step belongs to"/>
