@@ -40,6 +40,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @property-read int $id Internal ID of the workflow
  * @property-read string $title Title of the workflow
  * @property-read string|null $description Optional description of the workflow
+ * @property-read step[] $steps Sorted array of steps that belong to this workflow
  * @property-read int $sort Sort index of this workflow in relation to other workflows
  * @property-read bool $active If true, the workflow will actively be processed
  * @property-read int $createdby ID of the user that created this workflow
@@ -48,6 +49,9 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @property-read int $timemodified Unix timestamp when this workflow was last modified
  */
 class workflow {
+    /** @var array|null Lazy-loaded sorted array of steps that belong to this workflow */
+    protected ?array $steps;
+
     /**
      * Internal constructor to create the actual workflow object based on data
      * that was fetched by one of the static CRUD methods.
@@ -82,6 +86,7 @@ class workflow {
         /** @var int $timemodified Unix timestamp when this workflow was last modified */
         protected int $timemodified,
     ) {
+        $this->steps = null;
     }
 
     /**
@@ -90,13 +95,38 @@ class workflow {
      * @param string $name Name of the property to access
      * @return mixed Value of the requested property
      * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function __get(string $name): mixed {
+        // Handle lazy-loaded properties.
+        switch ($name) {
+            case 'steps':
+                return $this->get_steps();
+        }
+
+        // Handle regular properties.
         if (property_exists($this, $name)) {
             return $this->$name;
         }
 
         throw new \coding_exception('Invalid property: ' . $name);
+    }
+
+    /**
+     * Retrieves all steps that belong to this workflow, sorted by their sort
+     * index.
+     *
+     * @return step[] Sorted array of steps that belong to this workflow
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function get_steps(): array {
+        if ($this->steps === null) {
+            $this->steps = step::get_all_workflow_steps($this);
+        }
+
+        return $this->steps;
     }
 
     /**
@@ -197,11 +227,10 @@ class workflow {
      *
      * @return int Total number of steps in this workflow
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function get_step_count(): int {
-        global $DB;
-
-        return $DB->count_records(db_table::WORKFLOW_STEP->value, ['workflowid' => $this->id]);
+        return count($this->get_steps());
     }
 
     /**
@@ -214,6 +243,10 @@ class workflow {
     public function touch(): void {
         global $DB, $USER;
 
+        // Invalidate lazy-loaded props.
+        $this->steps = null;
+
+        // Update database record.
         $now = time();
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
