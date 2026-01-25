@@ -151,6 +151,20 @@ class step {
     }
 
     /**
+     * Marks this step and its parent workflow as modified.
+     *
+     * This method also clears any cached filter and action instances.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function touch(): void {
+        $this->actions = null;
+        $this->filters = null;
+        $this->workflow->touch();
+    }
+
+    /**
      * Retrieves a workflow step by its ID.
      *
      * @param int $stepid ID of the workflow step to retrieve

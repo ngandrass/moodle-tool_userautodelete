@@ -88,6 +88,8 @@ abstract class userdeleteaction {
             'pluginname' => $pluginname,
         ]);
 
+        $step->touch();
+
         return self::get_instance_by_id($actionid);
     }
 
