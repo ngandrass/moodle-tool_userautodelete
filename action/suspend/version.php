@@ -31,3 +31,6 @@ $plugin->version = 2026012400;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 501]; // X meta-supported-moodle{4.5 - 5.1} meta-supported-php{8.1 - 8.4}.
 $plugin->maturity = MATURITY_ALPHA;
+$plugin->dependencies = [
+    'tool_userautodelete' => 2026012400,
+];
