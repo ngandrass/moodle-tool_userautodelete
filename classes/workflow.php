@@ -49,7 +49,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @property-read int $timemodified Unix timestamp when this workflow was last modified
  */
 class workflow {
-    /** @var array|null Lazy-loaded sorted array of steps that belong to this workflow */
+    /** @var step[]|null Lazy-loaded sorted array of steps that belong to this workflow */
     protected ?array $steps;
 
     /**
@@ -386,5 +386,82 @@ class workflow {
 
         // Update this object.
         $this->sort = $otherworkflowrecord->sort;
+    }
+
+    /**
+     * Processes this workflow by progressing existing user deletion processes
+     * and ingesting new applicable users into the workflow.
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function process(): void {
+        // Only process active workflows.
+        if (!$this->active) {
+            return;
+        }
+
+        // Progress existing processes.
+        // Steps are processed in reverse order to ensure that users that
+        // progress to the next step within this run are not processed again
+        // within the same run.
+        foreach (array_reverse($this->steps) as $step) {
+            foreach (process::get_active_processes_for_step($step->id) as $process) {
+                $process->transition();
+            }
+        }
+
+        // Ingest new applicable users.
+        $newusers = $this->get_applicable_users();
+        foreach ($newusers as $userid) {
+            process::create($userid, $this);
+        }
+    }
+
+    /**
+     * Retrieves all users that are applicable for this workflow based on
+     * the filters defined in the first step of this workflow.
+     *
+     * @return int[] Array of user IDs that are applicable for this workflow
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function get_applicable_users(): array {
+        global $DB;
+
+        // Prepare filter clauses.
+        $filtersql = "";
+        $filterparams = [];
+        foreach ($this->steps[0]->filters as $filter) {
+            $clause = $filter->user_records_filter_clause();
+
+            // Prefix query parameters with filter ID to prevent name collisions.
+            $clausesql = $clause->sql;
+            foreach ($clause->params as $paramname => $paramvalue) {
+                $newparamname = "f{$this->id}{$paramname}";
+                $clausesql = preg_replace(
+                    '/(.*:)' . $paramname . '(\W.*)/',
+                    '$1' . $newparamname . '$2',
+                    $clausesql . ' '  // Append space to ensure regex detects parameters at string end.
+                );
+
+                $filterparams[$newparamname] = $paramvalue;
+            }
+
+            $filtersql .= " AND {$clausesql}";
+        }
+
+        // Get all users this workflow is sensitive to and that are not yet part
+        // of any other workflow.
+        return $DB->get_fieldset_sql(
+            'SELECT u.id ' .
+            'FROM {user} u ' .
+            'LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON p.userid = u.id ' .
+            'WHERE u.deleted = 0 ' .
+            '    AND p.id IS NULL ' .
+            $filtersql,
+            $filterparams
+        );
     }
 }
