@@ -105,7 +105,7 @@ abstract class userdeleteaction {
      *
      * @param process $process The user deletion process to execute this action for
      *
-     * @return void
+     * @return bool True if the action was executed successfully, false otherwise
      */
-    abstract public function execute(process $process): void;
+    abstract public function execute(process $process): bool;
 }

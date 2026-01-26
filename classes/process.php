@@ -261,7 +261,14 @@ class process {
 
             // Execute initial step actions.
             foreach ($initialstep->actions as $action) {
-                $action->execute($process);
+                if (!$action->execute($process)) {
+                    throw new \moodle_exception(
+                        'userdeleteaction_execution_failed',
+                        'tool_userautodelete',
+                        '',
+                        "{$action->get_plugin_name()} #{$action->id}"
+                    );
+                }
             }
 
             // Commit everything if all the above went well.
@@ -326,7 +333,14 @@ class process {
 
             // Execute target step actions.
             foreach ($targetstep->actions as $action) {
-                $action->execute($this);
+                if (!$action->execute($this)) {
+                    throw new \moodle_exception(
+                        'userdeleteaction_execution_failed',
+                        'tool_userautodelete',
+                        '',
+                        "{$action->get_plugin_name()} #{$action->id}"
+                    );
+                }
             }
 
             // Commit everything if all the above went well.

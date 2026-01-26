@@ -49,16 +49,18 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      *
      * @param process $process The user deletion process to execute this action for
      *
-     * @return void
+     * @return bool True if the action was executed successfully, false otherwise
      * @throws \dml_exception
      */
-    public function execute(process $process): void {
+    public function execute(process $process): bool {
         global $DB;
 
         $DB->update_record('user', [
             'id' => $process->userid,
             'suspended' => 0,
         ]);
+
+        return true;
     }
 
     /**
