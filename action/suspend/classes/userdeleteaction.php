@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * User action that (un-)suspends users.
+ * User action that suspends users.
  *
  * @package     userdeleteaction_suspend
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
- * User action that (un-)suspends users.
+ * User action that suspends users.
  */
 class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     /**
@@ -50,9 +50,15 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * @param process $process The user deletion process to execute this action for
      *
      * @return void
+     * @throws \dml_exception
      */
     public function execute(process $process): void {
-        // TODO (MDL-0): Implement execute() method.
+        global $DB;
+
+        $DB->update_record('user', [
+            'id' => $process->userid,
+            'suspended' => 1,
+        ]);
     }
 
     /**
