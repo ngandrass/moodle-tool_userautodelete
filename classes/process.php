@@ -162,6 +162,44 @@ class process {
     }
 
     /**
+     * Returns all active (not finished) processes for a given step.
+     *
+     * @param int $stepid The ID of the step to retrieve active processes for
+     * @return process[] An associative array of user processes, indexed by process ID
+     * @throws \dml_exception
+     */
+    public static function get_active_processes_for_step(int $stepid): array {
+        global $DB;
+
+        // Fetch all active process records for the given step.
+        $records = $DB->get_record_sql(
+            'SELECT proc.*, step.workflowid ' .
+            'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
+            'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
+            'WHERE proc.stepid = :stepid ' .
+            'AND proc.finished = 0',
+            ['stepid' => $stepid],
+            IGNORE_MISSING
+        );
+
+        // Build process objects as an associative array, indexed by process ID.
+        $userprocesses = [];
+        foreach ($records as $record) {
+            $userprocesses[$record->id] = new process(
+                id: $record->id,
+                userid: $record->userid,
+                workflowid: $record->workflowid,
+                stepid: $record->stepid,
+                finished: (bool) $record->finished,
+                timecreated: $record->timecreated,
+                timemodified: $record->timemodified
+            );
+        }
+
+        return $userprocesses;
+    }
+
+    /**
      * Creates a new user process in the given workflow and executes the step
      * action during creation
      *
