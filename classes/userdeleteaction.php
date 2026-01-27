@@ -26,6 +26,7 @@ namespace tool_userautodelete;
 
 use tool_userautodelete\local\trait\subplugin_instance_settings;
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\subplugin_type;
 use tool_userautodelete\local\util\plugin_util;
 
 // phpcs:ignore
@@ -91,6 +92,24 @@ abstract class userdeleteaction {
         $step->touch();
 
         return self::get_instance_by_id($actionid);
+    }
+
+    /**
+     * Returns the ID of this sub-plugin instance
+     *
+     * @return int The ID of this sub-plugin instance
+     */
+    public function get_instance_id(): int {
+        return $this->id;
+    }
+
+    /**
+     * Returns the type of this sub-plugin
+     *
+     * @return subplugin_type The type of this sub-plugin
+     */
+    public function get_plugin_type(): subplugin_type {
+        return subplugin_type::ACTION;
     }
 
     /**

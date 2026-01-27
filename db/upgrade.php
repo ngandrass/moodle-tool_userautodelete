@@ -186,6 +186,8 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
+        // TODO (MDL-0): Take existing old v1 settings and migrate them to a new corresponding workflow.
+
         // Userautodelete savepoint reached.
         upgrade_plugin_savepoint(true, 2026012400, 'tool', 'userautodelete');
     }
