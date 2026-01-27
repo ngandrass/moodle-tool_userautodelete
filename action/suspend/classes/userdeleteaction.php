@@ -55,12 +55,10 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     public function execute(process $process): bool {
         global $DB;
 
-        $DB->update_record('user', [
+        return $DB->update_record('user', [
             'id' => $process->userid,
             'suspended' => 1,
         ]);
-
-        return true;
     }
 
     /**
