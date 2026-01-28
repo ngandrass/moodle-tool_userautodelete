@@ -51,12 +51,18 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * Multiple filter clauses will be concatenated using a SQL 'AND' operator.
      *
      * @return userfilter_clause The SQL where clause and parameters for filtering user datasets
+     * @throws \moodle_exception
      */
     public function user_records_filter_clause(): userfilter_clause {
-        // TODO (MDL-0): Implement ...
+        $thresholdsec = intval($this->get_instance_setting('thresholdsec'));
+
+        if ($thresholdsec <= 0) {
+            throw new \moodle_exception('negative_thresholdsec', 'userdeletefilter_lastaccess');
+        }
+
         return new userfilter_clause(
             'lastaccess < :lastaccesstime',
-            ['lastaccesstime' => time() - YEARSECS]
+            ['lastaccesstime' => time() - $thresholdsec]
         );
     }
 
