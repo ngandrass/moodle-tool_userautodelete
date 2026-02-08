@@ -79,6 +79,42 @@ class step {
     }
 
     /**
+     * Creates a new workflow step record in the database and returns an instance
+     * of this class representing the new step.
+     *
+     * @param workflow $workflow The workflow this step should belong to
+     * @param string|null $title Optional custom title for this step
+     * @param string|null $description Optional custom description for this step
+     * @return step An instance of this class representing the newly created step
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function create(workflow $workflow, ?string $title = null, ?string $description = null): step {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        // Determine largest sort index of existing steps.
+        $laststepsort = $DB->get_field(
+            db_table::WORKFLOW_STEP->value,
+            'MAX(sort)',
+            ['workflowid' => $workflow->id]
+        );
+
+        // Create new step.
+        $stepid = $DB->insert_record(db_table::WORKFLOW_STEP->value, [
+            'workflowid' => $workflow->id,
+            'sort' => $laststepsort ?: 1,
+            'title' => $title,
+            'description' => $description,
+        ]);
+
+        $transaction->allow_commit();
+
+        return self::get_by_id($stepid);
+    }
+
+    /**
      * Allows read-only access to object properties
      *
      * @param string $name Name of the property to access
@@ -299,6 +335,7 @@ class step {
      * @param sort_move_direction $direction Direction to move the workflow step in
      * @return void
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function move(sort_move_direction $direction): void {
         global $DB;
@@ -340,5 +377,42 @@ class step {
 
         // Update this object.
         $this->sort = $othersteprecord->sort;
+    }
+
+    /**
+     * Deletes this workflow step and all linked filters and actions.
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function delete(): void {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        // Delete all filters and actions linked to this step.
+        foreach ($this->get_actions() as $action) {
+            $action->delete();
+        }
+        foreach ($this->get_filters() as $filter) {
+            $filter->delete();
+        }
+
+        // Delete the step record itself.
+        $DB->delete_records(db_table::WORKFLOW_STEP->value, ['id' => $this->id]);
+
+        // Recalculate sort indexes for remaining steps in this workflow.
+        $DB->execute(
+            'UPDATE {' . db_table::WORKFLOW_STEP->value . '} ' .
+            'SET sort = sort - 1 ' .
+            'WHERE workflowid = :workflowid AND sort > :sort',
+            ['workflowid' => $this->workflow->id, 'sort' => $this->sort]
+        );
+
+        // Touch the workflow to update its modified time and clear caches.
+        $this->workflow->touch();
+
+        $transaction->allow_commit();
     }
 }
