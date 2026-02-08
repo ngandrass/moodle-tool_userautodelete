@@ -182,6 +182,9 @@ abstract class userdeletefilter {
      * Returns a userfilter_clause object defining the SQL where clause and parameters
      * to be used when querying user datasets that match this filter's criteria.
      *
+     * User table fields must be accessed using the 'u' table alias, e.g., 'u.lastaccess'
+     * for the 'lastaccess' field inside the Moodle 'user' table.
+     *
      * Multiple filter clauses will be concatenated using a SQL 'AND' operator.
      *
      * @return userfilter_clause The SQL where clause and parameters for filtering user datasets
