@@ -40,15 +40,22 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 abstract class userdeletefilter {
     use subplugin_instance_settings;
 
+    /** @var step|null The step this filter instance belongs to (lazy-loaded) */
+    protected ?step $step;
+
     /**
      * Creates a new instance of this filter sub-plugin
      *
      * @param int $id The ID of this filter sub-plugin instance
+     * @param int $stepid The ID of the step this filter instance is part of
      */
     private function __construct(
         /** @var int The ID of this filter sub-plugin instance */
         public readonly int $id,
+        /** @var int The ID of the step this filter instance is part of */
+        public readonly int $stepid,
     ) {
+        $this->setp = null;
     }
 
     /**
@@ -67,7 +74,7 @@ abstract class userdeletefilter {
         $record = $DB->get_record(db_table::WORKFLOW_FILTER->value, ['id' => $filterid], '*', MUST_EXIST);
         $filtercls = plugin_util::get_subplugin_class('userdeletefilter', $record->pluginname);
 
-        return new $filtercls($filterid);
+        return new $filtercls($filterid, $record->stepid);
     }
 
     /**
@@ -100,6 +107,21 @@ abstract class userdeletefilter {
      */
     public function get_instance_id(): int {
         return $this->id;
+    }
+
+    /**
+     * Returns the step this filter instance belongs to
+     *
+     * @return step The step this filter instance belongs to
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function get_step(): step {
+        if ($this->step === null) {
+            $this->step = step::get_by_id($this->stepid);
+        }
+
+        return $this->step;
     }
 
     /**

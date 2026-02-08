@@ -39,15 +39,22 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 abstract class userdeleteaction {
     use subplugin_instance_settings;
 
+    /** @var step|null The step this action instance belongs to (lazy-loaded) */
+    protected ?step $step;
+
     /**
      * Creates a new instance of this action sub-plugin
      *
      * @param int $id The ID of this action sub-plugin instance
+     * @param int $stepid The ID of the step this action instance is part of
      */
     private function __construct(
         /** @var int The ID of this action sub-plugin instance */
         public readonly int $id,
+        /** @var int The ID of the step this action instance is part of */
+        public readonly int $stepid,
     ) {
+        $this->step = null;
     }
 
     /**
@@ -67,7 +74,7 @@ abstract class userdeleteaction {
         $actioncls = plugin_util::get_subplugin_class('userdeleteaction', $record->pluginname);
 
         // Instantiate.
-        return new $actioncls($actionid);
+        return new $actioncls($actionid, $record->stepid);
     }
 
     /**
@@ -101,6 +108,21 @@ abstract class userdeleteaction {
      */
     public function get_instance_id(): int {
         return $this->id;
+    }
+
+    /**
+     * Returns the step this action instance belongs to
+     *
+     * @return step The step this action instance belongs to
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function get_step(): step {
+        if ($this->step === null) {
+            $this->step = step::get_by_id($this->stepid);
+        }
+
+        return $this->step;
     }
 
     /**
