@@ -87,8 +87,11 @@ abstract class userdeleteaction {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function create_instance(step $step, string $pluginname): self {
+    public static function create_instance(step $step, $pluginname): self {
         global $DB;
+
+        // Validate pluginname by checking if the respective class exists (call throws moodle_exception).
+        plugin_util::get_subplugin_class('userdeleteaction', $pluginname);
 
         // Create action instance record.
         $actionid = $DB->insert_record(db_table::WORKFLOW_ACTION->value, [

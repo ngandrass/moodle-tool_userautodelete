@@ -89,6 +89,9 @@ abstract class userdeletefilter {
     public static function create_instance(step $step, string $pluginname): self {
         global $DB;
 
+        // Validate pluginname by checking if the respective class exists (call throws moodle_exception).
+        plugin_util::get_subplugin_class('userdeletefilter', $pluginname);
+
         // Create filter instance record.
         $filterid = $DB->insert_record(db_table::WORKFLOW_FILTER->value, [
             'stepid' => $step->id,
