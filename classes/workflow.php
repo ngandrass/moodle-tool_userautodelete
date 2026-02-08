@@ -488,4 +488,47 @@ class workflow {
             $filterparams
         );
     }
+
+    /**
+     * Loads the default workflow steps with their respective filters and
+     * actions into this workflow.
+     *
+     * By default this method will throw an exception when called on an already
+     * populated workflow. This can be overridden by setting the $force
+     * parameter to true, which will delete all existing steps, filters and
+     * actions of this workflow before loading the default ones.
+     *
+     * @param bool $force If true, existing steps, filters and actions of this
+     * workflow will be deleted before loading the default ones.
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function load_default_workflow(bool $force = false): void {
+        // Prevent accidental workflow wiping.
+        if ($this->get_step_count() > 0) {
+            if (!$force) {
+                throw new \moodle_exception('workflow_not_empty', 'tool_userautodelete');
+            } else {
+                // Clear existing steps when overwrite is forced.
+                foreach ($this->get_steps() as $step) {
+                    $step->delete();
+                }
+            }
+        }
+
+        // TODO (MDL-0): Customize filter and step settings.
+
+        // Warning phase.
+        $warningstep = step::create(workflow: $this);
+        userdeletefilter::create_instance($warningstep, 'lastaccess');
+        userdeleteaction::create_instance($warningstep, 'mail');
+
+        // Deletion phase.
+        $deletionstep = step::create(workflow: $this);
+        userdeletefilter::create_instance($deletionstep, 'delay');
+        userdeleteaction::create_instance($deletionstep, 'mail');
+        userdeleteaction::create_instance($deletionstep, 'delete');
+        userdeleteaction::create_instance($deletionstep, 'anonymize');
+    }
 }
