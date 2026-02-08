@@ -105,6 +105,20 @@ abstract class userdeleteaction {
     }
 
     /**
+     * Deletes this action instance
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function delete(): void {
+        global $DB;
+
+        $DB->delete_records(db_table::WORKFLOW_ACTION->value, ['id' => $this->get_instance_id()]);
+        $this->get_step()->touch();
+    }
+
+    /**
      * Returns the ID of this sub-plugin instance
      *
      * @return int The ID of this sub-plugin instance
