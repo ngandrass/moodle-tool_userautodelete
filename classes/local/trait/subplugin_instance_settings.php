@@ -155,6 +155,46 @@ trait subplugin_instance_settings {
     }
 
     /**
+     * Sets all settings to their default values. Single settings can instead be
+     * set to a custom value by passing an key-value pair within the $overrides
+     * array.
+     *
+     * @param array $overrides An associative array of setting key-value pairs
+     * to set instead of the default value
+     * @return void
+     * @throws \dml_transaction_exception
+     */
+    public function load_default_instance_settings(array $overrides = []): void {
+        global $DB;
+
+        // Prepare settings to be inserted.
+        $settings = [];
+        foreach (self::instance_setting_descriptors() as $descriptor) {
+            $key = $descriptor->key;
+            $value = $overrides[$key] ?? $descriptor->default;
+
+            $settings[] = (object) [
+                'plugintype' => self::get_plugin_type()->value,
+                'instanceid' => self::get_instance_id(),
+                'datakey' => $key,
+                'datavalue' => $value,
+            ];
+        }
+
+        // Clear all existing settings and write new ones in a transaction.
+        try {
+            $transaction = $DB->start_delegated_transaction();
+
+            $this->delete_all_instance_settings();
+            $DB->insert_records(db_table::INSTANCE_SETTINGS->value, $settings);
+
+            $transaction->allow_commit();
+        } catch (\Exception $e) {
+            $transaction->rollback($e);
+        }
+    }
+
+    /**
      * Deletes all settings for this sub-plugin instance.
      *
      * @return void

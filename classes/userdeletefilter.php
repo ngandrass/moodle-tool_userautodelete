@@ -81,26 +81,47 @@ abstract class userdeletefilter {
      * Creates a new filter instance associated with the given step.
      *
      * @param step $step The step to associate the new filter instance with
-     * @param string $pluginname The name of the filter sub-plugin to use
+     * @param string|null $pluginname The name of the filter sub-plugin to instantiate,
+     * defaults to the actual plugin name of the class this method is called on
+     * @param array $settings An associative array of setting key-value pairs
+     * set for the new instance. Falls back to default values defined in th
+     * respective sub-plugin implementation if not given explicitly.
      * @return self
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function create_instance(step $step, string $pluginname): self {
+    public static function create_instance(
+        step $step,
+        ?string $pluginname = null,
+        array $settings = []
+    ): self {
         global $DB;
 
         // Validate pluginname by checking if the respective class exists (call throws moodle_exception).
+        $pluginname = $pluginname ?: static::get_plugin_name();
         plugin_util::get_subplugin_class('userdeletefilter', $pluginname);
 
-        // Create filter instance record.
-        $filterid = $DB->insert_record(db_table::WORKFLOW_FILTER->value, [
-            'stepid' => $step->id,
-            'pluginname' => $pluginname,
-        ]);
+        try {
+            $transaction = $DB->start_delegated_transaction();
 
-        $step->touch();
+            // Create filter instance.
+            $filterid = $DB->insert_record(db_table::WORKFLOW_FILTER->value, [
+                'stepid' => $step->id,
+                'pluginname' => $pluginname,
+            ]);
 
-        return self::get_instance_by_id($filterid);
+            $filter = static::get_instance_by_id($filterid);
+            $filter->load_default_instance_settings($settings);
+
+            // Mark step as modified.
+            $step->touch();
+
+            $transaction->allow_commit();
+        } catch (\Exception $e) {
+            $transaction->rollback($e);
+        }
+
+        return $filter;
     }
 
     /**

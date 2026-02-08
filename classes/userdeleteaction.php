@@ -82,26 +82,47 @@ abstract class userdeleteaction {
      * the respective action sub-plugin instance.
      *
      * @param step $step The step this action instance belongs to
-     * @param string $pluginname The name of the action sub-plugin to instantiate
+     * @param string|null $pluginname The name of the action sub-plugin to instantiate,
+     * defaults to the actual plugin name of the class this method is called on
+     * @param array $settings An associative array of setting key-value pairs
+     * set for the new instance. Falls back to default values defined in th
+     * respective sub-plugin implementation if not given explicitly.
      * @return self An instance of the respective userdeleteaction sub-plugin
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function create_instance(step $step, $pluginname): self {
+    public static function create_instance(
+        step $step,
+        ?string $pluginname = null,
+        array $settings = []
+    ): self {
         global $DB;
 
         // Validate pluginname by checking if the respective class exists (call throws moodle_exception).
+        $pluginname = $pluginname ?: static::get_plugin_name();
         plugin_util::get_subplugin_class('userdeleteaction', $pluginname);
 
-        // Create action instance record.
-        $actionid = $DB->insert_record(db_table::WORKFLOW_ACTION->value, [
-            'stepid' => $step->id,
-            'pluginname' => $pluginname,
-        ]);
+        try {
+            $transaction = $DB->start_delegated_transaction();
 
-        $step->touch();
+            // Create action instance.
+            $actionid = $DB->insert_record(db_table::WORKFLOW_ACTION->value, [
+                'stepid' => $step->id,
+                'pluginname' => $pluginname,
+            ]);
 
-        return self::get_instance_by_id($actionid);
+            $action = static::get_instance_by_id($actionid);
+            $action->load_default_instance_settings($settings);
+
+            // Mark step as modified.
+            $step->touch();
+
+            $transaction->allow_commit();
+        } catch (\Exception $e) {
+            $transaction->rollback($e);
+        }
+
+        return $action;
     }
 
     /**
