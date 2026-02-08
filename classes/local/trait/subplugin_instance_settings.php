@@ -42,7 +42,14 @@ trait subplugin_instance_settings {
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
      */
-    abstract public function instance_setting_descriptors(): array;
+    abstract public static function instance_setting_descriptors(): array;
+
+    /**
+     * Returns the type of this sub-plugin
+     *
+     * @return subplugin_type The type of this sub-plugin
+     */
+    abstract public static function get_plugin_type(): subplugin_type;
 
     /**
      * Returns the ID of this sub-plugin instance
@@ -50,13 +57,6 @@ trait subplugin_instance_settings {
      * @return int The ID of this sub-plugin instance
      */
     abstract public function get_instance_id(): int;
-
-    /**
-     * Returns the type of this sub-plugin
-     *
-     * @return subplugin_type The type of this sub-plugin
-     */
-    abstract public function get_plugin_type(): subplugin_type;
 
     /**
      * Retrieves all setting key-value pairs for this sub-plugin instance.

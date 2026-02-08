@@ -40,7 +40,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      *
      * @return string The name of this filter sub-plugin
      */
-    public function get_plugin_name(): string {
+    public static function get_plugin_name(): string {
         return 'mail';
     }
 
@@ -81,7 +81,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
      */
-    public function instance_setting_descriptors(): array {
+    public static function instance_setting_descriptors(): array {
         return [
             new instance_setting_descriptor('subject', PARAM_TEXT, true),
             new instance_setting_descriptor('message', PARAM_TEXT, true),

@@ -147,7 +147,7 @@ abstract class userdeleteaction {
      *
      * @return subplugin_type The type of this sub-plugin
      */
-    public function get_plugin_type(): subplugin_type {
+    public static function get_plugin_type(): subplugin_type {
         return subplugin_type::ACTION;
     }
 
@@ -156,7 +156,7 @@ abstract class userdeleteaction {
      *
      * @return string The name of this action sub-plugin
      */
-    abstract public function get_plugin_name(): string;
+    abstract public static function get_plugin_name(): string;
 
     /**
      * Executes this action for a given user deletion process

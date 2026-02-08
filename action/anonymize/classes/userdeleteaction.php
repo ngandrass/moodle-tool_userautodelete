@@ -40,7 +40,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      *
      * @return string The name of this filter sub-plugin
      */
-    public function get_plugin_name(): string {
+    public static function get_plugin_name(): string {
         return 'anonymize';
     }
 
@@ -88,7 +88,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
      */
-    public function instance_setting_descriptors(): array {
+    public static function instance_setting_descriptors(): array {
         return [];
     }
 }

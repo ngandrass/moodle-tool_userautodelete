@@ -40,7 +40,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      *
      * @return string The name of this filter sub-plugin
      */
-    public function get_plugin_name(): string {
+    public static function get_plugin_name(): string {
         return 'suspension';
     }
 
@@ -73,7 +73,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * @return instance_setting_descriptor[] An array of setting descriptors
      */
     #[\Override]
-    public function instance_setting_descriptors(): array {
+    public static function instance_setting_descriptors(): array {
         return [
             new instance_setting_descriptor(
                 key: 'suspended',

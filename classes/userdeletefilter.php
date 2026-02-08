@@ -55,7 +55,7 @@ abstract class userdeletefilter {
         /** @var int The ID of the step this filter instance is part of */
         public readonly int $stepid,
     ) {
-        $this->setp = null;
+        $this->step = null;
     }
 
     /**
@@ -146,7 +146,7 @@ abstract class userdeletefilter {
      *
      * @return subplugin_type The type of this sub-plugin
      */
-    public function get_plugin_type(): subplugin_type {
+    public static function get_plugin_type(): subplugin_type {
         return subplugin_type::FILTER;
     }
 
@@ -155,7 +155,7 @@ abstract class userdeletefilter {
      *
      * @return string The name of this filter sub-plugin
      */
-    abstract public function get_plugin_name(): string;
+    abstract public static function get_plugin_name(): string;
 
     /**
      * Returns a userfilter_clause object defining the SQL where clause and parameters
