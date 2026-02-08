@@ -211,6 +211,30 @@ class workflow {
     }
 
     /**
+     * Deletes this workflow and all associated steps, filters and actions from
+     * the database.
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function delete(): void {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        // Delete all steps (including filters and actions) of this workflow.
+        foreach ($this->get_steps() as $step) {
+            $step->delete();
+        }
+
+        // Delete the workflow itself.
+        $DB->delete_records(db_table::WORKFLOW->value, ['id' => $this->id]);
+
+        $transaction->allow_commit();
+    }
+
+    /**
      * Returns the total number of workflows in the database.
      *
      * @return int Total number of workflows
