@@ -26,6 +26,7 @@ namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\sort_move_direction;
+use tool_userautodelete\local\type\userfilter_clause;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -120,6 +121,8 @@ class step {
      * @param string $name Name of the property to access
      * @return mixed Value of the requested property
      * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function __get(string $name): mixed {
         // Handle lazy-loaded props.
@@ -414,5 +417,53 @@ class step {
         $this->workflow->touch();
 
         $transaction->allow_commit();
+    }
+
+    /**
+     * Generates a userfilter_clause object representing the combined SQL where
+     * clauses and parameters for all filters linked to this workflow step.
+     *
+     * @return userfilter_clause The combined SQL where clause and parameters
+     * for filtering user datasets
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public function generate_user_filter_clause(): userfilter_clause {
+        global $CFG, $DB;
+
+        $filtersqls = [];
+        $filterparams = [];
+
+        foreach ($this->get_filters() as $filter) {
+            $clause = $filter->user_records_filter_clause();
+
+            // Prefix query parameters with filter ID to prevent name collisions.
+            $clausesql = $clause->sql;
+            foreach ($clause->params as $paramname => $paramvalue) {
+                $newparamname = "f{$this->id}{$paramname}";
+                $clausesql = preg_replace(
+                    '/(.*:)' . $paramname . '(\W.*)/',
+                    '$1' . $newparamname . '$2',
+                    $clausesql . ' '  // Append space to ensure regex detects parameters at string end.
+                );
+
+                $filterparams[$newparamname] = $paramvalue;
+            }
+
+            $filtersqls[] = "({$clausesql})";
+        }
+
+        // Always ignore site admins and the guest user.
+        $ignoreduserids = array_merge(
+            explode(',', $CFG->siteadmins),
+            [$CFG->siteguest]
+        );
+        $ignoreduserids = array_map(fn($id): int => intval($id), $ignoreduserids);
+        $filtersqls[] = '(u.id NOT IN (' . join(',', $ignoreduserids) . '))';
+
+        return new userfilter_clause(
+            sql: join(' AND ', $filtersqls),
+            params: $filterparams
+        );
     }
 }
