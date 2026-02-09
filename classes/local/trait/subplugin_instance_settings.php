@@ -169,13 +169,13 @@ trait subplugin_instance_settings {
 
         // Prepare settings to be inserted.
         $settings = [];
-        foreach (self::instance_setting_descriptors() as $descriptor) {
+        foreach (static::instance_setting_descriptors() as $descriptor) {
             $key = $descriptor->key;
             $value = $overrides[$key] ?? $descriptor->default;
 
             $settings[] = (object) [
-                'plugintype' => self::get_plugin_type()->value,
-                'instanceid' => self::get_instance_id(),
+                'plugintype' => static::get_plugin_type()->value,
+                'instanceid' => static::get_instance_id(),
                 'datakey' => $key,
                 'datavalue' => $value,
             ];
