@@ -502,12 +502,18 @@ class workflow {
         // Warning phase.
         $warningstep = step::create(workflow: $this);
         userdeletefilter::create_instance($warningstep, 'lastaccess');
-        userdeleteaction::create_instance($warningstep, 'mail');
+        userdeleteaction::create_instance($warningstep, 'mail', [
+            'subject' => get_string('defaultworkflow_warningmail_subject', 'tool_userautodelete'),
+            'message' => get_string('defaultworkflow_warningmail_message', 'tool_userautodelete'),
+        ]);
 
         // Deletion phase.
         $deletionstep = step::create(workflow: $this);
         userdeletefilter::create_instance($deletionstep, 'delay');
-        userdeleteaction::create_instance($deletionstep, 'mail');
+        userdeleteaction::create_instance($deletionstep, 'mail', [
+            'subject' => get_string('defaultworkflow_deletionmail_subject', 'tool_userautodelete'),
+            'message' => get_string('defaultworkflow_deletionmail_message', 'tool_userautodelete'),
+        ]);
         userdeleteaction::create_instance($deletionstep, 'delete');
         userdeleteaction::create_instance($deletionstep, 'anonymize');
     }
