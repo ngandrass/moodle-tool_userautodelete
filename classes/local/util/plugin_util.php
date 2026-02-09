@@ -44,15 +44,23 @@ class plugin_util {
      * @throws \moodle_exception If the plugin is not found or the class does not exist.
      */
     public static function get_subplugin_class(string $plugintype, string $pluginname): string {
-        $plugins = \core_plugin_manager::instance()->get_enabled_plugins($plugintype);
+        global $CFG;
+
+        // During upgrades do not expect plugins to be enabled and fully installed.
+        // This case is required when migrating existing settings into new sub-plugins in one go.
+        if ($CFG->upgraderunning || during_initial_install()) {
+            $plugins = \core_plugin_manager::instance()->get_present_plugins($plugintype);
+        } else {
+            $plugins = \core_plugin_manager::instance()->get_enabled_plugins($plugintype);
+        }
 
         // Make sure that the desired plugin is properly installed and enabled.
-        if (!in_array($pluginname, $plugins)) {
+        if (!array_key_exists($pluginname, $plugins)) {
             throw new \moodle_exception('subplugin_not_found', 'tool_userautodelete', '', "{$plugintype}_{$pluginname}");
         }
 
         // Test for the class in the expected namespace.
-        $plugincls = "\\{$plugintype}_{$pluginname}\\{$pluginname}";
+        $plugincls = "\\{$plugintype}_{$pluginname}\\{$plugintype}";
         if (!class_exists($plugincls)) {
             throw new \moodle_exception('subplugin_class_not_found', 'tool_userautodelete', '', $plugincls);
         }
