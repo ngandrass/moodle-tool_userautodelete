@@ -62,9 +62,10 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
 
         // Transform comma separated list of auth methods into SQL clause.
         [$insql, $inparams] = $DB->get_in_or_equal(
-            explode(',', $this->get_instance_setting('auths')),
-            SQL_PARAMS_NAMED,
-            'authparam'
+            items: explode(',', $this->get_instance_setting('auths')),
+            type: SQL_PARAMS_NAMED,
+            prefix: 'authparam',
+            equal: !$this->get_instance_setting('inverted')
         );
 
         return new userfilter_clause(
@@ -87,6 +88,13 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_TEXT,
                 required: true,
                 default: 'manual',
+                readonly: false
+            ),
+            new instance_setting_descriptor(
+                key: 'inverted',
+                type: PARAM_BOOL,
+                required: false,
+                default: false,
                 readonly: false
             ),
         ];
