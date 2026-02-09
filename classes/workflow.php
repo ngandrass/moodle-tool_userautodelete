@@ -431,7 +431,7 @@ class workflow {
         // progress to the next step within this run are not processed again
         // within the same run.
         foreach (array_reverse($this->steps) as $step) {
-            foreach (process::get_active_processes_for_step($step->id) as $process) {
+            foreach (process::get_active_processes_for_step($step, transitionableonly: true) as $process) {
                 $process->transition();
             }
         }
@@ -454,27 +454,7 @@ class workflow {
     protected function get_applicable_users(): array {
         global $DB;
 
-        // Prepare filter clauses.
-        $filtersql = "";
-        $filterparams = [];
-        foreach ($this->steps[0]->filters as $filter) {
-            $clause = $filter->user_records_filter_clause();
-
-            // Prefix query parameters with filter ID to prevent name collisions.
-            $clausesql = $clause->sql;
-            foreach ($clause->params as $paramname => $paramvalue) {
-                $newparamname = "f{$this->id}{$paramname}";
-                $clausesql = preg_replace(
-                    '/(.*:)' . $paramname . '(\W.*)/',
-                    '$1' . $newparamname . '$2',
-                    $clausesql . ' '  // Append space to ensure regex detects parameters at string end.
-                );
-
-                $filterparams[$newparamname] = $paramvalue;
-            }
-
-            $filtersql .= " AND {$clausesql}";
-        }
+        $userfilterclause = $this->steps[0]->generate_user_filter_clause();
 
         // Get all users this workflow is sensitive to and that are not yet part
         // of any other workflow.
@@ -484,8 +464,8 @@ class workflow {
             'LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON p.userid = u.id ' .
             'WHERE u.deleted = 0 ' .
             '    AND p.id IS NULL ' .
-            $filtersql,
-            $filterparams
+            $userfilterclause->sql,
+            $userfilterclause->params
         );
     }
 

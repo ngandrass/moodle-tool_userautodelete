@@ -26,6 +26,7 @@ namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\sort_move_direction;
+use tool_userautodelete\local\type\userfilter_clause;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -164,23 +165,48 @@ class process {
     /**
      * Returns all active (not finished) processes for a given step.
      *
-     * @param int $stepid The ID of the step to retrieve active processes for
+     * @param step $step The step to retrieve active processes for
+     * @param bool $transitionableonly Whether to include only processes that
+     * are ready to transition based on the step's filter criteria
      * @return process[] An associative array of user processes, indexed by process ID
+     * @throws \coding_exception
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
-    public static function get_active_processes_for_step(int $stepid): array {
+    public static function get_active_processes_for_step(
+        step $step,
+        bool $transitionableonly = false
+    ): array {
         global $DB;
 
-        // Fetch all active process records for the given step.
-        $records = $DB->get_record_sql(
-            'SELECT proc.*, step.workflowid ' .
-            'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
-            'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
-            'WHERE proc.stepid = :stepid ' .
-            'AND proc.finished = 0',
-            ['stepid' => $stepid],
-            IGNORE_MISSING
-        );
+        if ($transitionableonly) {
+            $userfilterclause = $step->generate_user_filter_clause();
+
+            // Fetch all active process records that match the given user filter
+            // clause for the given step.
+            $records = $DB->get_record_sql(
+                'SELECT proc.*, step.workflowid ' .
+                'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
+                'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
+                'JOIN {user} u ON proc.userid = u.id ' .
+                'WHERE proc.stepid = :stepid ' .
+                'AND proc.finished = 0 ' .
+                $userfilterclause->sql,
+                array_merge(['stepid' => $step->id], $userfilterclause->params),
+                IGNORE_MISSING
+            );
+        } else {
+            // Fetch all active process records for the given step.
+            $records = $DB->get_record_sql(
+                'SELECT proc.*, step.workflowid ' .
+                'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
+                'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
+                'WHERE proc.stepid = :stepid ' .
+                'AND proc.finished = 0',
+                ['stepid' => $step->id],
+                IGNORE_MISSING
+            );
+        }
 
         // Build process objects as an associative array, indexed by process ID.
         $userprocesses = [];
