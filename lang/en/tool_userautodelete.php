@@ -45,6 +45,14 @@ $string['warned'] = 'Warned';
 $string['deleted'] = 'Deleted';
 $string['recovered'] = 'Recovered';
 
+$string['workflow'] = 'Workflow';
+$string['manage_workflows'] = 'Manage workflows';
+$string['step'] = 'Step';
+$string['steps'] = 'Steps';
+$string['process'] = 'Process';
+$string['processes'] = 'Processes';
+$string['finished'] = 'Finished';
+
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';
 $string['subplugintype_userdeleteaction_plural'] = 'User lifecycle actions';

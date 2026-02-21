@@ -31,8 +31,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('tool_userautodelete_settings', new lang_string('pluginname', 'tool_userautodelete'));
-    $ADMIN->add('tools', $settings);
+    $category = new admin_category('tool_userautodelete', new lang_string('pluginname', 'tool_userautodelete'));
+    $settings = new admin_settingpage('tool_userautodelete_settings', new lang_string('generalsettings', 'admin'));
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
@@ -217,4 +217,12 @@ if ($hassiteconfig) {
             20
         ));
     }
+
+    $ADMIN->add('tools', $category);
+    $ADMIN->add($category->name, $settings);
+    $ADMIN->add($category->name, new admin_externalpage(
+        'tool_userautodelete_workflows',
+        get_string('manage_workflows', 'tool_userautodelete'),
+        new moodle_url('/admin/tool/userautodelete/workflows.php')
+    ));
 }
