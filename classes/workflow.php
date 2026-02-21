@@ -511,8 +511,8 @@ class workflow {
         $deletionstep = step::create(workflow: $this);
         userdeletefilter::create_instance($deletionstep, 'delay');
         userdeleteaction::create_instance($deletionstep, 'mail', [
-            'subject' => get_string('defaultworkflow_deletionmail_subject', 'tool_userautodelete'),
-            'message' => get_string('defaultworkflow_deletionmail_message', 'tool_userautodelete'),
+            'subject' => get_string('defaultworkflow_deletemail_subject', 'tool_userautodelete'),
+            'message' => get_string('defaultworkflow_deletemail_message', 'tool_userautodelete'),
         ]);
         userdeleteaction::create_instance($deletionstep, 'delete');
         userdeleteaction::create_instance($deletionstep, 'anonymize');

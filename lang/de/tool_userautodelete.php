@@ -45,6 +45,9 @@ $string['warned'] = 'Gewarnt';
 $string['deleted'] = 'Gelöscht';
 $string['recovered'] = 'Zurückgekehrt';
 
+$string['workflow'] = 'Ablauf';
+$string['manage_workflows'] = 'Abläufe verwalten';
+
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'Nutzerzyklus Aktion';
 $string['subplugintype_userdeleteaction_plural'] = 'Nutzerzyklus Aktionen';
@@ -55,6 +58,14 @@ $string['subplugintype_userdeletefilter_plural'] = 'Nutzerzyklus Filter';
 $string['privacy:metadata:tool_userautodelete_mail'] = 'Informationen über Nutzer die eine Inaktivitätswarnung per E-Mail erhalten haben.';
 $string['privacy:metadata:tool_userautodelete_mail:userid'] = 'Die ID des Nutzers der die E-Mail erhalten hat.';
 $string['privacy:metadata:tool_userautodelete_mail:timesent'] = 'Der Zeitpunkt zu dem die E-Mail gesendet wurde.';
+
+// Default workflow.
+$string['defaultworkflow_title'] = 'Standardablauf';
+$string['defaultworkflow_desc'] = 'Dieser Ablauf wird standardmäßig während der Plugin-Installation erstellt.';
+$string['defaultworkflow_warningmail_subject'] = 'Ihr Konto wird bald gelöscht - Handlung erforderlich!';
+$string['defaultworkflow_warningmail_message'] = '<p>Hallo,</p><p>Ihr Konto auf unserer Seite war für einen langen Zeitraum inaktiv. Um Ihr Konto zu behalten, <strong>loggen Sie sich jetzt ein, um zu verhindern, dass Ihr Konto gemäß unserer Datenschutzrichtlinie in den nächsten Tagen gelöscht wird</strong>.</p><p>Wenn Sie möchten, dass Ihr Konto gelöscht wird, können Sie diese Nachricht ignorieren.</p><p>Mit freundlichen Grüßen</p>';
+$string['defaultworkflow_deletemail_subject'] = 'Ihr Konto wurde gelöscht';
+$string['defaultworkflow_deletemail_message'] = '<p>Hallo,</p><p>Ihr Konto auf unserer Seite wurde aufgrund von Inaktivität gelöscht. Wenn Sie unseren Dienst weiterhin nutzen möchten, erstellen Sie sich bitte ein neues Konto.</p><p>Mit freundlichen Grüßen</p>';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Das Plugin ist global deaktiviert, überspringe Ausführung.';

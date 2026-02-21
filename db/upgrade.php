@@ -24,6 +24,11 @@
  */
 
 // @codingStandardsIgnoreLine
+use tool_userautodelete\step;
+use tool_userautodelete\userdeleteaction;
+use tool_userautodelete\userdeletefilter;
+use tool_userautodelete\workflow;
+
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 /**
@@ -186,7 +191,77 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // TODO (MDL-0): Take existing old v1 settings and migrate them to a new corresponding workflow.
+        // VVV | Take existing old v1 settings and migrate them to a new corresponding workflow | VVV.
+        $oldconfig = get_config('tool_userautodelete');
+        $workflow = workflow::create(
+            title: get_string('defaultworkflow_title', 'tool_userautodelete'),
+            description: get_string('defaultworkflow_desc', 'tool_userautodelete'),
+        );
+
+        // Migrate warning mail step if enabled.
+        $warningstep = null;
+        if ($oldconfig->warning_email_enable) {
+            $warningstep = step::create($workflow);
+            userdeleteaction::create_instance($warningstep, 'mail', [
+                'subject' => $oldconfig->warning_email_subject,
+                'message' => $oldconfig->warning_email_body,
+            ]);
+        }
+
+        // Migrate deletion step.
+        $deletionstep = step::create($workflow);
+        if ($oldconfig->delete_email_enable) {
+            userdeleteaction::create_instance($deletionstep, 'mail', [
+                'subject' => $oldconfig->delete_email_subject,
+                'message' => $oldconfig->delete_email_body,
+            ]);
+        }
+
+        userdeleteaction::create_instance($deletionstep, 'delete');
+
+        if ($oldconfig->anonymize_user_data) {
+            userdeleteaction::create_instance($deletionstep, 'anonymize');
+        }
+
+        // Create filter rules for steps.
+        if ($warningstep) {
+            // Warning and delete step present.
+            $ingeststep = $warningstep;
+
+            userdeletefilter::create_instance($warningstep, 'lastaccess', [
+                'thresholdsec' => $oldconfig->warning_threshold_days * DAYSECS,
+            ]);
+            userdeletefilter::create_instance($deletionstep, 'delay', [
+                'delaysec' => ($oldconfig->delete_threshold_days - $oldconfig->warning_threshold_days) * DAYSECS,
+            ]);
+        } else {
+            $ingeststep = $deletionstep;
+
+            // Only delete step present.
+            userdeletefilter::create_instance($deletionstep, 'lastaccess', [
+                'thresholdsec' => $oldconfig->delete_threshold_days * DAYSECS,
+            ]);
+        }
+
+        if ($oldconfig->suspended_only) {
+            userdeletefilter::create_instance($ingeststep, 'suspension', [
+                'suspended' => true,
+            ]);
+        }
+
+        if ($oldconfig->ignore_auths) {
+            userdeletefilter::create_instance($ingeststep, 'auth', [
+                'auths' => $oldconfig->ignore_auths,
+                'inverted' => true,
+            ]);
+        }
+
+        if ($oldconfig->ignore_roles) {
+            userdeletefilter::create_instance($ingeststep, 'role', [
+                'roles' => $oldconfig->ignore_roles,
+                'inverted' => true,
+            ]);
+        }
 
         // Userautodelete savepoint reached.
         upgrade_plugin_savepoint(true, 2026012400, 'tool', 'userautodelete');

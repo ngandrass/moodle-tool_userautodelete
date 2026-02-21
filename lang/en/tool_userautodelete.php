@@ -56,6 +56,14 @@ $string['privacy:metadata:tool_userautodelete_mail'] = 'Information about users 
 $string['privacy:metadata:tool_userautodelete_mail:userid'] = 'The ID of the user that received the email.';
 $string['privacy:metadata:tool_userautodelete_mail:timesent'] = 'The time the email was sent.';
 
+// Default workflow.
+$string['defaultworkflow_title'] = 'Default workflow';
+$string['defaultworkflow_desc'] = 'This is the default workflow that was created during plugin installation.';
+$string['defaultworkflow_warningmail_subject'] = 'Your account will be deleted soon - Action required!';
+$string['defaultworkflow_warningmail_message'] = '<p>Hello,</p><p>your account on our site has been inactive for a long period of time. To keep your account, please <strong>log back in now to prevent your account from being deleted</strong> according to our data protection policy within the next days.</p><p>If you wish your account to be deleted, you can ignore this message.</p><p>Kind regards</p>';
+$string['defaultworkflow_deletemail_subject'] = 'Your account was deleted';
+$string['defaultworkflow_deletemail_message'] = '<p>Hello,</p><p>your account on our site was deleted due to inactivity. If you wish to continue using our service, please create a new account.</p><p>Kind regards</p>';
+
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';
 $string['warning_email_disabled'] = 'Warning emails are disabled.';
