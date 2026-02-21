@@ -130,6 +130,36 @@ class workflow {
     }
 
     /**
+     * Retrieves all workflows from the database, sorted by their sort index.
+     *
+     * @return self[] Sorted array of all workflow objects
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function get_all(): array {
+        global $DB;
+
+        $records = $DB->get_records(db_table::WORKFLOW->value, null, 'sort ASC');
+
+        $workflows = [];
+        foreach ($records as $record) {
+            $workflows[] = new self(
+                id: $record->id,
+                title: $record->title,
+                description: $record->description,
+                sort: $record->sort,
+                active: $record->active == 1,
+                createdby: $record->createdby,
+                modifiedby: $record->modifiedby,
+                timecreated: $record->timecreated,
+                timemodified: $record->timemodified,
+            );
+        }
+
+        return $workflows;
+    }
+
+    /**
      * Retrieves an existing workflow from the database, identified by its internal ID.
      *
      * @param int $workflowid Internal ID of the workflow to retrieve

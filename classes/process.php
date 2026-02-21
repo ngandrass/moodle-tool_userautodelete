@@ -163,6 +163,47 @@ class process {
     }
 
     /**
+     * Calculates number of total, active and finished processes within each
+     * step of a given workflow
+     *
+     * @param int $workflowid ID of the workflow to retrieve process stats for
+     * @return array An array of objects containing step ID and corresponding
+     * process stats. Steps are ordered by their sort order within the workflow.
+     * @throws \dml_exception
+     */
+    public static function get_process_stats_for_workflow(int $workflowid): array {
+        global $DB;
+
+        $stepstats = $DB->get_records_sql(
+            'SELECT ' .
+            '    s.id AS stepid, ' .
+            '    COUNT(p.id) AS total, ' .
+            '    SUM(CASE WHEN p.finished > 0 THEN 1 ELSE 0 END) AS finished, ' .
+            '    SUM(CASE WHEN p.finished = 0 THEN 1 ELSE 0 END) AS active ' .
+            'FROM {' . db_table::WORKFLOW_STEP->value . '} s ' .
+            '    JOIN {' . db_table::WORKFLOW->value . '} w ON s.workflowid = w.id ' .
+            '    LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON s.id = p.stepid ' .
+            'WHERE w.id = :workflowid ' .
+            'GROUP BY (s.id) ' .
+            'ORDER BY s.sort ASC',
+            ['workflowid' => $workflowid],
+            IGNORE_MISSING
+        );
+
+        $res = [];
+        foreach ($stepstats as $stepstat) {
+            $res[] = (object) [
+                'stepid' => $stepstat->stepid,
+                'total' => $stepstat->total,
+                'finished' => $stepstat->finished,
+                'active' => $stepstat->active,
+            ];
+        }
+
+        return $res;
+    }
+
+    /**
      * Returns all active (not finished) processes for a given step.
      *
      * @param step $step The step to retrieve active processes for
