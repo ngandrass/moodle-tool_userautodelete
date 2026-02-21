@@ -48,10 +48,10 @@ class plugin_util {
 
         // During upgrades do not expect plugins to be enabled and fully installed.
         // This case is required when migrating existing settings into new sub-plugins in one go.
-        if ($CFG->upgraderunning || during_initial_install()) {
+        if (isset($CFG->upgraderunning) || during_initial_install()) {
             $plugins = \core_plugin_manager::instance()->get_present_plugins($plugintype);
         } else {
-            $plugins = \core_plugin_manager::instance()->get_enabled_plugins($plugintype);
+            $plugins = \core_plugin_manager::instance()->get_installed_plugins($plugintype);
         }
 
         // Make sure that the desired plugin is properly installed and enabled.
