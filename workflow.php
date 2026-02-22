@@ -28,15 +28,38 @@ use tool_userautodelete\workflow;
 require_once(__DIR__ . '/../../../config.php');
 require_once("{$CFG->libdir}/adminlib.php");
 
-global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+global $CFG, $DB, $OUTPUT, $PAGE, $SITE, $USER;
 
-// Login and capability checks as well as $PAGE setup are performed by admin_externalpage_setup.
-admin_externalpage_setup('tool_userautodelete_workflows');
+require_admin();
 
 // Request parameters.
 $workflowid = required_param('id', PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);
 $returnurl = optional_param('returnurl', null, PARAM_RAW);
+
+// Setup page as sub-admin page of workflows overview.
+// This does not use admin_externalpage_setup as we do not want these detail
+// pages to be accessible via the default admin navigation tree since these
+// always require valid parameters.
+$PAGE->set_url(new moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflowid]));
+$PAGE->set_context(context_system::instance());
+$PAGE->set_title(get_string('manage_workflow', 'tool_userautodelete'));
+$PAGE->set_heading($SITE->fullname);
+$PAGE->set_pagelayout('admin');
+
+navigation_node::require_admin_tree();
+$parentnavnode = $PAGE->settingsnav->find('tool_userautodelete_workflows', navigation_node::TYPE_SETTING);
+$navnode = $parentnavnode->add(
+    get_string('manage_workflow', 'tool_userautodelete'),
+    new moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflowid])
+);
+$navnode->make_active();
+$PAGE->navigation->clear_cache();
+
+$PAGE->add_header_action($OUTPUT->render_from_template('core_admin/header_search_input', [
+    'action' => new moodle_url('/admin/search.php'),
+    'query' => $PAGE->url->get_param('query'),
+]));
 
 // Get requested workflow.
 $workflow = workflow::get_by_id($workflowid);
@@ -58,4 +81,5 @@ if ($action === 'movedown') {
 // Render main output.
 echo $OUTPUT->header();
 echo "nothing to see here yet ...";
+echo "<pre>".print_r($workflow)."</pre>";
 echo $OUTPUT->footer();

@@ -46,6 +46,8 @@ $string['deleted'] = 'Deleted';
 $string['recovered'] = 'Recovered';
 
 $string['workflow'] = 'Workflow';
+$string['manage_workflow'] = 'Manage workflow';
+$string['manage_workflow_desc'] = 'TODO';
 $string['manage_workflows'] = 'Manage workflows';
 $string['manage_workflows_desc'] = 'All currently existing workflows are listed here.';
 $string['step'] = 'Step';
