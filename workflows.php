@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_userautodelete\output\workflow_table;
+use tool_userautodelete\process;
 use tool_userautodelete\workflow;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -33,33 +33,69 @@ global $CFG, $DB, $OUTPUT, $PAGE, $USER;
 // Login and capability checks as well as $PAGE setup are performed by admin_externalpage_setup.
 admin_externalpage_setup('tool_userautodelete_workflows');
 
-// Render main output.
-$workflowtable = new workflow_table('workflowtable');
-$workflowtable->define_baseurl(new moodle_url('/admin/tool/userautodelete/workflows.php'));
-
-echo $OUTPUT->header();
-$workflowtable->out(9999, false);
-
+// Generate context data for page template.
 $workflows = workflow::get_all();
+$workflowmeta = [];
 foreach ($workflows as $workflow) {
-    echo html_writer::tag('h2', format_string($workflow->title));
-    echo html_writer::tag('p', format_text($workflow->description));
+    // Calculate process stats for this workflow.
+    $processmeta = array_reduce(
+        process::get_process_stats_for_workflow($workflow->id),
+        function ($carry, $item) {
+            $carry['active'] += $item->active;
+            $carry['finished'] += $item->finished;
+            $carry['total'] += $item->total;
+            $carry['steps'] += 1;
+            return $carry;
+        },
+        ['active' => 0, 'finished' => 0, 'total' => 0, 'steps' => 0]
+    );
 
-    foreach ($workflow->steps as $id => $step) {
-        echo html_writer::tag('h3', "Step {$id}");
-
-        echo "<p><b>Filters: </b><ul>";
-        foreach ($step->filters as $filter) {
-            echo "<li>" . $filter::get_plugin_name() . " #" . $filter->id . "</li>";
-        }
-        echo "</ul></p>";
-
-        echo "<p><b>Actions: </b><ul>";
-        foreach ($step->actions as $action) {
-            echo "<li>" . $action::get_plugin_name() . " #" . $action->id . "</li>";
-        }
-        echo "</ul></p>";
-    }
+    // Ingest metadata for current workflow.
+    $workflowmeta[] = [
+        'id' => $workflow->id,
+        'title' => $workflow->title,
+        'description' => $workflow->description,
+        'sort' => $workflow->sort,
+        'active' => $workflow->active,
+        'timecreated' => $workflow->timecreated,
+        'timemodified' => $workflow->timemodified,
+        'createdby' => [
+            'id' => $workflow->createdby,
+            'fullname' => fullname(core_user::get_user($workflow->createdby)),
+            'profileurl' => new moodle_url('/user/profile.php', ['id' => $workflow->createdby]),
+        ],
+        'modifiedby' => [
+            'id' => $workflow->modifiedby,
+            'fullname' => fullname(core_user::get_user($workflow->modifiedby)),
+            'profileurl' => new moodle_url('/user/profile.php', ['id' => $workflow->modifiedby]),
+        ],
+        'processes' => $processmeta,
+        'canmoveup' => count($workflows) > 1 && $workflow->sort > 1,
+        'canmovedown' => count($workflows) > 1 && $workflow->sort < count($workflows),
+        'actionurls' => [
+            'edit' => new moodle_url(
+                '/admin/tool/userautodelete/workflow.php',
+                ['id' => $workflow->id]
+            ),
+            'delete' => new moodle_url(
+                '/admin/tool/userautodelete/workflow.php',
+                ['id' => $workflow->id, 'action' => 'delete']
+            ),
+            'moveup' => new moodle_url(
+                '/admin/tool/userautodelete/workflow.php',
+                ['id' => $workflow->id, 'action' => 'moveup', 'returnurl' => $PAGE->url->out_as_local_url(true)],
+            ),
+            'movedown' => new moodle_url(
+                '/admin/tool/userautodelete/workflow.php',
+                ['id' => $workflow->id, 'action' => 'movedown', 'returnurl' => $PAGE->url->out_as_local_url(true)],
+            ),
+        ],
+    ];
 }
 
+// Render main output.
+echo $OUTPUT->header();
+echo $OUTPUT->render_from_template('tool_userautodelete/workflows', [
+    'workflows' => $workflowmeta,
+]);
 echo $OUTPUT->footer();

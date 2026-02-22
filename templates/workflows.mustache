@@ -1,0 +1,167 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/workflows
+
+    Workflows overview page.
+
+    Example context (json):
+    {
+        "workflows": [
+            {
+                "id": 1,
+                "title": "Workflow 1",
+                "description": "Description of workflow 1",
+                "active": true,
+                "processes": {
+                    "active": 5,
+                    "total": 10,
+                    "steps": 2
+                },
+                "modifiedby": {
+                    "fullname": "Admin User",
+                    "profileurl": "https://mymoodle/user/profile.php?id=2"
+                },
+                "timemodified": 1700000000,
+                "actionurls": {
+                    "edit": "https://foo.bar/baz",
+                    "delete": "https://foo.bar/baz",
+                    "moveup": "https://foo.bar/baz",
+                    "movedown": "https://foo.bar/baz"
+                }
+            },
+            {
+                "id": 2,
+                "title": "Workflow 2",
+                "description": "Description of workflow 2",
+                "active": false,
+                "processes": {
+                    "active": 0,
+                    "total": 5,
+                    "steps": 3
+                },
+                "modifiedby": {
+                    "fullname": "Admin User",
+                    "profileurl": "https://mymoodle/user/profile.php?id=2"
+                },
+                "timemodified": 1700000000,
+                "actionurls": {
+                    "edit": "https://foo.bar/baz",
+                    "delete": "https://foo.bar/baz",
+                    "moveup": "https://foo.bar/baz",
+                    "movedown": "https://foo.bar/baz"
+                }
+            }
+        ]
+    }
+}}
+
+<h2>{{#str}} manage_workflows, tool_userautodelete {{/str}}</h2>
+
+<div class="row">
+    <div class="col-sm-12">
+        <p>
+            {{#str}} manage_workflows_desc, tool_userautodelete {{/str}}
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table table-striped" style="max-width: 1600px;">
+            <thead>
+                <tr>
+                    <th scope="col">{{#str}} workflow, tool_userautodelete {{/str}}</th>
+                    <th scope="col">{{#str}} status {{/str}}</th>
+                    <th scope="col">{{#str}} processes, tool_userautodelete {{/str}}</th>
+                    <th scope="col">{{#str}} lastmodified {{/str}}</th>
+                    <th scope="col">{{#str}} order {{/str}}</th>
+                    <th scope="col">{{#str}} actions {{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#workflows}}
+                    <tr>
+                        <td>
+                            <b>{{title}}</b><br>
+                            <span>{{description}}</span>
+                        </td>
+                        <td>
+                            {{#active}}
+                                <span class="badge badge-success">{{#str}} active {{/str}}</span>
+                            {{/active}}
+                            {{^active}}
+                                <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
+                            {{/active}}
+                        </td>
+                        <td>
+                            {{#str}}
+                                workflow_stat_processes_in_steps,
+                                tool_userautodelete,
+                                {
+                                    "active": {{processes.active}},
+                                    "total": {{processes.total}},
+                                    "steps": {{processes.steps}}
+                                }
+                            {{/str}}
+                        </td>
+                        <td>
+                            <a href="{{{modifiedby.profileurl}}}">
+                                {{modifiedby.fullname}}
+                            </a>
+                            <br>
+                            <span>
+                                {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                            </span>
+                        </td>
+                        <td>
+                            <a
+                                href="{{{actionurls.moveup}}}"
+                                class="btn {{^canmoveup}}disabled{{/canmoveup}} px-0"
+                                role="button"
+                                title="{{#str}} up {{/str}}"
+                            >
+                                <i
+                                    class="icon fa fa-arrow-up fa-fw mx-0"
+                                    title="{{#str}} up {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} up {{/str}}"
+                                ></i>
+                            </a>
+                            <a
+                                href="{{{actionurls.movedown}}}"
+                                class="btn {{^canmovedown}}disabled{{/canmovedown}} px-0"
+                                role="button"
+                                title="{{#str}} down {{/str}}"
+                            >
+                                <i
+                                        class="icon fa fa-arrow-down fa-fw mx-0"
+                                        title="{{#str}} down {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} down {{/str}}"
+                                ></i>
+                            </a>
+                        </td>
+                        <td>
+                            TODO
+                        </td>
+                    </tr>
+                {{/workflows}}
+            </tbody>
+        </table>
+    </div>
+</div>

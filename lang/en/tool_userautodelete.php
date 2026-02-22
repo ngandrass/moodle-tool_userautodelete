@@ -47,11 +47,13 @@ $string['recovered'] = 'Recovered';
 
 $string['workflow'] = 'Workflow';
 $string['manage_workflows'] = 'Manage workflows';
+$string['manage_workflows_desc'] = 'All currently existing workflows are listed here.';
 $string['step'] = 'Step';
 $string['steps'] = 'Steps';
 $string['process'] = 'Process';
 $string['processes'] = 'Processes';
 $string['finished'] = 'Finished';
+$string['workflow_stat_processes_in_steps'] = '{$a->active} active ({$a->total} total) process(es) in {$a->steps} step(s)';
 
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';
