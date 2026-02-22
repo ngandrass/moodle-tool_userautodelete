@@ -129,35 +129,86 @@
                             </span>
                         </td>
                         <td>
-                            <a
-                                href="{{{actionurls.moveup}}}"
-                                class="btn {{^canmoveup}}disabled{{/canmoveup}} px-0"
-                                role="button"
-                                title="{{#str}} up {{/str}}"
-                            >
-                                <i
-                                    class="icon fa fa-arrow-up fa-fw mx-0"
+                            <div class="btn-group" role="group" aria-label="{{#str}} order {{/str}}">
+                                <a
+                                    href="{{{actionurls.moveup}}}"
+                                    class="btn px-2 {{#canmoveup}}btn-outline-primary{{/canmoveup}} {{^canmoveup}}btn-outline-secondary disabled{{/canmoveup}}"
+                                    role="button"
                                     title="{{#str}} up {{/str}}"
-                                    role="img"
-                                    aria-label="{{#str}} up {{/str}}"
-                                ></i>
-                            </a>
-                            <a
-                                href="{{{actionurls.movedown}}}"
-                                class="btn {{^canmovedown}}disabled{{/canmovedown}} px-0"
-                                role="button"
-                                title="{{#str}} down {{/str}}"
-                            >
-                                <i
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} up {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} up {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa fa-arrow-up fa-fw mx-0"
+                                        title="{{#str}} up {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} up {{/str}}"
+                                    ></i>
+                                </a>
+                                <a
+                                    href="{{{actionurls.movedown}}}"
+                                    class="btn px-2 {{#canmovedown}}btn-outline-primary{{/canmovedown}} {{^canmovedown}}btn-outline-secondary disabled{{/canmovedown}}"
+                                    role="button"
+                                    title="{{#str}} down {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} down {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} down {{/str}}"
+                                >
+                                    <i
                                         class="icon fa fa-arrow-down fa-fw mx-0"
                                         title="{{#str}} down {{/str}}"
                                         role="img"
                                         aria-label="{{#str}} down {{/str}}"
-                                ></i>
-                            </a>
+                                    ></i>
+                                </a>
+                            </div>
                         </td>
                         <td>
-                            TODO
+                            <a
+                                href="{{{actionurls.edit}}}"
+                                class="btn btn-primary px-2 mx-1"
+                                role="button"
+                                title="{{#str}} edit {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                data-title="{{#str}} edit {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-title="{{#str}} edit {{/str}}"
+                            >
+                                <i
+                                    class="icon fa-solid fa-magnifying-glass mx-0"
+                                    title="{{#str}} edit {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} edit {{/str}}"
+                                ></i>
+                            </a>
+                            <a
+                                href="{{{actionurls.delete}}}"
+                                class="btn btn-danger px-2 mx-1"
+                                role="button"
+                                title="{{#str}} delete {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                data-title="{{#str}} delete {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-title="{{#str}} delete {{/str}}"
+                            >
+                                <i
+                                    class="icon fa-solid fa-trash-can mx-0"
+                                    title="{{#str}} delete {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} delete {{/str}}"
+                                ></i>
+                            </a>
                         </td>
                     </tr>
                 {{/workflows}}
