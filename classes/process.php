@@ -167,11 +167,13 @@ class process {
      * step of a given workflow
      *
      * @param int $workflowid ID of the workflow to retrieve process stats for
+     * @param bool $indexbystepid If true, the returned array will be associative
+     * and indexed by step ID.
      * @return array An array of objects containing step ID and corresponding
      * process stats. Steps are ordered by their sort order within the workflow.
      * @throws \dml_exception
      */
-    public static function get_process_stats_for_workflow(int $workflowid): array {
+    public static function get_process_stats_for_workflow(int $workflowid, bool $indexbystepid = false): array {
         global $DB;
 
         $stepstats = $DB->get_records_sql(
@@ -198,6 +200,13 @@ class process {
                 'finished' => $stepstat->finished,
                 'active' => $stepstat->active,
             ];
+        }
+
+        if ($indexbystepid) {
+            $res = array_combine(
+                array_map(fn($item) => $item->stepid, $res),
+                $res
+            );
         }
 
         return $res;
