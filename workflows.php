@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Workflow overview page.
+ * Workflows overview page.
+ *
+ * Lists all existing workflows with some metadata.
  *
  * @package     tool_userautodelete
  * @copyright   2025 Niels Gandraß <niels@gandrass.de>
