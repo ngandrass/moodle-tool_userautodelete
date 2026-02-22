@@ -1,0 +1,183 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/workflows
+
+    Displays a single workflow.
+
+    Example context (json):
+    {
+        "id": 1,
+        "title": "Workflow 1",
+        "description": "Description of workflow 1",
+        "sort": 1,
+        "active": true,
+        "timecreated": 1700000000,
+        "timemodified": 1700000000,
+        "createdby": {
+            "id": 2,
+            "fullname": "Admin User",
+            "profileurl": "https://mymoodle/user/profile.php?id=2"
+        },
+        "modifiedby": {
+            "id": 2,
+            "fullname": "Admin User",
+            "profileurl": "https://mymoodle/user/profile.php?id=2"
+        },
+        "stepcount": 1,
+        "steps": [
+            {
+                "id": 1,
+                "title": "Step 1",
+                "description": "Description of step 1",
+                "sort": 1,
+                "isfirst": true,
+                "filters": [
+                    {
+                        "id": 1,
+                        "name:": "auth",
+                        "title": "Authentication method",
+                        "details": "manual, email"
+                    }
+                ],
+                "actions": [
+                    {
+                        "id": 1,
+                        "name:": "delete",
+                        "title": "Delete user",
+                        "details": ""
+                    }
+                ]
+                "processes": {
+                    "active": 2,
+                    "finished": 8,
+                    "total": 10
+                }
+            }
+        ],
+        "actionurls": {
+            "delete": "https://foo.bar/baz"
+        }
+    }
+}}
+
+<h2>{{#str}} manage_workflow, tool_userautodelete {{/str}}</h2>
+<p>{{#str}} manage_workflow_desc, tool_userautodelete {{/str}}</p>
+
+<div class="container text-center">
+    <div class="row mb-5">
+        <div class="col-sm-12">
+            <div class="card text-white bg-primary text-bg-primary m-auto" style="width: fit-content; min-width: 580px;">
+                <div class="card-header">
+                    <b>{{title}}</b><br>
+                    <span>{{description}}</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item list-group-item-primary">
+                        {{#active}}
+                            <span class="badge badge-success">{{#str}} active {{/str}}</span>
+                        {{/active}}
+                        {{^active}}
+                            <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
+                        {{/active}}
+                    </li>
+                    <li class="list-group-item list-group-item-primary">
+                        {{#str}} order {{/str}}: {{sort}}
+                    </li>
+                    <li class="list-group-item list-group-item-primary">
+                        {{stepcount}}&nbsp;{{#str}} steps, tool_userautodelete {{/str}}
+                    </li>
+                </ul>
+                <div class="card-footer">
+                    {{#str}} lastmodifiedby, tool_userautodelete {{/str}}
+                    <a href="{{{modifiedby.profileurl}}}" class="text-white">{{modifiedby.fullname}}</a>
+                    <br>
+                    <span>
+                        {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#steps}}
+        {{^isfirst}}
+            <div class="row py-3">
+                <div class="col-sm-12">
+                    <i class="fa-solid fa-arrow-down-long fa-2x"></i>
+                </div>
+            </div>
+        {{/isfirst}}
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <div class="card m-auto" style="width: fit-content; min-width: 420px;">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between">
+                        <div class="border-end pe-2 me-2">
+                            <i class="fa-solid fa-hashtag"></i>&nbsp;<b>{{sort}}</b>
+                        </div>
+                        <div class="flex-grow-1 text-left">
+                            <b>{{title}}</b>
+                        </div>
+                        <div class="ms-2 ps-2">
+                            {{#description}}
+                                <i
+                                    class="icon fa-solid fa-circle-info fa-lg"
+                                    title="{{description}}"
+                                    data-toggle="tooltip"
+                                    data-title="{{description}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="{{description}}"
+                                ></i>
+                            {{/description}}
+                            <a
+                                href="#TODO"
+                                class="link-success"
+                                title="{{#str}} edit {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                data-title="{{#str}} edit {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-title="{{#str}} edit {{/str}}"
+                            >
+                                <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <i class="fa-solid fa-filter"></i>&nbsp;
+                        <i>{{#str}} filters, tool_userautodelete {{/str}}</i><br>
+                        {{#filters}}
+                            <span>{{title}}: {{details}}</span><br>
+                        {{/filters}}
+                        <hr>
+                        <i class="fa-solid fa-gears"></i>&nbsp;
+                        <i>{{#str}} actions, tool_userautodelete {{/str}}</i><br>
+                        {{#actions}}
+                            <span>{{title}}: {{details}}</span><br>
+                        {{/actions}}
+                    </div>
+                    <div class="card-footer text-muted">
+                        <i class="fa-solid fa-user"></i>&nbsp;
+                        {{#str}} active_processes, tool_userautodelete, {{processes.active}} {{/str}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/steps}}
+</div>
+

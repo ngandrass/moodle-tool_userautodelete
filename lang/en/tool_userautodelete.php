@@ -56,6 +56,12 @@ $string['process'] = 'Process';
 $string['processes'] = 'Processes';
 $string['finished'] = 'Finished';
 $string['workflow_stat_processes_in_steps'] = '{$a->active} active ({$a->total} total) process(es) in {$a->steps} step(s)';
+$string['active_processes'] = '{$a} active process(es)';
+$string['filter'] = 'Filter';
+$string['filters'] = 'Filters';
+$string['action'] = 'Action';
+$string['actions'] = 'Actions';
+$string['lastmodifiedby'] = 'Last modified by';
 
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';

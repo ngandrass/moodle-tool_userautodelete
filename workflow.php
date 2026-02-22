@@ -23,6 +23,7 @@
  */
 
 use tool_userautodelete\local\type\sort_move_direction;
+use tool_userautodelete\process;
 use tool_userautodelete\workflow;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -78,8 +79,59 @@ if ($action === 'movedown') {
     }
 }
 
+// Prepare step data.
+$stepsmeta = [];
+$processesmeta = process::get_process_stats_for_workflow(workflowid: $workflow->id, indexbystepid: true);
+foreach ($workflow->steps as $step) {
+    $stepsmeta[] = [
+        'id' => $step->id,
+        'title' => $step->title,
+        'description' => $step->description,
+        'sort' => $step->sort,
+        'isfirst' => $step->sort === 1,
+        'processes' => $processesmeta[$step->id],
+        'filters' => array_map(fn ($filter) => [
+            'id' => $filter->id,
+            'name' => $filter->get_plugin_name(),
+            'title' => get_string('pluginname', 'userdeletefilter_' . $filter->get_plugin_name()), // TODO (MDL-0): Move to proper generic method?
+            'details' => 'TODO', // TODO (MDL-0): Implement formatting callback in plugins.
+        ], $step->filters),
+        'actions' => array_map(fn ($action) => [
+            'id' => $action->id,
+            'name' => $action->get_plugin_name(),
+            'title' => get_string('pluginname', 'userdeleteaction_' . $action->get_plugin_name()), // TODO (MDL-0): Move to proper generic method?
+            'details' => 'TODO', // TODO (MDL-0): Implement formatting callback in plugins.
+        ], $step->actions),
+    ];
+}
+
 // Render main output.
 echo $OUTPUT->header();
-echo "nothing to see here yet ...";
-echo "<pre>".print_r($workflow)."</pre>";
+echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
+    'id' => $workflow->id,
+    'title' => $workflow->title,
+    'description' => $workflow->description,
+    'sort' => $workflow->sort,
+    'active' => $workflow->active,
+    'timecreated' => $workflow->timecreated,
+    'timemodified' => $workflow->timemodified,
+    'createdby' => [
+        'id' => $workflow->createdby,
+        'fullname' => fullname(core_user::get_user($workflow->createdby)),
+        'profileurl' => new moodle_url('/user/profile.php', ['id' => $workflow->createdby]),
+    ],
+    'modifiedby' => [
+        'id' => $workflow->modifiedby,
+        'fullname' => fullname(core_user::get_user($workflow->modifiedby)),
+        'profileurl' => new moodle_url('/user/profile.php', ['id' => $workflow->modifiedby]),
+    ],
+    'stepcount' => count($stepsmeta),
+    'steps' => $stepsmeta,
+    'actionurls' => [
+        'delete' => new moodle_url(
+            '/admin/tool/userautodelete/workflow.php',
+            ['id' => $workflow->id, 'action' => 'TODO'] // TODO (MDL-0): Implement.
+        ),
+    ],
+]);
 echo $OUTPUT->footer();
