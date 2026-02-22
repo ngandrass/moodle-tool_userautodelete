@@ -105,7 +105,7 @@ class step {
         // Create new step.
         $stepid = $DB->insert_record(db_table::WORKFLOW_STEP->value, [
             'workflowid' => $workflow->id,
-            'sort' => $laststepsort ?: 1,
+            'sort' => $laststepsort ? $laststepsort + 1 : 1,
             'title' => $title,
             'description' => $description,
         ]);

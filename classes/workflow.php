@@ -216,18 +216,17 @@ class workflow {
         $transaction = $DB->start_delegated_transaction();
 
         // Determine the next sort index.
-        $sort = 1;
-        $lastworkflowrecord = $DB->get_records(db_table::WORKFLOW->value, null, 'sort DESC', 'id, sort', 0, 1);
-        if ($lastworkflowrecord) {
-            $lastworkflow = reset($lastworkflowrecord);
-            $sort = $lastworkflow->sort + 1;
-        }
+        $lastsort = $DB->get_field(
+            db_table::WORKFLOW->value,
+            'MAX(sort)',
+            []
+        );
 
         // Create actual new workflow record.
         $id = $DB->insert_record(db_table::WORKFLOW->value, [
             'title' => $title,
             'description' => $description,
-            'sort' => $sort,
+            'sort' => $lastsort ? $lastsort + 1 : 1,
             'active' => 0,
             'createdby' => $USER->id,
             'modifiedby' => $USER->id,
