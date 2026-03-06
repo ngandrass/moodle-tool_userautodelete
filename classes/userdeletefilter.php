@@ -172,6 +172,35 @@ abstract class userdeletefilter {
     }
 
     /**
+     * Returns a descriptive title of this filter instance to be shown in the UI
+     *
+     * This should be a very short human-readable string that allows to identify
+     * what the filter does at a glance, e.g., 'Last access' for a filter that
+     * filters users based on their last access time.
+     *
+     * @return string A descriptive title of this filter instance to be shown in the UI
+     * @throws \coding_exception
+     */
+    public function get_instance_title(): string {
+        return get_string('pluginname', 'userdeletefilter_' . static::get_plugin_name());
+    }
+
+    /**
+     * Returns a descriptive string of this filter instance's settings to be shown in the UI
+     *
+     * This should be a human-readable string that describes the actual settings
+     * of this filter instance, e.g., '<= 3 months' for a filter instance that
+     * filters users based on their last access time with a threshold of 3 months.
+     *
+     * If no settings are defined, this function can simply return an empty string.
+     *
+     * @return string A descriptive string of this filter instance's settings to be shown in the UI
+     */
+    public function get_instance_details(): string {
+        return '';
+    }
+
+    /**
      * Returns the name of this filter sub-plugin, e.g., 'lastaccess' for 'userdeletefilter_lastaccess'
      *
      * @return string The name of this filter sub-plugin
