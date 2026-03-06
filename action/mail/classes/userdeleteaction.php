@@ -45,6 +45,21 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     }
 
     /**
+     * Returns a descriptive string of this action instance's settings to be shown in the UI
+     *
+     * This should be a human-readable string that describes the actual settings
+     * of this action instance, e.g., 'Mail subject' for an action instance that
+     * sends users an email with a subject defined in the instance settings.
+     *
+     * If no settings are defined, this function can simply return an empty string.
+     *
+     * @return string A descriptive string of this action instance's settings to be shown in the UI
+     */
+    public function get_instance_details(): string {
+        return $this->get_instance_setting('subject');
+    }
+
+    /**
      * Executes this action for a given user deletion process
      *
      * @param process $process The user deletion process to execute this action for
