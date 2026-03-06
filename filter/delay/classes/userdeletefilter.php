@@ -28,6 +28,7 @@ namespace userdeletefilter_delay;
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 use tool_userautodelete\local\type\userfilter_clause;
+use tool_userautodelete\step;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -45,6 +46,21 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      */
     public static function get_plugin_name(): string {
         return 'delay';
+    }
+
+    /**
+     * Returns a descriptive string of this filter instance's settings to be shown in the UI
+     *
+     * This should be a human-readable string that describes the actual settings
+     * of this filter instance, e.g., '<= 3 months' for a filter instance that
+     * filters users based on their last access time with a threshold of 3 months.
+     *
+     * If no settings are defined, this function can simply return an empty string.
+     *
+     * @return string A descriptive string of this filter instance's settings to be shown in the UI
+     */
+    public function get_instance_details(): string {
+        return '> ' . format_time($this->get_instance_setting('delaysec'));
     }
 
     /**

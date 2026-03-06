@@ -45,6 +45,21 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     }
 
     /**
+     * Returns a descriptive string of this filter instance's settings to be shown in the UI
+     *
+     * This should be a human-readable string that describes the actual settings
+     * of this filter instance, e.g., '<= 3 months' for a filter instance that
+     * filters users based on their last access time with a threshold of 3 months.
+     *
+     * If no settings are defined, this function can simply return an empty string.
+     *
+     * @return string A descriptive string of this filter instance's settings to be shown in the UI
+     */
+    public function get_instance_details(): string {
+        return $this->get_instance_setting('roleids'); // TODO (MDL-0): Implement properly.
+    }
+
+    /**
      * Returns a userfilter_clause object defining the SQL where clause and parameters
      * to be used when querying user datasets that match this filter's criteria.
      *
