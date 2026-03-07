@@ -69,8 +69,12 @@
                 }
             }
         ],
+        "isediting": true,
+        "canbeactivated": false,
         "actionurls": {
-            "delete": "https://foo.bar/baz"
+            "activate": "https://foo.bar/baz",
+            "delete": "https://foo.bar/baz",
+            "edit": "https://foo.bar/baz",
         }
     }
 }}
@@ -137,41 +141,46 @@
                                     data-bs-title="{{description}}"
                                 ></i>
                             {{/description}}
-                            <a
-                                href="#TODO"
-                                class="link-success"
-                                title="{{#str}} edit {{/str}}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-title="{{#str}} edit {{/str}}"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-title="{{#str}} edit {{/str}}"
-                            >
-                                <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
-                            </a>
+                            {{#isediting}}
+                                <a
+                                    href="#TODO"
+                                    class="link-success"
+                                    title="{{#str}} edit {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} edit {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} edit {{/str}}"
+                                >
+                                    <i class="fa-solid fa-pencil fa-lg"></i>
+                                </a>
+                            {{/isediting}}
                         </div>
                     </div>
                     <div class="card-body">
                         <div>
-                            <p class="mb-2">
-                                <b>
+                            <div class="mb-2">
+                                <span class="border rounded-pill px-3 py-1 font-weight-bold">
                                     <i class="fa-solid fa-filter"></i>&nbsp;
-                                    <i>{{#str}} filters, tool_userautodelete {{/str}}</i>
-                                </b>
-                            </p>
+                                    {{#str}} filters, tool_userautodelete {{/str}}
+                                </span>
+                            </div>
                             {{#filters}}
                                 <a
-                                    class="btn btn-outline-primary px-3 py-2 m-1"
+                                    class="btn btn-outline-primary px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
+                                    style="font-style: normal;"
                                     role="button"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
-                                    title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
                                     href="#"
+                                    {{#isediting}}
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                        title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                    {{/isediting}}
                                 >
                                     <div>
                                         <div class="font-weight-bold">
@@ -185,42 +194,47 @@
                                     </div>
                                 </a>
                             {{/filters}}
-                            <a
-                                class="btn btn-outline-primary btn-sm m-1"
-                                style="border-style: dashed;"
-                                role="button"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
-                                title="{{#str}} add_filter, tool_userautodelete {{/str}}"
-                                href="#"
-                            >
-                                <i class="fa-solid fa-plus"></i>
-                            </a>
+                            {{#isediting}}
+                                <a
+                                    class="btn btn-outline-primary btn-sm m-1"
+                                    style="border-style: dashed;"
+                                    role="button"
+                                    href="#"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                    title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                >
+                                    <i class="fa-solid fa-plus"></i>
+                                </a>
+                            {{/isediting}}
                         </div>
                         <hr>
                         <div>
-                            <p class="mb-2">
-                                <b>
+                            <div class="mb-2">
+                                <span class="border rounded-pill px-3 py-1 font-weight-bold">
                                     <i class="fa-solid fa-gears"></i>&nbsp;
-                                    <i>{{#str}} actions, tool_userautodelete {{/str}}</i><br>
-                                </b>
-                            </p>
+                                    {{#str}} actions, tool_userautodelete {{/str}}
+                                </span>
+                            </div>
                             {{#actions}}
                                 <a
-                                    class="btn btn-outline-danger px-3 py-2 m-1"
+                                    class="btn btn-outline-danger px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
+                                    style="font-style: normal;"
                                     role="button"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
-                                    title="{{#str}} edit_action, tool_userautodelete {{/str}}"
                                     href="#"
+                                    {{#isediting}}
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                        title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                    {{/isediting}}
                                 >
                                     <div>
                                         <div class="font-weight-bold">
@@ -234,21 +248,23 @@
                                     </div>
                                 </a>
                             {{/actions}}
-                            <a
-                                class="btn btn-outline-danger btn-sm m-1"
-                                style="border-style: dashed;"
-                                role="button"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-title="{{#str}} add_action, tool_userautodelete {{/str}}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-title="{{#str}} add_action, tool_userautodelete {{/str}}"
-                                title="{{#str}} add_action, tool_userautodelete {{/str}}"
-                                href="#"
-                            >
-                                <i class="fa-solid fa-plus"></i>
-                            </a>
+                            {{#isediting}}
+                                <a
+                                    class="btn btn-outline-danger btn-sm m-1"
+                                    style="border-style: dashed;"
+                                    role="button"
+                                    href="#"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                    title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                >
+                                    <i class="fa-solid fa-plus"></i>
+                                </a>
+                            {{/isediting}}
                         </div>
                     </div>
                     <div class="card-footer text-muted">

@@ -37,6 +37,7 @@ require_admin();
 $workflowid = required_param('id', PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);
 $returnurl = optional_param('returnurl', null, PARAM_RAW);
+$isediting = false;
 
 // Setup page as sub-admin page of workflows overview.
 // This does not use admin_externalpage_setup as we do not want these detail
@@ -66,14 +67,30 @@ $PAGE->add_header_action($OUTPUT->render_from_template('core_admin/header_search
 $workflow = workflow::get_by_id($workflowid);
 
 // Handle actions.
-if ($action === 'moveup') {
-    $workflow->move(sort_move_direction::UP);
-    if ($returnurl) {
-        redirect($returnurl);
+if ($action) {
+    switch ($action) {
+        case 'moveup':
+            $workflow->move(sort_move_direction::UP);
+            break;
+        case 'movedown':
+            $workflow->move(sort_move_direction::DOWN);
+            break;
+        case 'edit':
+            if ($workflow->active) {
+                throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
+            }
+            $isediting = true;
+            break;
+        case 'enable':
+            $workflow->activate();
+            break;
+        case 'disable':
+            $workflow->deactivate();
+            break;
+        default:
+            throw new moodle_exception('invalid_action', 'tool_userautodelete');
     }
-}
-if ($action === 'movedown') {
-    $workflow->move(sort_move_direction::DOWN);
+
     if ($returnurl) {
         redirect($returnurl);
     }
@@ -127,10 +144,26 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     ],
     'stepcount' => count($stepsmeta),
     'steps' => $stepsmeta,
+    'isediting' => $isediting,
+    'canbeactivated' => false, // TODO (MDL-0): Create check if a workflow is valid.
     'actionurls' => [
+        'activate' => new moodle_url(
+            '/admin/tool/userautodelete/workflow.php',
+            [
+                'id' => $workflow->id,
+                'action' => $workflow->active ? 'disable' : 'enable',
+            ]
+        ),
         'delete' => new moodle_url(
             '/admin/tool/userautodelete/workflow.php',
             ['id' => $workflow->id, 'action' => 'TODO'] // TODO (MDL-0): Implement.
+        ),
+        'edit' => new moodle_url(
+            '/admin/tool/userautodelete/workflow.php',
+            [
+                'id' => $workflow->id,
+                'action' => $isediting ? '' : 'edit',
+            ]
         ),
     ],
 ]);
