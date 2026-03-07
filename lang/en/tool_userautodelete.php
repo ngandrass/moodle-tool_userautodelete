@@ -66,6 +66,9 @@ $string['add_action'] = 'Add action';
 $string['add_filter'] = 'Add filter';
 $string['edit_action'] = 'Edit action';
 $string['edit_filter'] = 'Edit filter';
+$string['can_not_edit_active_workflow'] = 'Active workflows must be disabled before they can be edited.';
+$string['enable_workflow'] = 'Enable workflow';
+$string['disable_workflow'] = 'Disable workflow';
 
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';

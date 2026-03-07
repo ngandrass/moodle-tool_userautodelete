@@ -108,6 +108,44 @@
                         (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
                     </li>
                 </ul>
+                <div class="card-footer text-center">
+                    {{^isediting}}
+                        <a
+                            class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{/active}} mx-1"
+                            style="font-style: normal;"
+                            role="button"
+                            href="{{{actionurls.activate}}}"
+                        >
+                            {{#active}}
+                                <i class="fa-solid fa-pause"></i>&nbsp;
+                                {{#str}} disable_workflow, tool_userautodelete {{/str}}
+                            {{/active}}
+                            {{^active}}
+                                <i class="fa-solid fa-check"></i>&nbsp;
+                                {{#str}} enable_workflow, tool_userautodelete {{/str}}
+                            {{/active}}
+                        </a>
+                    {{/isediting}}
+                    <a
+                        class="btn btn-primary {{#active}} btn-outline-primary disabled {{/active}} mx-1"
+                        style="font-style: normal;"
+                        role="button"
+                        href="{{{actionurls.edit}}}"
+                    >
+                        <i class="fa-solid fa-pencil"></i>&nbsp;
+                        {{#isediting}}
+                            {{#str}} turneditingoff {{/str}}
+                        {{/isediting}}
+                        {{^isediting}}
+                            {{#str}} turneditingon {{/str}}
+                        {{/isediting}}
+                    </a>
+                    {{#active}}
+                        <div class="mt-1">
+                            <i>{{#str}} can_not_edit_active_workflow, tool_userautodelete {{/str}}</i>
+                        </div>
+                    {{/active}}
+                </div>
             </div>
         </div>
     </div>
