@@ -62,6 +62,10 @@ $string['filters'] = 'Filters';
 $string['action'] = 'Action';
 $string['actions'] = 'Actions';
 $string['lastmodifiedby'] = 'Last modified by';
+$string['add_action'] = 'Add action';
+$string['add_filter'] = 'Add filter';
+$string['edit_action'] = 'Edit action';
+$string['edit_filter'] = 'Edit filter';
 
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';

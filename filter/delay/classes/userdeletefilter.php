@@ -60,7 +60,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * @return string A descriptive string of this filter instance's settings to be shown in the UI
      */
     public function get_instance_details(): string {
-        return '> ' . format_time($this->get_instance_setting('delaysec'));
+        return format_time($this->get_instance_setting('delaysec'));
     }
 
     /**
