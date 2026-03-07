@@ -46,6 +46,7 @@
                 "description": "Description of step 1",
                 "sort": 1,
                 "isfirst": true,
+                "islast": false,
                 "filters": [
                     {
                         "id": 1,
@@ -160,158 +161,266 @@
         {{/isfirst}}
         <div class="row">
             <div class="col-sm-12 text-center">
-                <div class="card m-auto" style="width: fit-content; min-width: 420px;">
-                    <div class="card-header d-flex flex-row align-items-center justify-content-between">
-                        <div class="border-end pe-2 me-2">
-                            <i class="fa-solid fa-hashtag"></i>&nbsp;<b>{{sort}}</b>
+                <div class="d-flex flex-row justify-content-center align-items-start">
+                    <div
+                        class="card"
+                        style="width: fit-content; min-width: 420px; {{#isediting}} border-top-right-radius: 0; {{/isediting}}"
+                    >
+                        <div class="card-header d-flex flex-row align-items-center justify-content-between">
+                            <div class="border-end pe-2 me-2">
+                                <i class="fa-solid fa-hashtag"></i>&nbsp;<b>{{sort}}</b>
+                            </div>
+                            <div class="flex-grow-1 text-left">
+                                <b>{{title}}</b>
+                            </div>
+                            <div class="ms-2 ps-2">
+                                {{#description}}
+                                    <i
+                                        class="icon fa-solid fa-circle-info fa-lg"
+                                        title="{{description}}"
+                                        data-toggle="tooltip"
+                                        data-title="{{description}}"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="{{description}}"
+                                    ></i>
+                                {{/description}}
+                            </div>
                         </div>
-                        <div class="flex-grow-1 text-left">
-                            <b>{{title}}</b>
+                        <div class="card-body">
+                            <div>
+                                <div class="mb-2">
+                                    <span class="border rounded-pill px-3 py-1 font-weight-bold">
+                                        <i class="fa-solid fa-filter"></i>&nbsp;
+                                        {{#str}} filters, tool_userautodelete {{/str}}
+                                    </span>
+                                </div>
+                                {{#filters}}
+                                    <a
+                                        class="btn btn-outline-primary px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
+                                        style="font-style: normal;"
+                                        role="button"
+                                        href="#"
+                                        {{#isediting}}
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                            title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                    >
+                                        <div>
+                                            <div class="font-weight-bold">
+                                                {{title}}
+                                            </div>
+                                            {{#details}}
+                                                <div>
+                                                    {{#shortentext}} 32, {{details}} {{/shortentext}}
+                                                </div>
+                                            {{/details}}
+                                        </div>
+                                    </a>
+                                {{/filters}}
+                                {{#isediting}}
+                                    <a
+                                        class="btn btn-outline-primary btn-sm m-1"
+                                        style="border-style: dashed;"
+                                        role="button"
+                                        href="#"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                        title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                    >
+                                        <i class="fa-solid fa-plus"></i>
+                                    </a>
+                                {{/isediting}}
+                            </div>
+                            <hr>
+                            <div>
+                                <div class="mb-2">
+                                    <span class="border rounded-pill px-3 py-1 font-weight-bold">
+                                        <i class="fa-solid fa-gears"></i>&nbsp;
+                                        {{#str}} actions, tool_userautodelete {{/str}}
+                                    </span>
+                                </div>
+                                {{#actions}}
+                                    <a
+                                        class="btn btn-outline-danger px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
+                                        style="font-style: normal;"
+                                        role="button"
+                                        href="#"
+                                        {{#isediting}}
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                            title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                    >
+                                        <div>
+                                            <div class="font-weight-bold">
+                                                {{title}}
+                                            </div>
+                                            {{#details}}
+                                                <div>
+                                                    {{#shortentext}} 32, {{details}} {{/shortentext}}
+                                                </div>
+                                            {{/details}}
+                                        </div>
+                                    </a>
+                                {{/actions}}
+                                {{#isediting}}
+                                    <a
+                                        class="btn btn-outline-danger btn-sm m-1"
+                                        style="border-style: dashed;"
+                                        role="button"
+                                        href="#"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                        title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                    >
+                                        <i class="fa-solid fa-plus"></i>
+                                    </a>
+                                {{/isediting}}
+                            </div>
                         </div>
-                        <div class="ms-2 ps-2">
-                            {{#description}}
-                                <i
-                                    class="icon fa-solid fa-circle-info fa-lg"
-                                    title="{{description}}"
+                        <div class="card-footer text-muted">
+                            <i class="fa-solid fa-user"></i>&nbsp;
+                            {{#str}} active_processes, tool_userautodelete, {{processes.active}} {{/str}}
+                        </div>
+                    </div>
+
+                    {{#isediting}}
+                        <div>
+                            <div
+                                class="btn-group-vertical"
+                                role="group"
+                                aria-label="{{#str}} order {{/str}}"
+                            >
+                                <a
+                                    href="{{{actionurls.moveup}}}"
+                                    class="btn px-2 {{^isfirst}}btn-outline-primary{{/isfirst}} {{#isfirst}}btn-outline-secondary disabled{{/isfirst}}"
+                                    style="border-top-left-radius: 0;"
+                                    role="button"
+                                    title="{{#str}} up {{/str}}"
                                     data-toggle="tooltip"
-                                    data-title="{{description}}"
+                                    data-placement="right"
+                                    data-title="{{#str}} up {{/str}}"
                                     data-bs-toggle="tooltip"
-                                    data-bs-title="{{description}}"
-                                ></i>
-                            {{/description}}
-                            {{#isediting}}
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} up {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa fa-arrow-up fa-fw mx-0"
+                                        title="{{#str}} up {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} up {{/str}}"
+                                    ></i>
+                                </a>
+                                <a
+                                    href="{{{actionurls.movedown}}}"
+                                    class="btn px-2 {{^islast}}btn-outline-primary{{/islast}} {{#islast}}btn-outline-secondary disabled{{/islast}}"
+                                    role="button"
+                                    title="{{#str}} down {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    data-title="{{#str}} down {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} down {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa fa-arrow-down fa-fw mx-0"
+                                        title="{{#str}} down {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} down {{/str}}"
+                                    ></i>
+                                </a>
                                 <a
                                     href="#TODO"
-                                    class="link-success"
+                                    class="btn px-2 btn-outline-primary"
+                                    role="button"
                                     title="{{#str}} edit {{/str}}"
                                     data-toggle="tooltip"
-                                    data-placement="top"
+                                    data-placement="right"
                                     data-title="{{#str}} edit {{/str}}"
                                     data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
+                                    data-bs-placement="right"
                                     data-bs-title="{{#str}} edit {{/str}}"
                                 >
-                                    <i class="fa-solid fa-pencil fa-lg"></i>
+                                    <i
+                                        class="icon fa-solid fa-pencil fa-fw mx-0"
+                                        title="{{#str}} edit {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} edit {{/str}}"
+                                    ></i>
                                 </a>
-                            {{/isediting}}
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div class="mb-2">
-                                <span class="border rounded-pill px-3 py-1 font-weight-bold">
-                                    <i class="fa-solid fa-filter"></i>&nbsp;
-                                    {{#str}} filters, tool_userautodelete {{/str}}
-                                </span>
-                            </div>
-                            {{#filters}}
                                 <a
-                                    class="btn btn-outline-primary px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
-                                    style="font-style: normal;"
+                                    href="#TODO"
+                                    class="btn px-2 btn-outline-primary"
+                                    style="border-bottom-left-radius: 0;"
                                     role="button"
-                                    href="#"
-                                    {{#isediting}}
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
-                                        data-toggle="tooltip"
-                                        data-placement="top"
-                                        data-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
-                                        title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
-                                    {{/isediting}}
-                                >
-                                    <div>
-                                        <div class="font-weight-bold">
-                                            {{title}}
-                                        </div>
-                                        {{#details}}
-                                            <div>
-                                                {{#shortentext}} 32, {{details}} {{/shortentext}}
-                                            </div>
-                                        {{/details}}
-                                    </div>
-                                </a>
-                            {{/filters}}
-                            {{#isediting}}
-                                <a
-                                    class="btn btn-outline-primary btn-sm m-1"
-                                    style="border-style: dashed;"
-                                    role="button"
-                                    href="#"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                    title="{{#str}} delete {{/str}}"
                                     data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
-                                    title="{{#str}} add_filter, tool_userautodelete {{/str}}"
-                                >
-                                    <i class="fa-solid fa-plus"></i>
-                                </a>
-                            {{/isediting}}
-                        </div>
-                        <hr>
-                        <div>
-                            <div class="mb-2">
-                                <span class="border rounded-pill px-3 py-1 font-weight-bold">
-                                    <i class="fa-solid fa-gears"></i>&nbsp;
-                                    {{#str}} actions, tool_userautodelete {{/str}}
-                                </span>
-                            </div>
-                            {{#actions}}
-                                <a
-                                    class="btn btn-outline-danger px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
-                                    style="font-style: normal;"
-                                    role="button"
-                                    href="#"
-                                    {{#isediting}}
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
-                                        data-toggle="tooltip"
-                                        data-placement="top"
-                                        data-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
-                                        title="{{#str}} edit_action, tool_userautodelete {{/str}}"
-                                    {{/isediting}}
-                                >
-                                    <div>
-                                        <div class="font-weight-bold">
-                                            {{title}}
-                                        </div>
-                                        {{#details}}
-                                            <div>
-                                                {{#shortentext}} 32, {{details}} {{/shortentext}}
-                                            </div>
-                                        {{/details}}
-                                    </div>
-                                </a>
-                            {{/actions}}
-                            {{#isediting}}
-                                <a
-                                    class="btn btn-outline-danger btn-sm m-1"
-                                    style="border-style: dashed;"
-                                    role="button"
-                                    href="#"
+                                    data-placement="right"
+                                    data-title="{{#str}} delete {{/str}}"
                                     data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-title="{{#str}} add_action, tool_userautodelete {{/str}}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-title="{{#str}} add_action, tool_userautodelete {{/str}}"
-                                    title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} delete {{/str}}"
                                 >
-                                    <i class="fa-solid fa-plus"></i>
+                                    <i
+                                        class="icon fa-solid fa-trash fa-fw mx-0"
+                                        title="{{#str}} delete {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} delete {{/str}}"
+                                    ></i>
                                 </a>
-                            {{/isediting}}
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-footer text-muted">
-                        <i class="fa-solid fa-user"></i>&nbsp;
-                        {{#str}} active_processes, tool_userautodelete, {{processes.active}} {{/str}}
-                    </div>
+                    {{/isediting}}
                 </div>
             </div>
         </div>
-    {{/steps}}
+        {{/steps}}
+        {{#isediting}}
+            {{#stepcount}}
+                <div class="row py-3 text-center">
+                    <div class="col-sm-12">
+                        <i class="fa-solid fa-arrow-down-long fa-2x text-secondary"></i>
+                    </div>
+                </div>
+            {{/stepcount}}
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <a
+                        class="btn btn-outline-secondary"
+                        style="border-style: dashed;"
+                        role="button"
+                        href="#"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="bottom"
+                        data-bs-title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        data-title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                        title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                    >
+                        <i class="fa-solid fa-plus"></i>&nbsp;
+                        {{#str}} add_step, tool_userautodelete {{/str}}
+                    </a>
+                </div>
+            </div>
+        {{/isediting}}
+    </div>
 </div>
-

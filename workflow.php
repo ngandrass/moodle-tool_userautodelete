@@ -106,6 +106,7 @@ foreach ($workflow->steps as $step) {
         'description' => $step->description,
         'sort' => $step->sort,
         'isfirst' => $step->sort === 1,
+        'islast' => $step->sort === count($workflow->steps),
         'processes' => $processesmeta[$step->id],
         'filters' => array_map(fn ($filter) => [
             'id' => $filter->id,
