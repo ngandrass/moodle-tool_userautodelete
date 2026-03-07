@@ -93,14 +93,14 @@ foreach ($workflow->steps as $step) {
         'filters' => array_map(fn ($filter) => [
             'id' => $filter->id,
             'name' => $filter->get_plugin_name(),
-            'title' => get_string('pluginname', 'userdeletefilter_' . $filter->get_plugin_name()), // TODO (MDL-0): Move to proper generic method?
-            'details' => 'TODO', // TODO (MDL-0): Implement formatting callback in plugins.
+            'title' => $filter->get_instance_title(),
+            'details' => $filter->get_instance_details(),
         ], $step->filters),
         'actions' => array_map(fn ($action) => [
             'id' => $action->id,
             'name' => $action->get_plugin_name(),
-            'title' => get_string('pluginname', 'userdeleteaction_' . $action->get_plugin_name()), // TODO (MDL-0): Move to proper generic method?
-            'details' => 'TODO', // TODO (MDL-0): Implement formatting callback in plugins.
+            'title' => $action->get_instance_title(),
+            'details' => $action->get_instance_details(),
         ], $step->actions),
     ];
 }

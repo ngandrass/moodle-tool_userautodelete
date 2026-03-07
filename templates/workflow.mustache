@@ -78,16 +78,17 @@
 <h2>{{#str}} manage_workflow, tool_userautodelete {{/str}}</h2>
 <p>{{#str}} manage_workflow_desc, tool_userautodelete {{/str}}</p>
 
-<div class="container text-center">
+<div class="container">
     <div class="row mb-5">
         <div class="col-sm-12">
-            <div class="card text-white bg-primary text-bg-primary m-auto" style="width: fit-content; min-width: 580px;">
-                <div class="card-header">
+            <div class="card m-auto" style="width: fit-content; min-width: 580px;">
+                <div class="card-header text-white bg-primary">
                     <b>{{title}}</b><br>
                     <span>{{description}}</span>
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item list-group-item-primary">
+                    <li class="list-group-item">
+                        <b>{{#str}} status {{/str}}:</b>
                         {{#active}}
                             <span class="badge badge-success">{{#str}} active {{/str}}</span>
                         {{/active}}
@@ -95,28 +96,21 @@
                             <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
                         {{/active}}
                     </li>
-                    <li class="list-group-item list-group-item-primary">
-                        {{#str}} order {{/str}}: {{sort}}
-                    </li>
-                    <li class="list-group-item list-group-item-primary">
-                        {{stepcount}}&nbsp;{{#str}} steps, tool_userautodelete {{/str}}
+                    <li class="list-group-item">
+                        <b>{{#str}} lastmodified {{/str}}:</b>
+                        <span>
+                            {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                        </span>
+                        (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
                     </li>
                 </ul>
-                <div class="card-footer">
-                    {{#str}} lastmodifiedby, tool_userautodelete {{/str}}
-                    <a href="{{{modifiedby.profileurl}}}" class="text-white">{{modifiedby.fullname}}</a>
-                    <br>
-                    <span>
-                        {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
-                    </span>
-                </div>
             </div>
         </div>
     </div>
 
     {{#steps}}
         {{^isfirst}}
-            <div class="row py-3">
+            <div class="row py-3 text-center">
                 <div class="col-sm-12">
                     <i class="fa-solid fa-arrow-down-long fa-2x"></i>
                 </div>
