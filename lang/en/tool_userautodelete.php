@@ -71,6 +71,8 @@ $string['edit_step'] = 'Edit step';
 $string['can_not_edit_active_workflow'] = 'Active workflows must be disabled before they can be edited.';
 $string['enable_workflow'] = 'Enable workflow';
 $string['disable_workflow'] = 'Disable workflow';
+$string['enable_workflow_warning'] = '<p>You are about to enable the workflow listed below. This will prevent any further changes to the workflow steps, actions, and filters until it is disabled again. The workflow can be disabled at any point in the future, however, all active user processes will be terminated at their current state when disabling a workflow.</p><p>Once a workflow is active, applicable users will be processed according to the workflow definition. Are you sure you want to enable this workflow now?</p>';
+$string['disable_workflow_warning'] = '<p>You are about to disable the workflow listed below. No new users will be processed until the workflow is enabled again. This does not affect other active workflows. Disabling the workflow will also terminate all active user processes at their current state.</p><p>The workflow can be re-enabled at any point in the future, however, all applicable user will start from the first step again. Are you sure you want to disable this workflow now?</p>';
 
 // Subplugins.
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';

@@ -81,12 +81,6 @@ if ($action) {
             }
             $isediting = true;
             break;
-        case 'enable':
-            $workflow->activate();
-            break;
-        case 'disable':
-            $workflow->deactivate();
-            break;
         default:
             throw new moodle_exception('invalid_action', 'tool_userautodelete');
     }
@@ -149,7 +143,7 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     'canbeactivated' => false, // TODO (MDL-0): Create check if a workflow is valid.
     'actionurls' => [
         'activate' => new moodle_url(
-            '/admin/tool/userautodelete/workflow.php',
+            '/admin/tool/userautodelete/manageworkflow.php',
             [
                 'id' => $workflow->id,
                 'action' => $workflow->active ? 'disable' : 'enable',
