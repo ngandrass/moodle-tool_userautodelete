@@ -360,6 +360,9 @@ class workflow {
     public function activate(): void {
         global $DB, $USER;
 
+        // TODO (MDL-0): Ensure that workflow is valid.
+
+        $now = time();
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
             'active' => 1,
@@ -368,6 +371,8 @@ class workflow {
         ]);
 
         $this->active = true;
+        $this->modifiedby = $USER->id;
+        $this->timemodified = $now;
     }
 
     /**
@@ -379,14 +384,28 @@ class workflow {
     public function deactivate(): void {
         global $DB, $USER;
 
+        $transaction = $DB->start_delegated_transaction();
+
+        // Abort all active processes.
+        foreach ($this->get_steps() as $step) {
+            foreach (process::get_active_processes_for_step($step) as $process) {
+                $process->abort();
+            }
+        }
+
+        // Update process metadata entry.
+        $now = time();
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
             'active' => 0,
             'modifiedby' => $USER->id,
             'timemodified' => time(),
         ]);
+        $transaction->allow_commit();
 
         $this->active = false;
+        $this->modifiedby = $USER->id;
+        $this->timemodified = $now;
     }
 
     /**

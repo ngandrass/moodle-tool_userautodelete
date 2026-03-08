@@ -386,6 +386,25 @@ class process {
     }
 
     /**
+     * Aborts this user process.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function abort(): void {
+        global $DB;
+
+        $now = time();
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $this->id,
+            'state' => process_state::ABORTED->value,
+            'timemodified' => $now,
+        ]);
+        $this->state = process_state::ABORTED;
+        $this->timemodified = $now;
+    }
+
+    /**
      * Performs a transition from the current step of this process to another
      * step.
      *
