@@ -25,6 +25,7 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\sort_move_direction;
 use tool_userautodelete\local\type\userfilter_clause;
 
@@ -43,7 +44,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @property-read int $userid ID of the user this process if for
  * @property-read int $workflowid ID of the workflow this process belongs to
  * @property-read int $stepid ID of the step this process currently is in
- * @property-read bool $finished Whether this process has reached the end of the workflow
+ * @property-read process_state $state State this process currently is in
  * @property-read int $timecreated Time this process entered the workflow for the first time
  * @property-read int $timemodified Time this process was last updated
  */
@@ -56,7 +57,7 @@ class process {
      * @param int $userid ID of the user this process if for
      * @param int $workflowid ID of the workflow this process belongs to
      * @param int $stepid ID of the step this process currently is in
-     * @param bool $finished Whether this process has reached the end of the workflow
+     * @param process_state $state State this process currently is in
      * @param int $timecreated Time this process entered the workflow for the first time
      * @param int $timemodified Time this process was last updated
      */
@@ -69,8 +70,8 @@ class process {
         protected readonly int $workflowid,
         /** @var int $stepid ID of the step this process currently is in */
         protected int $stepid,
-        /** @var bool $finished Whether this process has reached the end of the workflow */
-        protected readonly bool $finished,
+        /** @var process_state $state State this process currently is in */
+        protected process_state $state,
         /** @var int $timecreated Time this process entered the workflow for the first time */
         protected readonly int $timecreated,
         /** @var int $timemodified Time this process was last updated */
@@ -117,7 +118,7 @@ class process {
             userid: $record->userid,
             workflowid: $record->workflowid,
             stepid: $record->stepid,
-            finished: (bool) $record->finished,
+            state: process_state::from($record->state),
             timecreated: $record->timecreated,
             timemodified: $record->timemodified
         );
@@ -126,22 +127,40 @@ class process {
     /**
      * Returns all processes for a given user.
      *
+     * By default, only active processes are returned. Finished and aborted
+     * processes can be included by setting the respective parameters to true.
+     *
      * @param int $userid The ID of the user to retrieve processes for
      * @param bool $includefinished Whether to include finished processes as well
+     * @param bool $includeaborted Whether to include aborted processes as well
      * @return array An associative array of user processes, indexed by process ID
      * @throws \dml_exception
+     * @throws \coding_exception
      */
-    public static function get_user_processes(int $userid, bool $includefinished = false): array {
+    public static function get_user_processes(
+        int $userid,
+        bool $includefinished = false,
+        bool $includeaborted = false
+    ): array {
         global $DB;
 
         // Fetch all process records for the given user.
-        $records = $DB->get_record_sql(
+        [$insql, $inparams] = $DB->get_in_or_equal(
+            items: array_merge(
+                [process_state::ACTIVE->value],
+                $includefinished ? [process_state::FINISHED->value] : [],
+                $includeaborted ? [process_state::ABORTED->value] : []
+            ),
+            type: SQL_PARAMS_NAMED,
+            prefix: 'state'
+        );
+
+        $records = $DB->get_records_sql(
             'SELECT proc.*, step.workflowid ' .
             'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
             'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
-            'WHERE proc.userid = :userid ' .
-            ($includefinished ? '' : 'AND proc.finished = 0'),
-            ['userid' => $userid],
+            'WHERE proc.userid = :userid AND proc.state ' . $insql,
+            array_merge(['userid' => $userid], $inparams),
             IGNORE_MISSING
         );
 
@@ -153,7 +172,7 @@ class process {
                 userid: $record->userid,
                 workflowid: $record->workflowid,
                 stepid: $record->stepid,
-                finished: (bool) $record->finished,
+                state: process_state::from($record->state),
                 timecreated: $record->timecreated,
                 timemodified: $record->timemodified
             );
@@ -163,8 +182,8 @@ class process {
     }
 
     /**
-     * Calculates number of total, active and finished processes within each
-     * step of a given workflow
+     * Calculates number of total, active, finished, and aborted processes
+     * within each step of a given workflow
      *
      * @param int $workflowid ID of the workflow to retrieve process stats for
      * @param bool $indexbystepid If true, the returned array will be associative
@@ -180,15 +199,21 @@ class process {
             'SELECT ' .
             '    s.id AS stepid, ' .
             '    COUNT(p.id) AS total, ' .
-            '    SUM(CASE WHEN p.finished > 0 THEN 1 ELSE 0 END) AS finished, ' .
-            '    SUM(CASE WHEN p.finished = 0 THEN 1 ELSE 0 END) AS active ' .
+            '    SUM(CASE WHEN p.state = :stateactive   THEN 1 ELSE 0 END) AS active, ' .
+            '    SUM(CASE WHEN p.state = :statefinished THEN 1 ELSE 0 END) AS finished, ' .
+            '    SUM(CASE WHEN p.state = :stateaborted  THEN 1 ELSE 0 END) AS aborted ' .
             'FROM {' . db_table::WORKFLOW_STEP->value . '} s ' .
             '    JOIN {' . db_table::WORKFLOW->value . '} w ON s.workflowid = w.id ' .
             '    LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON s.id = p.stepid ' .
             'WHERE w.id = :workflowid ' .
             'GROUP BY (s.id) ' .
             'ORDER BY s.sort ASC',
-            ['workflowid' => $workflowid],
+            [
+                'workflowid' => $workflowid,
+                'stateactive' => process_state::ACTIVE->value,
+                'statefinished' => process_state::FINISHED->value,
+                'stateaborted' => process_state::ABORTED->value,
+            ],
             IGNORE_MISSING
         );
 
@@ -199,6 +224,7 @@ class process {
                 'total' => $stepstat->total,
                 'finished' => $stepstat->finished,
                 'active' => $stepstat->active,
+                'aborted' => $stepstat->aborted,
             ];
         }
 
@@ -213,7 +239,7 @@ class process {
     }
 
     /**
-     * Returns all active (not finished) processes for a given step.
+     * Returns all active (not finished or aborted) processes for a given step.
      *
      * @param step $step The step to retrieve active processes for
      * @param bool $transitionableonly Whether to include only processes that
@@ -240,9 +266,12 @@ class process {
                 'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
                 'JOIN {user} u ON proc.userid = u.id ' .
                 'WHERE proc.stepid = :stepid ' .
-                'AND proc.finished = 0 ' .
+                'AND proc.state = :stateactive ' .
                 $userfilterclause->sql,
-                array_merge(['stepid' => $step->id], $userfilterclause->params),
+                array_merge(
+                    ['stepid' => $step->id, 'stateactive' => process_state::ACTIVE->value],
+                    $userfilterclause->params
+                ),
                 IGNORE_MISSING
             );
         } else {
@@ -252,8 +281,8 @@ class process {
                 'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
                 'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
                 'WHERE proc.stepid = :stepid ' .
-                'AND proc.finished = 0',
-                ['stepid' => $step->id],
+                'AND proc.state = :stateactive',
+                ['stepid' => $step->id, 'stateactive' => process_state::ACTIVE->value],
                 IGNORE_MISSING
             );
         }
@@ -266,7 +295,7 @@ class process {
                 userid: $record->userid,
                 workflowid: $record->workflowid,
                 stepid: $record->stepid,
-                finished: (bool) $record->finished,
+                state: process_state::from($record->state),
                 timecreated: $record->timecreated,
                 timemodified: $record->timemodified
             );
@@ -312,7 +341,7 @@ class process {
             $transaction = $DB->start_delegated_transaction();
 
             // Ensure that the user is not already part of a workflow.
-            if (!empty(self::get_user_processes($userid, includefinished: false))) {
+            if (!empty(self::get_user_processes($userid))) {
                 throw new \moodle_exception('user_already_in_workflow', 'tool_userautodelete');
             }
 
@@ -321,7 +350,7 @@ class process {
             $processid = $DB->insert_record(db_table::USER_PROCESS->value, [
                 'userid' => $userid,
                 'stepid' => $initialstep->id,
-                'finished' => 0,
+                'state' => process_state::ACTIVE->value,
                 'timecreated' => $now,
                 'timemodified' => $now,
             ]);
@@ -330,7 +359,7 @@ class process {
                 userid: $userid,
                 workflowid: $workflow->id,
                 stepid: $initialstep->id,
-                finished: false,
+                state: process_state::ACTIVE,
                 timecreated: $now,
                 timemodified: $now
             );
@@ -372,8 +401,8 @@ class process {
         global $DB;
 
         // Do not process finished processes.
-        if ($this->finished) {
-            throw new \moodle_exception('process_already_finished', 'tool_userautodelete');
+        if ($this->state != process_state::ACTIVE) {
+            throw new \moodle_exception('process_already_terminated', 'tool_userautodelete');
         }
 
         try {
@@ -399,13 +428,14 @@ class process {
             }
 
             // Update process record and internal representation.
+            $now = time();
             $DB->update_record(db_table::USER_PROCESS->value, [
                 'id' => $this->id,
                 'stepid' => $targetstep->id,
-                'finished' => $targetstep->is_final() ? 1 : 0,
-                'timemodified' => time(),
+                'timemodified' => $now,
             ]);
             $this->stepid = $targetstep->id;
+            $this->timemodified = $now;
 
             // Execute target step actions.
             foreach ($targetstep->actions as $action) {
@@ -417,6 +447,16 @@ class process {
                         "{$action->get_plugin_name()} #{$action->id}"
                     );
                 }
+            }
+
+            // Mark step as finished if the target step is the last step of the workflow.
+            if (!$targetstep->is_final()) {
+                $DB->update_record(db_table::USER_PROCESS->value, [
+                    'id' => $this->id,
+                    'state' => process_state::FINISHED->value,
+                    'timemodified' => $now,
+                ]);
+                $this->state = process_state::FINISHED;
             }
 
             // Commit everything if all the above went well.
