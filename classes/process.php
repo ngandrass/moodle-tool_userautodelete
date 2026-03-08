@@ -260,7 +260,7 @@ class process {
 
             // Fetch all active process records that match the given user filter
             // clause for the given step.
-            $records = $DB->get_record_sql(
+            $records = $DB->get_records_sql(
                 'SELECT proc.*, step.workflowid ' .
                 'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
                 'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
@@ -276,7 +276,7 @@ class process {
             );
         } else {
             // Fetch all active process records for the given step.
-            $records = $DB->get_record_sql(
+            $records = $DB->get_records_sql(
                 'SELECT proc.*, step.workflowid ' .
                 'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
                 'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
