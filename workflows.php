@@ -45,11 +45,10 @@ foreach ($workflows as $workflow) {
         function ($carry, $item) {
             $carry['active'] += $item->active;
             $carry['finished'] += $item->finished;
-            $carry['total'] += $item->total;
             $carry['steps'] += 1;
             return $carry;
         },
-        ['active' => 0, 'finished' => 0, 'total' => 0, 'steps' => 0]
+        ['active' => 0, 'finished' => 0, 'steps' => 0]
     );
 
     // Ingest metadata for current workflow.
