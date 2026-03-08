@@ -71,14 +71,18 @@ $output = '';
 if ($action == 'enable') {
     $enableform = new workflow_enable_form();
     if ($enableform->is_submitted()) {
-        $workflow->activate();
+        if (!$enableform->is_cancelled()) {
+            $workflow->activate();
+        }
     } else {
         $output = $enableform->render();
     }
 } else if ($action == 'disable') {
     $disableform = new workflow_disable_form();
     if ($disableform->is_submitted()) {
-        $workflow->deactivate();
+        if (!$disableform->is_cancelled()) {
+            $workflow->deactivate();
+        }
     } else {
         $output = $disableform->render();
     }

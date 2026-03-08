@@ -24,6 +24,7 @@
 
 namespace tool_userautodelete\form;
 
+use tool_userautodelete\process;
 use tool_userautodelete\workflow;
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -45,18 +46,23 @@ class workflow_disable_form extends \moodleform {
         global $OUTPUT;
         $mform = $this->_form;
 
+        // Get workflow and determine number of active processes.
         $workflow = workflow::get_by_id($this->optional_param('id', null, PARAM_INT));
+        $processmeta = process::get_process_stats_for_workflow($workflow->id);
+        $numactiveprocesses = array_reduce($processmeta, fn ($carry, $item) => $carry + $item->active, 0);
 
         // Generic warning message.
         $warnhead = get_string('areyousure');
         $warnmsg = get_string('disable_workflow_warning', 'tool_userautodelete');
         $warndetails  = '<b>' . $workflow->title . ' (ID: ' . $workflow->id . ')</b><br>';
-        $warndetails .= '<span>' . $workflow->description . '</span>';
+        $warndetails .= '<span>' . $workflow->description . '<br>';
+        $warndetails .= '<i class="fa-solid fa-user"></i>&nbsp;';
+        $warndetails .= get_string('active_processes', 'tool_userautodelete', $numactiveprocesses) . '</span>';
 
         // Print warning element.
         $mform->addElement('html', $OUTPUT->notification(
             "<h4>$warnhead</h4> $warnmsg <hr/> $warndetails",
-            \core\output\notification::NOTIFY_ERROR,
+            $numactiveprocesses > 0 ? \core\output\notification::NOTIFY_ERROR : \core\output\notification::NOTIFY_WARNING,
             false,
         ));
 
