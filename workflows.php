@@ -73,7 +73,7 @@ foreach ($workflows as $workflow) {
         'processes' => $processmeta,
         'canmoveup' => count($workflows) > 1 && $workflow->sort > 1,
         'canmovedown' => count($workflows) > 1 && $workflow->sort < count($workflows),
-        'actionurls' => [
+        'urls' => [
             'show' => new moodle_url(
                 '/admin/tool/userautodelete/workflow.php',
                 ['id' => $workflow->id]

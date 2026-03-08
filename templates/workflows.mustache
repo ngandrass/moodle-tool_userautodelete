@@ -37,7 +37,7 @@
                     "profileurl": "https://mymoodle/user/profile.php?id=2"
                 },
                 "timemodified": 1700000000,
-                "actionurls": {
+                "urls": {
                     "show": "https://foo.bar/baz",
                     "delete": "https://foo.bar/baz",
                     "moveup": "https://foo.bar/baz",
@@ -59,7 +59,7 @@
                     "profileurl": "https://mymoodle/user/profile.php?id=2"
                 },
                 "timemodified": 1700000000,
-                "actionurls": {
+                "urls": {
                     "show": "https://foo.bar/baz",
                     "delete": "https://foo.bar/baz",
                     "moveup": "https://foo.bar/baz",
@@ -124,7 +124,7 @@
                         <td>
                             <div class="btn-group" role="group" aria-label="{{#str}} order {{/str}}">
                                 <a
-                                    href="{{{actionurls.moveup}}}"
+                                    href="{{{urls.moveup}}}"
                                     class="btn px-2 {{#canmoveup}}btn-outline-primary{{/canmoveup}} {{^canmoveup}}btn-outline-secondary disabled{{/canmoveup}}"
                                     role="button"
                                     title="{{#str}} up {{/str}}"
@@ -143,7 +143,7 @@
                                     ></i>
                                 </a>
                                 <a
-                                    href="{{{actionurls.movedown}}}"
+                                    href="{{{urls.movedown}}}"
                                     class="btn px-2 {{#canmovedown}}btn-outline-primary{{/canmovedown}} {{^canmovedown}}btn-outline-secondary disabled{{/canmovedown}}"
                                     role="button"
                                     title="{{#str}} down {{/str}}"
@@ -165,7 +165,7 @@
                         </td>
                         <td>
                             <a
-                                href="{{{actionurls.show}}}"
+                                href="{{{urls.show}}}"
                                 class="btn btn-primary px-2 mx-1"
                                 role="button"
                                 title="{{#str}} show {{/str}}"
@@ -184,7 +184,7 @@
                                 ></i>
                             </a>
                             <a
-                                href="{{{actionurls.delete}}}"
+                                href="{{{urls.delete}}}"
                                 class="btn btn-danger px-2 mx-1"
                                 role="button"
                                 title="{{#str}} delete {{/str}}"

@@ -333,6 +333,48 @@ class step {
     }
 
     /**
+     * Updates the title of this workflow step.
+     *
+     * @param string|null $title The new title for this step, or null to remove the custom title
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function set_title(?string $title): void {
+        global $DB;
+
+        $DB->update_record(db_table::WORKFLOW_STEP->value, [
+            'id' => $this->id,
+            'title' => $title ?: null,
+        ]);
+
+        $this->touch();
+    }
+
+    /**
+     * Updates the description of this workflow step.
+     *
+     * @param string|null $description The new description for this step, or null to remove the custom description
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function set_description(?string $description): void {
+        global $DB;
+
+        if (!$description) {
+            $description = null;
+        }
+
+        $DB->update_record(db_table::WORKFLOW_STEP->value, [
+            'id' => $this->id,
+            'description' => $description,
+        ]);
+
+        $this->touch();
+    }
+
+    /**
      * Moves this workflow step up or down in the sort order.
      *
      * @param sort_move_direction $direction Direction to move the workflow step in
@@ -429,7 +471,7 @@ class step {
      * @throws \moodle_exception
      */
     public function generate_user_filter_clause(): userfilter_clause {
-        global $CFG, $DB;
+        global $CFG;
 
         $filtersqls = [];
         $filterparams = [];

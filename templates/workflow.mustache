@@ -72,7 +72,7 @@
         ],
         "isediting": true,
         "canbeactivated": false,
-        "actionurls": {
+        "urls": {
             "activate": "https://foo.bar/baz",
             "delete": "https://foo.bar/baz",
             "edit": "https://foo.bar/baz",
@@ -115,7 +115,7 @@
                             class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{/active}} mx-1"
                             style="font-style: normal;"
                             role="button"
-                            href="{{{actionurls.activate}}}"
+                            href="{{{urls.activate}}}"
                         >
                             {{#active}}
                                 <i class="fa-solid fa-stop"></i>&nbsp;
@@ -131,7 +131,7 @@
                         class="btn btn-primary {{#active}} btn-outline-primary disabled {{/active}} mx-1"
                         style="font-style: normal;"
                         role="button"
-                        href="{{{actionurls.edit}}}"
+                        href="{{{urls.edit}}}"
                     >
                         <i class="fa-solid fa-pencil"></i>&nbsp;
                         {{#isediting}}
@@ -163,7 +163,7 @@
             <div class="col-sm-12 text-center">
                 <div class="d-flex flex-row justify-content-center align-items-start">
                     <div
-                        class="card"
+                        class="card {{#isediting}} ms-5 {{/isediting}}"
                         style="width: fit-content; min-width: 420px; {{#isediting}} border-top-right-radius: 0; {{/isediting}}"
                     >
                         <div class="card-header d-flex flex-row align-items-center justify-content-between">
@@ -171,7 +171,12 @@
                                 <i class="fa-solid fa-hashtag"></i>&nbsp;<b>{{sort}}</b>
                             </div>
                             <div class="flex-grow-1 text-left">
-                                <b>{{title}}</b>
+                                {{#title}}
+                                    <b>{{title}}</b>
+                                {{/title}}
+                                {{^title}}
+                                    <i class="text-muted">{{#str}} unnamed, tool_userautodelete {{/str}}</i>
+                                {{/title}}
                             </div>
                             <div class="ms-2 ps-2">
                                 {{#description}}
@@ -309,7 +314,7 @@
                                 aria-label="{{#str}} order {{/str}}"
                             >
                                 <a
-                                    href="{{{actionurls.moveup}}}"
+                                    href="{{{urls.moveup}}}"
                                     class="btn px-2 {{^isfirst}}btn-outline-primary{{/isfirst}} {{#isfirst}}btn-outline-secondary disabled{{/isfirst}}"
                                     style="border-top-left-radius: 0;"
                                     role="button"
@@ -329,7 +334,7 @@
                                     ></i>
                                 </a>
                                 <a
-                                    href="{{{actionurls.movedown}}}"
+                                    href="{{{urls.movedown}}}"
                                     class="btn px-2 {{^islast}}btn-outline-primary{{/islast}} {{#islast}}btn-outline-secondary disabled{{/islast}}"
                                     role="button"
                                     title="{{#str}} down {{/str}}"
@@ -348,7 +353,7 @@
                                     ></i>
                                 </a>
                                 <a
-                                    href="#TODO"
+                                    id="edit-step-modal-{{id}}"
                                     class="btn px-2 btn-outline-primary"
                                     role="button"
                                     title="{{#str}} edit {{/str}}"
@@ -367,7 +372,7 @@
                                     ></i>
                                 </a>
                                 <a
-                                    href="#TODO"
+                                    href="{{{urls.delete}}}"
                                     class="btn px-2 btn-outline-primary"
                                     style="border-bottom-left-radius: 0;"
                                     role="button"
@@ -392,35 +397,60 @@
                 </div>
             </div>
         </div>
-        {{/steps}}
-        {{#isediting}}
-            {{#stepcount}}
-                <div class="row py-3 text-center">
-                    <div class="col-sm-12">
-                        <i class="fa-solid fa-arrow-down-long fa-2x text-secondary"></i>
-                    </div>
-                </div>
-            {{/stepcount}}
-            <div class="row">
-                <div class="col-sm-12 text-center">
-                    <a
-                        class="btn btn-outline-secondary"
-                        style="border-style: dashed;"
-                        role="button"
-                        href="#"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="bottom"
-                        data-bs-title="{{#str}} add_step, tool_userautodelete {{/str}}"
-                        data-toggle="tooltip"
-                        data-placement="bottom"
-                        data-title="{{#str}} add_step, tool_userautodelete {{/str}}"
-                        title="{{#str}} add_step, tool_userautodelete {{/str}}"
-                    >
-                        <i class="fa-solid fa-plus"></i>&nbsp;
-                        {{#str}} add_step, tool_userautodelete {{/str}}
-                    </a>
+    {{/steps}}
+    {{#isediting}}
+        {{#stepcount}}
+            <div class="row py-3 text-center">
+                <div class="col-sm-12">
+                    <i class="fa-solid fa-arrow-down-long fa-2x text-secondary"></i>
                 </div>
             </div>
-        {{/isediting}}
-    </div>
+        {{/stepcount}}
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <a
+                    class="btn btn-outline-secondary"
+                    style="border-style: dashed;"
+                    role="button"
+                    href="{{{urls.addstep}}}"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    data-bs-title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                    title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                >
+                    <i class="fa-solid fa-plus"></i>&nbsp;
+                    {{#str}} add_step, tool_userautodelete {{/str}}
+                </a>
+            </div>
+        </div>
+    {{/isediting}}
 </div>
+
+{{#js}}
+    require(
+        ['jquery', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str'],
+        function($, ModalSaveCancel, ModalEvents, Templates, Str) {
+            {{#steps}}
+                $('#edit-step-modal-{{id}}').click(async() => {
+                    var modal = await ModalSaveCancel.create({
+                        title: Str.get_string('edit_step', 'tool_userautodelete'),
+                        body: Templates.render('tool_userautodelete/modal/editstep', {
+                            id: {{id}},
+                            title: '{{title}}',
+                            description: '{{description}}',
+                            submiturl: '{{{urls.edit}}}',
+                        }),
+                        isVerticallyCentered: true,
+                    });
+                    modal.getRoot().on(ModalEvents.save, (e) => {
+                        e.target.querySelector('form').submit();
+                    });
+                    modal.show();
+                });
+            {{/steps}}
+        }
+    );
+{{/js}}

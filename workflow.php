@@ -42,7 +42,7 @@ $isediting = false;
 // This does not use admin_externalpage_setup as we do not want these detail
 // pages to be accessible via the default admin navigation tree since these
 // always require valid parameters.
-$PAGE->set_url(new moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflowid]));
+$PAGE->set_url(new moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflowid, 'action' => $action]));
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('manage_workflow', 'tool_userautodelete'));
 $PAGE->set_heading($SITE->fullname);
@@ -107,6 +107,28 @@ foreach ($workflow->steps as $step) {
             'title' => $action->get_instance_title(),
             'details' => $action->get_instance_details(),
         ], $step->actions),
+        'urls' => [
+            'moveup' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+                'id' => $step->id,
+                'action' => 'moveup',
+                'returnurl' => $PAGE->url->out_as_local_url(true),
+            ]),
+            'movedown' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+                'id' => $step->id,
+                'action' => 'movedown',
+                'returnurl' => $PAGE->url->out_as_local_url(true),
+            ]),
+            'edit' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+                'id' => $step->id,
+                'action' => 'edit',
+                'returnurl' => $PAGE->url->out_as_local_url(true),
+            ]),
+            'delete' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+                'id' => $step->id,
+                'action' => 'delete',
+                'returnurl' => $PAGE->url->out_as_local_url(true),
+            ]),
+        ],
     ];
 }
 
@@ -134,13 +156,17 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     'steps' => $stepsmeta,
     'isediting' => $isediting,
     'canbeactivated' => false, // TODO (MDL-0): Create check if a workflow is valid.
-    'actionurls' => [
+    'urls' => [
         'activate' => new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
             [
                 'id' => $workflow->id,
                 'action' => $workflow->active ? 'disable' : 'enable',
             ]
+        ),
+        'addstep' => new moodle_url(
+            '/admin/tool/userautodelete/manageworkflow.php',
+            ['id' => $workflow->id, 'action' => 'addstep', 'returnurl' => $PAGE->url->out_as_local_url(true)]
         ),
         'delete' => new moodle_url(
             '/admin/tool/userautodelete/workflow.php',
