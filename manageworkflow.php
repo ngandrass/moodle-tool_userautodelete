@@ -15,14 +15,16 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Collection of complex workflow management operations
+ * Collection of workflow management operations
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_userautodelete\process;
+use tool_userautodelete\form\workflow_disable_form;
+use tool_userautodelete\form\workflow_enable_form;
+use tool_userautodelete\local\type\sort_move_direction;
 use tool_userautodelete\workflow;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -67,19 +69,23 @@ $workflow = workflow::get_by_id($workflowid);
 // Handle actions.
 $output = '';
 if ($action == 'enable') {
-    $enableform = new \tool_userautodelete\form\workflow_enable_form();
+    $enableform = new workflow_enable_form();
     if ($enableform->is_submitted()) {
         $workflow->activate();
     } else {
         $output = $enableform->render();
     }
 } else if ($action == 'disable') {
-    $disableform = new \tool_userautodelete\form\workflow_disable_form();
+    $disableform = new workflow_disable_form();
     if ($disableform->is_submitted()) {
         $workflow->deactivate();
     } else {
         $output = $disableform->render();
     }
+} else if ($action == 'moveup') {
+    $workflow->move(sort_move_direction::UP);
+} else if ($action == 'movedown') {
+    $workflow->move(sort_move_direction::DOWN);
 } else {
     throw new moodle_exception('invalid_action', 'tool_userautodelete');
 }

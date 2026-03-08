@@ -15,14 +15,13 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Manages a single workflow.
+ * Renders a single workflow.
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_userautodelete\local\type\sort_move_direction;
 use tool_userautodelete\process;
 use tool_userautodelete\workflow;
 
@@ -69,12 +68,6 @@ $workflow = workflow::get_by_id($workflowid);
 // Handle actions.
 if ($action) {
     switch ($action) {
-        case 'moveup':
-            $workflow->move(sort_move_direction::UP);
-            break;
-        case 'movedown':
-            $workflow->move(sort_move_direction::DOWN);
-            break;
         case 'edit':
             if ($workflow->active) {
                 throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');

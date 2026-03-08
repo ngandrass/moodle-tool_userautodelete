@@ -74,20 +74,20 @@ foreach ($workflows as $workflow) {
         'canmoveup' => count($workflows) > 1 && $workflow->sort > 1,
         'canmovedown' => count($workflows) > 1 && $workflow->sort < count($workflows),
         'actionurls' => [
-            'edit' => new moodle_url(
+            'show' => new moodle_url(
                 '/admin/tool/userautodelete/workflow.php',
                 ['id' => $workflow->id]
             ),
             'delete' => new moodle_url(
-                '/admin/tool/userautodelete/workflow.php',
+                '/admin/tool/userautodelete/manageworkflow.php',
                 ['id' => $workflow->id, 'action' => 'delete']
             ),
             'moveup' => new moodle_url(
-                '/admin/tool/userautodelete/workflow.php',
+                '/admin/tool/userautodelete/manageworkflow.php',
                 ['id' => $workflow->id, 'action' => 'moveup', 'returnurl' => $PAGE->url->out_as_local_url(true)],
             ),
             'movedown' => new moodle_url(
-                '/admin/tool/userautodelete/workflow.php',
+                '/admin/tool/userautodelete/manageworkflow.php',
                 ['id' => $workflow->id, 'action' => 'movedown', 'returnurl' => $PAGE->url->out_as_local_url(true)],
             ),
         ],
