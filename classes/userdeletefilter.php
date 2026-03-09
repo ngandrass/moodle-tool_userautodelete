@@ -172,6 +172,16 @@ abstract class userdeletefilter {
     }
 
     /**
+     * Returns a font-awesome icon CSS class string that is shown in the UI for
+     * this filter sub-plugin type.
+     *
+     * @return string A font-awesome icon CSS class string combination
+     */
+    public static function get_icon_class(): string {
+        return 'fa-solid fa-filter';
+    }
+
+    /**
      * Returns a descriptive title of this filter instance to be shown in the UI
      *
      * This should be a very short human-readable string that allows to identify

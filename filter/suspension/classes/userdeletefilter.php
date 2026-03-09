@@ -45,6 +45,16 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     }
 
     /**
+     * Returns a font-awesome icon CSS class string that is shown in the UI for
+     * this filter sub-plugin type.
+     *
+     * @return string A font-awesome icon CSS class string combination
+     */
+    public static function get_icon_class(): string {
+        return 'fa-solid fa-user-slash';
+    }
+
+    /**
      * Returns a descriptive string of this filter instance's settings to be shown in the UI
      *
      * This should be a human-readable string that describes the actual settings
@@ -54,6 +64,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * If no settings are defined, this function can simply return an empty string.
      *
      * @return string A descriptive string of this filter instance's settings to be shown in the UI
+     * @throws \coding_exception
      */
     public function get_instance_details(): string {
         if ($this->get_instance_setting('inverted')) {

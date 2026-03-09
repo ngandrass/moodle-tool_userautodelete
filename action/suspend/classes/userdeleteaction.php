@@ -45,6 +45,16 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     }
 
     /**
+     * Returns a font-awesome icon CSS class string that is shown in the UI for
+     * this action sub-plugin type.
+     *
+     * @return string A font-awesome icon CSS class string combination
+     */
+    public static function get_icon_class(): string {
+        return 'fa-regular fa-circle-pause';
+    }
+
+    /**
      * Executes this action for a given user deletion process
      *
      * @param process $process The user deletion process to execute this action for

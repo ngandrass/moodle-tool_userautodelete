@@ -173,6 +173,16 @@ abstract class userdeleteaction {
     }
 
     /**
+     * Returns a font-awesome icon CSS class string that is shown in the UI for
+     * this action sub-plugin type.
+     *
+     * @return string A font-awesome icon CSS class string combination
+     */
+    public static function get_icon_class(): string {
+        return 'fa-solid fa-gear';
+    }
+
+    /**
      * Returns a descriptive title of this action instance to be shown in the UI
      *
      * This should be a very short human-readable string that allows to identify

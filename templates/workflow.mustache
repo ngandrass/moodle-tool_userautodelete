@@ -52,7 +52,8 @@
                         "id": 1,
                         "name:": "auth",
                         "title": "Authentication method",
-                        "details": "manual, email"
+                        "details": "manual, email",
+                        "iconclass": "fa-solid fa-filter"
                     }
                 ],
                 "actions": [
@@ -60,7 +61,8 @@
                         "id": 1,
                         "name:": "delete",
                         "title": "Delete user",
-                        "details": ""
+                        "details": "",
+                        "iconclass": "fa-solid fa-gear"
                     }
                 ]
                 "processes": {
@@ -217,6 +219,9 @@
                                     >
                                         <div>
                                             <div class="font-weight-bold">
+                                                {{#iconclass}}
+                                                    <i class="{{iconclass}} pe-1"></i>
+                                                {{/iconclass}}
                                                 {{title}}
                                             </div>
                                             {{#details}}
@@ -271,6 +276,9 @@
                                     >
                                         <div>
                                             <div class="font-weight-bold">
+                                                {{#iconclass}}
+                                                    <i class="{{iconclass}} pe-1"></i>
+                                                {{/iconclass}}
                                                 {{title}}
                                             </div>
                                             {{#details}}

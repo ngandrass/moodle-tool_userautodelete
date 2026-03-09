@@ -100,12 +100,14 @@ foreach ($workflow->steps as $step) {
             'name' => $filter->get_plugin_name(),
             'title' => $filter->get_instance_title(),
             'details' => $filter->get_instance_details(),
+            'iconclass' => $filter::get_icon_class(),
         ], $step->filters),
         'actions' => array_map(fn ($action) => [
             'id' => $action->id,
             'name' => $action->get_plugin_name(),
             'title' => $action->get_instance_title(),
             'details' => $action->get_instance_details(),
+            'iconclass' => $action::get_icon_class(),
         ], $step->actions),
         'urls' => [
             'moveup' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
