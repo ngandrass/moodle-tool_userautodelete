@@ -203,10 +203,10 @@
                                 </div>
                                 {{#filters}}
                                     <a
+                                        id="edit-filter-modal-{{id}}"
                                         class="btn btn-outline-primary px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
                                         style="font-style: normal;"
                                         role="button"
-                                        href="#"
                                         {{#isediting}}
                                             data-bs-toggle="tooltip"
                                             data-bs-placement="top"
@@ -260,10 +260,10 @@
                                 </div>
                                 {{#actions}}
                                     <a
+                                        id="edit-action-modal-{{id}}"
                                         class="btn btn-outline-danger px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
                                         style="font-style: normal;"
                                         role="button"
-                                        href="#"
                                         {{#isediting}}
                                             data-bs-toggle="tooltip"
                                             data-bs-placement="top"
@@ -438,27 +438,69 @@
 </div>
 
 {{#js}}
-    require(
-        ['jquery', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str'],
-        function($, ModalSaveCancel, ModalEvents, Templates, Str) {
-            {{#steps}}
-                $('#edit-step-modal-{{id}}').click(async() => {
-                    var modal = await ModalSaveCancel.create({
-                        title: Str.get_string('edit_step', 'tool_userautodelete'),
-                        body: Templates.render('tool_userautodelete/modal/editstep', {
-                            id: {{id}},
-                            title: '{{title}}',
-                            description: '{{description}}',
-                            submiturl: '{{{urls.edit}}}',
-                        }),
-                        isVerticallyCentered: true,
+    {{#isediting}}
+        require(
+            ['jquery', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str', 'tool_userautodelete/modal_delete_save_cancel'],
+            function($, ModalSaveCancel, ModalEvents, Templates, Str, ModalDeleteSaveCancel) {
+                {{#steps}}
+                    $('#edit-step-modal-{{id}}').click(async() => {
+                        var modal = await ModalSaveCancel.create({
+                            title: Str.get_string('edit_step', 'tool_userautodelete'),
+                            body: Templates.render('tool_userautodelete/modal/editstep', {
+                                id: {{id}},
+                                title: '{{title}}',
+                                description: '{{description}}',
+                                submiturl: '{{{urls.edit}}}',
+                            }),
+                            isVerticallyCentered: true,
+                        });
+                        modal.getRoot().on(ModalEvents.save, (e) => {
+                            e.target.querySelector('form').submit();
+                        });
+                        modal.show();
                     });
-                    modal.getRoot().on(ModalEvents.save, (e) => {
-                        e.target.querySelector('form').submit();
-                    });
-                    modal.show();
-                });
-            {{/steps}}
-        }
-    );
+
+                    {{#filters}}
+                        $('#edit-filter-modal-{{id}}').click(async() => {
+                            var modal = await ModalDeleteSaveCancel.create({
+                                title: Str.get_string('edit_filter', 'tool_userautodelete'),
+                                body: Templates.render('tool_userautodelete/modal/editfilter', {
+                                    id: {{id}},
+                                    submiturl: '{{{urls.edit}}}',
+                                }),
+                                isVerticallyCentered: true,
+                            });
+                            modal.getRoot().on(ModalEvents.save, (e) => {
+                                e.target.querySelector('form').submit();
+                            });
+                            modal.getRoot().on(ModalEvents.delete, (e) => {
+                                window.location.href = '{{{urls.delete}}}';
+                            });
+                            modal.show();
+                        });
+                    {{/filters}}
+
+                    {{#actions}}
+                        $('#edit-action-modal-{{id}}').click(async() => {
+                            var modal = await ModalDeleteSaveCancel.create({
+                                title: Str.get_string('edit_action', 'tool_userautodelete'),
+                                body: Templates.render('tool_userautodelete/modal/editaction', {
+                                    id: {{id}},
+                                    submiturl: '{{{urls.edit}}}',
+                                }),
+                                isVerticallyCentered: true,
+                            });
+                            modal.getRoot().on(ModalEvents.save, (e) => {
+                                e.target.querySelector('form').submit();
+                            });
+                            modal.getRoot().on(ModalEvents.delete, (e) => {
+                                window.location.href = '{{{urls.delete}}}';
+                            });
+                            modal.show();
+                        });
+                    {{/actions}}
+                {{/steps}}
+            }
+        );
+    {{/isediting}}
 {{/js}}

@@ -101,6 +101,17 @@ foreach ($workflow->steps as $step) {
             'title' => $filter->get_instance_title(),
             'details' => $filter->get_instance_details(),
             'iconclass' => $filter::get_icon_class(),
+            'urls' => [
+                'edit' => new moodle_url('/admin/tool/userautodelete/managefilter.php', [
+                    'id' => $filter->id,
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]),
+                'delete' => new moodle_url('/admin/tool/userautodelete/managefilter.php', [
+                    'id' => $filter->id,
+                    'action' => 'delete',
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]),
+            ],
         ], $step->filters),
         'actions' => array_map(fn ($action) => [
             'id' => $action->id,
@@ -108,6 +119,17 @@ foreach ($workflow->steps as $step) {
             'title' => $action->get_instance_title(),
             'details' => $action->get_instance_details(),
             'iconclass' => $action::get_icon_class(),
+            'urls' => [
+                'edit' => new moodle_url('/admin/tool/userautodelete/manageaction.php', [
+                    'id' => $action->id,
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]),
+                'delete' => new moodle_url('/admin/tool/userautodelete/manageaction.php', [
+                    'id' => $action->id,
+                    'action' => 'delete',
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]),
+            ],
         ], $step->actions),
         'urls' => [
             'moveup' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
