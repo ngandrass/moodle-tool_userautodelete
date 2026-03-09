@@ -26,8 +26,14 @@
 
 {{< core/modal }}
     {{$footer}}
-        <button type="button" class="btn btn-danger" data-action="delete">{{#str}} delete {{/str}}</button>
-        <button type="button" class="btn btn-secondary" data-action="cancel">{{#str}} cancel {{/str}}</button>
-        <button type="button" class="btn btn-primary" data-action="save">{{#str}} savechanges {{/str}}</button>
+        <div class="d-flex justify-content-between w-100">
+            <div>
+                <button type="button" class="btn btn-danger" data-action="delete">{{#str}} delete {{/str}}</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-secondary" data-action="cancel">{{#str}} cancel {{/str}}</button>
+                <button type="button" class="btn btn-primary" data-action="save">{{#str}} savechanges {{/str}}</button>
+            </div>
+        </div>
     {{/footer}}
 {{/ core/modal }}
