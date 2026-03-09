@@ -233,11 +233,10 @@
                                     </a>
                                 {{/filters}}
                                 {{#isediting}}
-                                    <a
+                                    <button
+                                        id="add-filter-modal-{{id}}"
                                         class="btn btn-outline-primary btn-sm m-1"
                                         style="border-style: dashed;"
-                                        role="button"
-                                        href="#"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
                                         data-bs-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
@@ -247,7 +246,7 @@
                                         title="{{#str}} add_filter, tool_userautodelete {{/str}}"
                                     >
                                         <i class="fa-solid fa-plus"></i>
-                                    </a>
+                                    </button>
                                 {{/isediting}}
                             </div>
                             <hr>
@@ -290,11 +289,10 @@
                                     </a>
                                 {{/actions}}
                                 {{#isediting}}
-                                    <a
+                                    <button
+                                        id="add-action-modal-{{id}}"
                                         class="btn btn-outline-danger btn-sm m-1"
                                         style="border-style: dashed;"
-                                        role="button"
-                                        href="#"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
                                         data-bs-title="{{#str}} add_action, tool_userautodelete {{/str}}"
@@ -304,7 +302,7 @@
                                         title="{{#str}} add_action, tool_userautodelete {{/str}}"
                                     >
                                         <i class="fa-solid fa-plus"></i>
-                                    </a>
+                                    </button>
                                 {{/isediting}}
                             </div>
                         </div>
@@ -440,8 +438,13 @@
 {{#js}}
     {{#isediting}}
         require(
-            ['jquery', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str', 'tool_userautodelete/modal_delete_save_cancel'],
-            function($, ModalSaveCancel, ModalEvents, Templates, Str, ModalDeleteSaveCancel) {
+            ['jquery', 'core/modal', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str', 'tool_userautodelete/modal_delete_save_cancel'],
+            function($, Modal, ModalSaveCancel, ModalEvents, Templates, Str, ModalDeleteSaveCancel) {
+                // Deserialize available filters and actions
+                var availableFilters = JSON.parse(atob('{{{availablefilters}}}'));
+                var availableActions = JSON.parse(atob('{{{availableactions}}}'));
+
+                // Setup modals
                 {{#steps}}
                     $('#edit-step-modal-{{id}}').click(async() => {
                         var modal = await ModalSaveCancel.create({
@@ -456,6 +459,30 @@
                         });
                         modal.getRoot().on(ModalEvents.save, (e) => {
                             e.target.querySelector('form').submit();
+                        });
+                        modal.show();
+                    });
+
+                    $('#add-filter-modal-{{id}}').click(async() => {
+                        var modal = await Modal.create({
+                            title: Str.get_string('add_filter', 'tool_userautodelete'),
+                            body: Templates.render('tool_userautodelete/modal/addfilter', {
+                                stepid: {{id}},
+                                filters: availableFilters,
+                            }),
+                            isVerticallyCentered: true,
+                        });
+                        modal.show();
+                    });
+
+                    $('#add-action-modal-{{id}}').click(async() => {
+                        var modal = await Modal.create({
+                            title: Str.get_string('add_action', 'tool_userautodelete'),
+                            body: Templates.render('tool_userautodelete/modal/addaction', {
+                                stepid: {{id}},
+                                actions: availableActions,
+                            }),
+                            isVerticallyCentered: true,
                         });
                         modal.show();
                     });

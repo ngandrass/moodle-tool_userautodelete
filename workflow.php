@@ -22,7 +22,10 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_userautodelete\local\util\plugin_util;
 use tool_userautodelete\process;
+use tool_userautodelete\userdeleteaction;
+use tool_userautodelete\userdeletefilter;
 use tool_userautodelete\workflow;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -86,6 +89,7 @@ if ($action) {
 // Prepare step data.
 $stepsmeta = [];
 $processesmeta = process::get_process_stats_for_workflow(workflowid: $workflow->id, indexbystepid: true);
+
 foreach ($workflow->steps as $step) {
     $stepsmeta[] = [
         'id' => $step->id,
@@ -102,15 +106,15 @@ foreach ($workflow->steps as $step) {
             'details' => $filter->get_instance_details(),
             'iconclass' => $filter::get_icon_class(),
             'urls' => [
-                'edit' => new moodle_url('/admin/tool/userautodelete/managefilter.php', [
+                'edit' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
                     'id' => $filter->id,
                     'returnurl' => $PAGE->url->out_as_local_url(true),
-                ]),
-                'delete' => new moodle_url('/admin/tool/userautodelete/managefilter.php', [
+                ]))->out(false),
+                'delete' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
                     'id' => $filter->id,
                     'action' => 'delete',
                     'returnurl' => $PAGE->url->out_as_local_url(true),
-                ]),
+                ]))->out(false),
             ],
         ], $step->filters),
         'actions' => array_map(fn ($action) => [
@@ -120,40 +124,88 @@ foreach ($workflow->steps as $step) {
             'details' => $action->get_instance_details(),
             'iconclass' => $action::get_icon_class(),
             'urls' => [
-                'edit' => new moodle_url('/admin/tool/userautodelete/manageaction.php', [
+                'edit' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
                     'id' => $action->id,
                     'returnurl' => $PAGE->url->out_as_local_url(true),
-                ]),
-                'delete' => new moodle_url('/admin/tool/userautodelete/manageaction.php', [
+                ]))->out(false),
+                'delete' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
                     'id' => $action->id,
                     'action' => 'delete',
                     'returnurl' => $PAGE->url->out_as_local_url(true),
-                ]),
+                ]))->out(false),
             ],
         ], $step->actions),
         'urls' => [
-            'moveup' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+            'moveup' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'moveup',
                 'returnurl' => $PAGE->url->out_as_local_url(true),
-            ]),
-            'movedown' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+            ]))->out(false),
+            'movedown' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'movedown',
                 'returnurl' => $PAGE->url->out_as_local_url(true),
-            ]),
-            'edit' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+            ]))->out(false),
+            'edit' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'edit',
                 'returnurl' => $PAGE->url->out_as_local_url(true),
-            ]),
-            'delete' => new moodle_url('/admin/tool/userautodelete/managestep.php', [
+            ]))->out(false),
+            'delete' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'delete',
                 'returnurl' => $PAGE->url->out_as_local_url(true),
-            ]),
+            ]))->out(false),
         ],
     ];
+}
+
+// Load available sub-plugins if editing is enabled.
+if ($isediting) {
+    $plugman = core_plugin_manager::instance();
+    $availablefilters = array_reduce(
+        array_keys($plugman->get_installed_plugins('userdeletefilter')),
+        function ($res, $filter): array {
+            global $PAGE;
+
+            /** @var userdeletefilter $subplugincls */
+            $subplugincls = plugin_util::get_subplugin_class('userdeletefilter', $filter);
+            $res[] = [
+                'pluginname' => $filter,
+                'displayname' => get_string('pluginname', 'userdeletefilter_' . $filter),
+                'iconclass' => $subplugincls::get_icon_class(),
+                'addurlbase' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
+                    'action' => 'add',
+                    'pluginname' => $filter,
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]))->out(false),
+            ];
+            return $res;
+        },
+        []
+    );
+
+    $availableactions = array_reduce(
+        array_keys($plugman->get_installed_plugins('userdeleteaction')),
+        function ($res, $action): array {
+            global $PAGE;
+
+            /** @var userdeleteaction $subplugincls */
+            $subplugincls = plugin_util::get_subplugin_class('userdeleteaction', $action);
+            $res[] = [
+                'pluginname' => $action,
+                'displayname' => get_string('pluginname', 'userdeleteaction_' . $action),
+                'iconclass' => $subplugincls::get_icon_class(),
+                'addurlbase' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
+                    'action' => 'add',
+                    'pluginname' => $action,
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]))->out(false),
+            ];
+            return $res;
+        },
+        []
+    );
 }
 
 // Render main output.
@@ -169,40 +221,42 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     'createdby' => [
         'id' => $workflow->createdby,
         'fullname' => fullname(core_user::get_user($workflow->createdby)),
-        'profileurl' => new moodle_url('/user/profile.php', ['id' => $workflow->createdby]),
+        'profileurl' => (new moodle_url('/user/profile.php', ['id' => $workflow->createdby]))->out(false),
     ],
     'modifiedby' => [
         'id' => $workflow->modifiedby,
         'fullname' => fullname(core_user::get_user($workflow->modifiedby)),
-        'profileurl' => new moodle_url('/user/profile.php', ['id' => $workflow->modifiedby]),
+        'profileurl' => (new moodle_url('/user/profile.php', ['id' => $workflow->modifiedby]))->out(false),
     ],
     'stepcount' => count($stepsmeta),
     'steps' => $stepsmeta,
+    'availablefilters' => isset($availablefilters) ? base64_encode(json_encode($availablefilters)) : null,
+    'availableactions' => isset($availableactions) ? base64_encode(json_encode($availableactions)) : null,
     'isediting' => $isediting,
     'canbeactivated' => false, // TODO (MDL-0): Create check if a workflow is valid.
     'urls' => [
-        'activate' => new moodle_url(
+        'activate' => (new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
             [
                 'id' => $workflow->id,
                 'action' => $workflow->active ? 'disable' : 'enable',
             ]
-        ),
-        'addstep' => new moodle_url(
+        ))->out(false),
+        'addstep' => (new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
             ['id' => $workflow->id, 'action' => 'addstep', 'returnurl' => $PAGE->url->out_as_local_url(true)]
-        ),
-        'delete' => new moodle_url(
+        ))->out(false),
+        'delete' => (new moodle_url(
             '/admin/tool/userautodelete/workflow.php',
             ['id' => $workflow->id, 'action' => 'TODO'] // TODO (MDL-0): Implement.
-        ),
-        'edit' => new moodle_url(
+        ))->out(false),
+        'edit' => (new moodle_url(
             '/admin/tool/userautodelete/workflow.php',
             [
                 'id' => $workflow->id,
                 'action' => $isediting ? '' : 'edit',
             ]
-        ),
+        ))->out(false),
     ],
 ]);
 echo $OUTPUT->footer();

@@ -1,0 +1,61 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/modal/addaction
+
+    An action creation modal.
+
+    Example context (json):
+    {
+        "stepid": 42,
+        "actions": [
+            {
+                "pluginname": "delete",
+                "displayname": "Delete user",
+                "iconclass": "fa-solid fa-trash",
+                "addurlbase": "https://foo.bar/baz"
+            },
+            {
+                "pluginname": "anonymize",
+                "displayname": "Anonymize",
+                "iconclass": "fa-solid fa-shield-halved",
+                "addurlbase": "https://foo.bar/baz"
+            }
+        ]
+    }
+}}
+
+<p class="text-center">
+    {{#str}} add_action_desc, tool_userautodelete {{/str}}
+</p>
+<div class="d-flex flex-wrap justify-content-center text-center">
+    {{#actions}}
+        <a
+            href="{{{addurlbase}}}&stepid={{stepid}}"
+            class="btn btn-outline-danger m-2 d-flex flex-column justify-content-center align-items-center"
+            style="width: 128px; height: 128px;"
+            role="button"
+        >
+            <div class="mb-3">
+                <b>{{displayname}}</b>
+            </div>
+            <div>
+                <i class="{{iconclass}} fa-2x"></i>
+            </div>
+        </a>
+    {{/actions}}
+</div>

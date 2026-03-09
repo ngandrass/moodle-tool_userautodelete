@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Collection of step management operations
+ * Collection of filter management operations
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_userautodelete\local\type\sort_move_direction;
 use tool_userautodelete\step;
+use tool_userautodelete\userdeletefilter;
 
 require_once(__DIR__ . '/../../../config.php');
 require_once("{$CFG->libdir}/adminlib.php");
@@ -33,15 +33,20 @@ global $CFG, $DB, $OUTPUT, $PAGE, $SITE, $USER;
 require_admin();
 
 // Request parameters.
-$stepid = required_param('id', PARAM_INT);
-$returnurl = required_param('returnurl', PARAM_RAW);
 $action = required_param('action', PARAM_ALPHA);
+$returnurl = required_param('returnurl', PARAM_RAW);
+$filterid = optional_param('id', null, PARAM_INT);
+$stepid = optional_param('stepid', null, PARAM_INT);
 
 // Setup page as sub-admin page of workflows overview.
 // This does not use admin_externalpage_setup as we do not want these detail
 // pages to be accessible via the default admin navigation tree since these
 // always require valid parameters.
-$PAGE->set_url(new moodle_url('/admin/tool/userautodelete/managestep.php', ['id' => $stepid, 'action' => $action]));
+$PAGE->set_url(new moodle_url('/admin/tool/userautodelete/managefilter.php', [
+    'action' => $action,
+    'id' => $filterid,
+    'stepid' => $stepid,
+]));
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('manage_workflow', 'tool_userautodelete'));
 $PAGE->set_heading($SITE->fullname);
@@ -51,7 +56,7 @@ navigation_node::require_admin_tree();
 $parentnavnode = $PAGE->settingsnav->find('tool_userautodelete_workflows', navigation_node::TYPE_SETTING);
 $navnode = $parentnavnode->add(
     get_string('manage_workflow', 'tool_userautodelete'),
-    new moodle_url('/admin/tool/userautodelete/managestep.php', ['id' => $stepid])
+    new moodle_url('/admin/tool/userautodelete/managefilter.php', ['id' => $filterid, 'stepid' => $stepid])
 );
 $navnode->make_active();
 $PAGE->navigation->clear_cache();
@@ -61,27 +66,17 @@ $PAGE->add_header_action($OUTPUT->render_from_template('core_admin/header_search
     'query' => $PAGE->url->get_param('query'),
 ]));
 
-// Get requested step.
-$step = step::get_by_id($stepid);
-
 // Handle actions.
 $output = '';
-if ($action == 'edit') {
-    $step->set_title(required_param('title', PARAM_TEXT));
-    $step->set_description(required_param('description', PARAM_TEXT));
-} else if ($action == 'moveup') {
-    $step->move(sort_move_direction::UP);
-} else if ($action == 'movedown') {
-    $step->move(sort_move_direction::DOWN);
+if ($action == 'add') {
+    $step = step::get_by_id($stepid);
+    userdeletefilter::create_instance(
+        step: $step,
+        pluginname: required_param('pluginname', PARAM_TEXT),
+    );
 } else if ($action == 'delete') {
-    $form = new \tool_userautodelete\form\step_delete_form();
-    if ($form->is_submitted()) {
-        if (!$form->is_cancelled()) {
-            $step->delete();
-        }
-    } else {
-        $output = $form->render();
-    }
+    $filter = userdeletefilter::get_instance_by_id($filterid);
+    $filter->delete();
 } else {
     throw new moodle_exception('invalid_action', 'tool_userautodelete');
 }
