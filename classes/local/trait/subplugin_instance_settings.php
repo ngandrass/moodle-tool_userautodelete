@@ -173,6 +173,11 @@ trait subplugin_instance_settings {
             $key = $descriptor->key;
             $value = $overrides[$key] ?? $descriptor->default;
 
+            // Skip null values, as they indicate that the setting should not be set.
+            if ($value === null) {
+                continue;
+            }
+
             $settings[] = (object) [
                 'plugintype' => static::get_plugin_type()->value,
                 'instanceid' => static::get_instance_id(),
