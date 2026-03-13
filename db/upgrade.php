@@ -239,8 +239,12 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             userdeletefilter::create_instance($warningstep, 'lastaccess', [
                 'thresholdsec' => ($oldconfig->delete_threshold_days - $oldconfig->warning_threshold_days) * DAYSECS,
             ]);
+
             userdeletefilter::create_instance($deletionstep, 'delay', [
                 'delaysec' => $oldconfig->warning_threshold_days * DAYSECS,
+            ]);
+            userdeletefilter::create_instance($deletionstep, 'lastaccess', [
+                'delaysec' => $oldconfig->delete_threshold_days * DAYSECS,
             ]);
         } else {
             $ingeststep = $deletionstep;
