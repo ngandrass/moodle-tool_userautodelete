@@ -229,10 +229,10 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             $ingeststep = $warningstep;
 
             userdeletefilter::create_instance($warningstep, 'lastaccess', [
-                'thresholdsec' => $oldconfig->warning_threshold_days * DAYSECS,
+                'thresholdsec' => ($oldconfig->delete_threshold_days - $oldconfig->warning_threshold_days) * DAYSECS,
             ]);
             userdeletefilter::create_instance($deletionstep, 'delay', [
-                'delaysec' => ($oldconfig->delete_threshold_days - $oldconfig->warning_threshold_days) * DAYSECS,
+                'delaysec' => $oldconfig->warning_threshold_days * DAYSECS,
             ]);
         } else {
             $ingeststep = $deletionstep;
@@ -258,9 +258,14 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
 
         if ($oldconfig->ignore_roles) {
             userdeletefilter::create_instance($ingeststep, 'role', [
-                'roles' => $oldconfig->ignore_roles,
+                'roleids' => $oldconfig->ignore_roles,
                 'inverted' => true,
             ]);
+        }
+
+        // Enable migrated workflow if plugin was active.
+        if ($oldconfig->enable) {
+            $workflow->activate();
         }
 
         // Userautodelete savepoint reached.
