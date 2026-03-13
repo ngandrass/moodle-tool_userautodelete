@@ -68,7 +68,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     public function get_instance_details(): string {
         $thresholdsec = intval($this->get_instance_setting('thresholdsec'));
 
-        return '<= ' . format_time($thresholdsec);
+        return '>= ' . format_time($thresholdsec);
     }
 
     /**
