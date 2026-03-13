@@ -59,13 +59,13 @@ $tplctx = [
         'back' => new \moodle_url('/admin/settings.php', [
             'section' => 'tool_userautodelete_settings',
         ]),
-        'tasklogs' => new moodle_url('/admin/tasklogs.php', [
-            'filter' => 'tool_userautodelete\task\check_and_delete_users',
+        'tasklogs' => new \moodle_url('/admin/tasklogs.php', [
+            'filter' => 'tool_userautodelete\task\executeworkflows',
         ]),
     ],
 ];
 
-$checktask = \core\task\manager::get_scheduled_task('tool_userautodelete\task\check_and_delete_users');
+$checktask = \core\task\manager::get_scheduled_task('tool_userautodelete\task\executeworkflows');
 if ($checktask->is_enabled()) {
     $tplctx['nextcheck'] = [
         'absolute' => $checktask->get_next_run_time(),

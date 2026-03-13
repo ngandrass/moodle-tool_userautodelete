@@ -52,7 +52,7 @@ if ($hassiteconfig) {
         // Task execution interval.
         $crontaskconfigurl = new moodle_url('/admin/tool/task/scheduledtasks.php', [
             'action' => 'edit',
-            'task' => 'tool_userautodelete\task\check_and_delete_users',
+            'task' => 'tool_userautodelete\task\executeworkflows',
         ]);
         $settings->add(new admin_setting_description(
             'tool_userautodelete/task_execution_interval',

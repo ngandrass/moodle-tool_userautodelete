@@ -32,13 +32,13 @@ final class check_and_delete_users_test extends \advanced_testcase {
     /**
      * Tests that the task name getter does not throw any exceptions
      *
-     * @covers \tool_userautodelete\task\check_and_delete_users::get_name
+     * @covers \tool_userautodelete\task\executeworkflows::get_name
      *
      * @return void
      * @throws \coding_exception
      */
     public function test_get_name(): void {
-        $task = new check_and_delete_users();
+        $task = new executeworkflows();
         $this->assertNotEmpty($task->get_name());
     }
 
@@ -47,7 +47,7 @@ final class check_and_delete_users_test extends \advanced_testcase {
      *
      * Everything else is covered in the manager_test class.
      *
-     * @covers \tool_userautodelete\task\check_and_delete_users::execute
+     * @covers \tool_userautodelete\task\executeworkflows::execute
      *
      * @return void
      * @throws \coding_exception
@@ -56,7 +56,7 @@ final class check_and_delete_users_test extends \advanced_testcase {
     public function test_execute(): void {
         $this->resetAfterTest();
 
-        $task = new check_and_delete_users();
+        $task = new executeworkflows();
         $task->execute();
     }
 }

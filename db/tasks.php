@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $tasks = [
     [
-        'classname' => 'tool_userautodelete\task\check_and_delete_users',
+        'classname' => 'tool_userautodelete\task\executeworkflows',
         'blocking' => 0,
         'minute' => '0',
         'hour' => '1',

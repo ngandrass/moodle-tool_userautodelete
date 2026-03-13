@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Scheduled task that checks users for inactivity, performs configured steps,
- * and finally deletes eligible users
+ * Scheduled task that executes all active workflows, thereby checking users for
+ * inactivity, performs configured steps, and finally deletes eligible users.
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
@@ -30,10 +30,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
- * Scheduled task that checks users for inactivity, performs configured steps,
- * and finally deletes eligible users
+ * Scheduled task that executes all active workflows, thereby checking users for
+ * inactivity, performs configured steps, and finally deletes eligible users.
  */
-class check_and_delete_users extends \core\task\scheduled_task {
+class executeworkflows extends \core\task\scheduled_task {
     /**
      * Get a descriptive name for the task (shown to admins)
      *
@@ -41,7 +41,7 @@ class check_and_delete_users extends \core\task\scheduled_task {
      * @throws \coding_exception
      */
     public function get_name() {
-        return get_string('task_check_and_delete_users', 'tool_userautodelete');
+        return get_string('task_executeworkflows', 'tool_userautodelete');
     }
 
     /**

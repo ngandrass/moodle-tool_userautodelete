@@ -99,7 +99,7 @@ if ($manager->get_config('warning_email_enable')) {
 }
 
 // Config: Next task execution.
-$checktask = \core\task\manager::get_scheduled_task('tool_userautodelete\task\check_and_delete_users');
+$checktask = \core\task\manager::get_scheduled_task('tool_userautodelete\task\executeworkflows');
 if ($checktask->is_enabled()) {
     $tplctx['nextcheck'] = [
         'absolute' => $checktask->get_next_run_time(),
