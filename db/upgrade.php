@@ -201,7 +201,11 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         // Migrate warning mail step if enabled.
         $warningstep = null;
         if ($oldconfig->warning_email_enable) {
-            $warningstep = step::create($workflow);
+            $warningstep = step::create(
+                $workflow,
+                get_string('defaultworkflow_warning_step_title', 'tool_userautodelete'),
+                get_string('defaultworkflow_warning_step_desc', 'tool_userautodelete')
+            );
             userdeleteaction::create_instance($warningstep, 'mail', [
                 'subject' => $oldconfig->warning_email_subject,
                 'message' => $oldconfig->warning_email_body,
@@ -209,7 +213,11 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         }
 
         // Migrate deletion step.
-        $deletionstep = step::create($workflow);
+        $deletionstep = step::create(
+            $workflow,
+            get_string('defaultworkflow_delete_step_title', 'tool_userautodelete'),
+            get_string('defaultworkflow_delete_step_desc', 'tool_userautodelete')
+        );
         if ($oldconfig->delete_email_enable) {
             userdeleteaction::create_instance($deletionstep, 'mail', [
                 'subject' => $oldconfig->delete_email_subject,

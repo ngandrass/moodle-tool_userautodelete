@@ -101,6 +101,10 @@ $string['defaultworkflow_warningmail_subject'] = 'Your account will be deleted s
 $string['defaultworkflow_warningmail_message'] = '<p>Hello,</p><p>your account on our site has been inactive for a long period of time. To keep your account, please <strong>log back in now to prevent your account from being deleted</strong> according to our data protection policy within the next days.</p><p>If you wish your account to be deleted, you can ignore this message.</p><p>Kind regards</p>';
 $string['defaultworkflow_deletemail_subject'] = 'Your account was deleted';
 $string['defaultworkflow_deletemail_message'] = '<p>Hello,</p><p>your account on our site was deleted due to inactivity. If you wish to continue using our service, please create a new account.</p><p>Kind regards</p>';
+$string['defaultworkflow_warning_step_title'] = 'Warn inactive users';
+$string['defaultworkflow_warning_step_desc'] = 'Sends a warning mail to inactive users. Users are selected by the given filter criteria.';
+$string['defaultworkflow_delete_step_title'] = 'Delete inactive users';
+$string['defaultworkflow_delete_step_desc'] = 'Deletes users that have been inactive for a long time.';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';
