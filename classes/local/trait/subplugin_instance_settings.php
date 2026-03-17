@@ -216,4 +216,31 @@ trait subplugin_instance_settings {
             ]
         );
     }
+
+    /**
+     * Checks if all required settings as defined in the respective sub-plugin's
+     * instance_setting_descriptors are set to an non-empty value for this
+     * instance.
+     *
+     * @return bool
+     * @throws \dml_exception
+     */
+    public function is_all_required_instance_settings_set(): bool {
+        $presentsettings = $this->get_all_instance_settings();
+        foreach (static::instance_setting_descriptors() as $descriptor) {
+            if (!$descriptor->required) {
+                continue;
+            }
+
+            if (!array_key_exists($descriptor->key, $presentsettings)) {
+                return false;
+            }
+
+            if ($descriptor->type !== PARAM_BOOL && empty($presentsettings[$descriptor->key])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
