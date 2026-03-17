@@ -212,6 +212,17 @@ abstract class userdeleteaction {
     }
 
     /**
+     * Validates the settings of this action instance and returns whether they
+     * are considered valid and ready for execution or not.
+     *
+     * @return bool True if this instance is valid and ready, false otherwise
+     * @throws \dml_exception
+     */
+    public function is_valid(): bool {
+        return $this->is_all_required_instance_settings_set();
+    }
+
+    /**
      * Returns the name of this action sub-plugin, e.g., 'suspend' for 'userdeleteaction_suspend'
      *
      * @return string The name of this action sub-plugin

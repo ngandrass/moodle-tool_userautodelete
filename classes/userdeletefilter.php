@@ -211,6 +211,17 @@ abstract class userdeletefilter {
     }
 
     /**
+     * Validates the settings of this filter instance and returns whether they
+     * are considered valid and ready for use or not.
+     *
+     * @return bool True if this instance is valid and ready, false otherwise
+     * @throws \dml_exception
+     */
+    public function is_valid(): bool {
+        return $this->is_all_required_instance_settings_set();
+    }
+
+    /**
      * Returns the name of this filter sub-plugin, e.g., 'lastaccess' for 'userdeletefilter_lastaccess'
      *
      * @return string The name of this filter sub-plugin

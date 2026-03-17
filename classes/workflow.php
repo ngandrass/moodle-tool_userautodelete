@@ -312,6 +312,30 @@ class workflow {
     }
 
     /**
+     * Detemines whether this workflow is valid and can be activated or not.
+     *
+     * A workflow is considered valid if it has at least one step and all of its
+     * steps themselves are valid.
+     *
+     * @return bool True if this workflow is valid, false otherwise
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function is_valid(): bool {
+        if (count($this->get_steps()) < 1) {
+            return false;
+        }
+
+        foreach ($this->get_steps() as $step) {
+            if (!$step->is_valid()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Updates the title of this workflow.
      *
      * @param string $title New title of the workflow
@@ -355,12 +379,15 @@ class workflow {
      * Activates this workflow.
      *
      * @return void
-     * @throws \dml_exception
+     * @throws \dml_exception On database errors
+     * @throws \moodle_exception If the workflow is not valid
      */
     public function activate(): void {
         global $DB, $USER;
 
-        // TODO (MDL-0): Ensure that workflow is valid.
+        if (!$this->is_valid()) {
+            throw new \moodle_exception('workflow_invalid', 'tool_userautodelete');
+        }
 
         $now = time();
         $DB->update_record(db_table::WORKFLOW->value, [

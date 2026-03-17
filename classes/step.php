@@ -333,6 +333,38 @@ class step {
     }
 
     /**
+     * Determines if this step is considered valid and can be executed.
+     *
+     * A step is considered valid, if it has at least one filter and one action.
+     * All filters and actions must be valid themselves.
+     *
+     * @return bool True, if this step is valid, false otherwise
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function is_valid(): bool {
+        // Ensure that we have at least one filter and one action.
+        if (count($this->get_filters()) < 1 || count($this->get_actions()) < 1) {
+            return false;
+        }
+
+        // Check that every action and filter in this step is valid.
+        foreach ($this->get_filters() as $filter) {
+            if (!$filter->is_valid()) {
+                return false;
+            }
+        }
+
+        foreach ($this->get_actions() as $action) {
+            if (!$action->is_valid()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Updates the title of this workflow step.
      *
      * @param string|null $title The new title for this step, or null to remove the custom title
