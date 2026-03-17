@@ -114,8 +114,8 @@
                 <div class="card-footer text-center">
                     {{^isediting}}
                         <a
-                            class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{/active}} mx-1"
-                            style="font-style: normal;"
+                            class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{^isvalid}} disabled {{/isvalid}} {{/active}} mx-1"
+                            style="font-style: normal; {{^active}}{{^isvalid}} opacity: 0.65 !important; {{/isvalid}}{{/active}}"
                             role="button"
                             href="{{{urls.activate}}}"
                         >
@@ -165,7 +165,7 @@
             <div class="col-sm-12 text-center">
                 <div class="d-flex flex-row justify-content-center align-items-start">
                     <div
-                        class="card {{#isediting}} ms-5 {{/isediting}}"
+                        class="card {{#isediting}} ms-5 {{/isediting}} {{^isvalid}} border-warning {{/isvalid}}"
                         style="width: fit-content; min-width: 420px; {{#isediting}} border-top-right-radius: 0; {{/isediting}}"
                     >
                         <div class="card-header d-flex flex-row align-items-center justify-content-between">
@@ -191,6 +191,16 @@
                                         data-bs-title="{{description}}"
                                     ></i>
                                 {{/description}}
+                                {{^isvalid}}
+                                    <i
+                                        class="fa-solid fa-triangle-exclamation fa-lg text-warning"
+                                        title="{{#str}} step_is_invalid, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-title="{{#str}} step_is_invalid, tool_userautodelete {{/str}}"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="{{#str}} step_is_invalid, tool_userautodelete {{/str}}"
+                                    ></i>
+                                {{/isvalid}}
                             </div>
                         </div>
                         <div class="card-body">
@@ -223,6 +233,16 @@
                                                     <i class="{{iconclass}} pe-1"></i>
                                                 {{/iconclass}}
                                                 {{title}}
+                                                {{^isvalid}}
+                                                    <i
+                                                        class="fa-solid fa-triangle-exclamation text-warning ms-1"
+                                                        title="{{#str}} filter_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-toggle="tooltip"
+                                                        data-title="{{#str}} filter_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-title="{{#str}} filter_is_invalid, tool_userautodelete {{/str}}"
+                                                    ></i>
+                                                {{/isvalid}}
                                             </div>
                                             {{#details}}
                                                 <div>
@@ -279,6 +299,16 @@
                                                     <i class="{{iconclass}} pe-1"></i>
                                                 {{/iconclass}}
                                                 {{title}}
+                                                {{^isvalid}}
+                                                    <i
+                                                        class="fa-solid fa-triangle-exclamation text-warning ms-1"
+                                                        title="{{#str}} action_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-toggle="tooltip"
+                                                        data-title="{{#str}} action_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-title="{{#str}} action_is_invalid, tool_userautodelete {{/str}}"
+                                                    ></i>
+                                                {{/isvalid}}
                                             </div>
                                             {{#details}}
                                                 <div>

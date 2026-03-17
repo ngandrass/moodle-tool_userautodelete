@@ -70,6 +70,10 @@ $workflow = workflow::get_by_id($workflowid);
 // Handle actions.
 $output = '';
 if ($action == 'enable') {
+    if (!$workflow->is_valid()) {
+        throw new moodle_exception('can_not_activate_invalid_workflow', 'tool_userautodelete');
+    }
+
     $enableform = new workflow_enable_form();
     if ($enableform->is_submitted()) {
         if (!$enableform->is_cancelled()) {

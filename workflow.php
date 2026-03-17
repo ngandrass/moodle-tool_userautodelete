@@ -98,12 +98,14 @@ foreach ($workflow->steps as $step) {
         'sort' => $step->sort,
         'isfirst' => $step->sort === 1,
         'islast' => $step->sort === count($workflow->steps),
+        'isvalid' => $step->is_valid(),
         'processes' => $processesmeta[$step->id],
         'filters' => array_map(fn ($filter) => [
             'id' => $filter->id,
             'name' => $filter->get_plugin_name(),
             'title' => $filter->get_instance_title(),
             'details' => $filter->get_instance_details(),
+            'isvalid' => $filter->is_valid(),
             'iconclass' => $filter::get_icon_class(),
             'urls' => [
                 'edit' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
@@ -122,6 +124,7 @@ foreach ($workflow->steps as $step) {
             'name' => $action->get_plugin_name(),
             'title' => $action->get_instance_title(),
             'details' => $action->get_instance_details(),
+            'isvalid' => $action->is_valid(),
             'iconclass' => $action::get_icon_class(),
             'urls' => [
                 'edit' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
@@ -216,6 +219,7 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     'description' => $workflow->description,
     'sort' => $workflow->sort,
     'active' => $workflow->active,
+    'isvalid' => $workflow->is_valid(),
     'timecreated' => $workflow->timecreated,
     'timemodified' => $workflow->timemodified,
     'createdby' => [

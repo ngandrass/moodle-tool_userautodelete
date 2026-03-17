@@ -44,8 +44,15 @@ class workflow_enable_form extends \moodleform {
     public function definition() {
         global $OUTPUT;
         $mform = $this->_form;
-
         $workflow = workflow::get_by_id($this->optional_param('id', null, PARAM_INT));
+
+        // Preserve internal information of the management page.
+        $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
+        $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'action', $this->optional_param('action', null, PARAM_TEXT));
+        $mform->setType('action', PARAM_TEXT);
+        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
+        $mform->setType('returnurl', PARAM_RAW);
 
         // Generic warning message.
         $warnhead = get_string('areyousure');
@@ -59,14 +66,6 @@ class workflow_enable_form extends \moodleform {
             \core\output\notification::NOTIFY_WARNING,
             false,
         ));
-
-        // Preserve internal information of the management page.
-        $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
-        $mform->setType('id', PARAM_INT);
-        $mform->addElement('hidden', 'action', $this->optional_param('action', null, PARAM_TEXT));
-        $mform->setType('action', PARAM_TEXT);
-        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
-        $mform->setType('returnurl', PARAM_RAW);
 
         // Action buttons.
         $this->add_action_buttons(true, get_string('enable_workflow', 'tool_userautodelete'));
