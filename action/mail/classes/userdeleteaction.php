@@ -66,7 +66,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * @return string A descriptive string of this action instance's settings to be shown in the UI
      */
     public function get_instance_details(): string {
-        return $this->get_instance_setting('subject');
+        return $this->get_instance_setting('subject') ?? '';
     }
 
     /**
