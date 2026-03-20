@@ -27,8 +27,5 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-// General.
 $string['pluginname'] = 'Delete';
-
-// Privacy.
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';

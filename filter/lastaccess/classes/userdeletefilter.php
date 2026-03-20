@@ -107,6 +107,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'thresholdsec',
+                title: get_string('setting_thresholdsec', 'userdeletefilter_lastaccess'),
+                description: get_string('setting_thresholdsec_desc', 'userdeletefilter_lastaccess'),
                 type: PARAM_INT,
                 required: true,
                 default: YEARSECS * 3,

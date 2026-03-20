@@ -27,8 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-// General.
 $string['pluginname'] = 'Role';
-
-// Privacy.
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$string['setting_roleids'] = 'Roles';
+$string['setting_roleids_desc'] = 'TODO';

@@ -27,8 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-// General.
 $string['pluginname'] = 'Last access';
-
-// Privacy.
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$string['setting_thresholdsec'] = 'Threshold';
+$string['setting_thresholdsec_desc'] = 'TODO';

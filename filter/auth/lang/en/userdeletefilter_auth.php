@@ -27,8 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-// General.
 $string['pluginname'] = 'Auth method';
-
-// Privacy.
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$string['setting_auths'] = 'Authentication methods';
+$string['setting_auths_desc'] = 'TODO';
+$string['setting_inverted'] = 'Inverted match';
+$string['setting_inverted_desc'] = 'TODO';

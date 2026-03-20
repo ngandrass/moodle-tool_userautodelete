@@ -115,6 +115,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'delaysec',
+                title: get_string('setting_delaysec', 'userdeletefilter_delay'),
+                description: get_string('setting_delaysec_desc', 'userdeletefilter_delay'),
                 type: PARAM_INT,
                 required: true,
                 default: DAYSECS * 30,

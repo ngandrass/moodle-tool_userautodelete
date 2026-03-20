@@ -27,8 +27,5 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-// General.
 $string['pluginname'] = 'Sperren';
-
-// Privacy.
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';

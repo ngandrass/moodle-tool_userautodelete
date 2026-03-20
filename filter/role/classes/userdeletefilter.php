@@ -113,6 +113,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'roleids',
+                title: get_string('setting_roleids', 'userdeletefilter_role'),
+                description: get_string('setting_roleids_desc', 'userdeletefilter_role'),
                 type: PARAM_TEXT,
                 required: true,
                 default: '',
@@ -120,6 +122,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
             ),
             new instance_setting_descriptor(
                 key: 'inverted',
+                title: get_string('setting_inverted', 'userdeletefilter_role'),
+                description: get_string('setting_inverted_desc', 'userdeletefilter_role'),
                 type: PARAM_BOOL,
                 required: false,
                 default: false,

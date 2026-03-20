@@ -108,8 +108,20 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      */
     public static function instance_setting_descriptors(): array {
         return [
-            new instance_setting_descriptor('subject', PARAM_TEXT, true),
-            new instance_setting_descriptor('message', PARAM_TEXT, true),
+            new instance_setting_descriptor(
+                key: 'subject',
+                title: get_string('setting_subject', 'userdeleteaction_mail'),
+                description: get_string('setting_subject_desc', 'userdeleteaction_mail'),
+                type: PARAM_TEXT,
+                required: true
+            ),
+            new instance_setting_descriptor(
+                key: 'message',
+                title: get_string('setting_message', 'userdeleteaction_mail'),
+                description: get_string('setting_message_desc', 'userdeleteaction_mail'),
+                type: PARAM_TEXT,
+                required: true
+            ),
         ];
     }
 }

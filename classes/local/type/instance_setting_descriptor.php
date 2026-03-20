@@ -47,6 +47,10 @@ class instance_setting_descriptor {
     public function __construct(
         /** @var string Internal string that uniquely identifies this setting */
         public readonly string $key,
+        /** @var string Localized human-readable title of this setting */
+        public readonly string $title,
+        /** @var string Localized human-readable description of this setting */
+        public readonly string $description,
         /** @var string Moodle parameter type (e.g., PARAM_INT) */
         public readonly string $type,
         /** @var bool If true, the value must be set for any instance */
