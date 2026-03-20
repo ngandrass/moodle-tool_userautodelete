@@ -24,7 +24,6 @@
 
 namespace tool_userautodelete;
 
-use tool_userautodelete\local\trait\subplugin_instance_settings;
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\subplugin_type;
 use tool_userautodelete\local\type\userfilter_clause;
@@ -37,44 +36,24 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 /**
  * Interface for userdeletefilter sub-plugins
  */
-abstract class userdeletefilter {
-    use subplugin_instance_settings;
-
-    /** @var step|null The step this filter instance belongs to (lazy-loaded) */
-    protected ?step $step;
-
-    /**
-     * Creates a new instance of this filter sub-plugin
-     *
-     * @param int $id The ID of this filter sub-plugin instance
-     * @param int $stepid The ID of the step this filter instance is part of
-     */
-    private function __construct(
-        /** @var int The ID of this filter sub-plugin instance */
-        public readonly int $id,
-        /** @var int The ID of the step this filter instance is part of */
-        public readonly int $stepid,
-    ) {
-        $this->step = null;
-    }
-
+abstract class userdeletefilter extends step_subplugin {
     /**
      * Retrieves an user filter instance from the database and creates a local
      * instance of the respective filter sub-plugin class.
      *
-     * @param int $filterid The ID of the filter instance to retrieve
+     * @param int $instanceid The ID of the filter instance to retrieve
      * @return self An instance of the respective userdeletefilter sub-plugin
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function get_instance_by_id(int $filterid): self {
+    public static function get_instance_by_id(int $instanceid): self {
         global $DB;
 
         // Fetch filter instance record and sub-plugin class to instantiate.
-        $record = $DB->get_record(db_table::WORKFLOW_FILTER->value, ['id' => $filterid], '*', MUST_EXIST);
+        $record = $DB->get_record(db_table::WORKFLOW_FILTER->value, ['id' => $instanceid], '*', MUST_EXIST);
         $filtercls = plugin_util::get_subplugin_class('userdeletefilter', $record->pluginname);
 
-        return new $filtercls($filterid, $record->stepid);
+        return new $filtercls($instanceid, $record->stepid);
     }
 
     /**
@@ -139,30 +118,6 @@ abstract class userdeletefilter {
     }
 
     /**
-     * Returns the ID of this sub-plugin instance
-     *
-     * @return int The ID of this sub-plugin instance
-     */
-    public function get_instance_id(): int {
-        return $this->id;
-    }
-
-    /**
-     * Returns the step this filter instance belongs to
-     *
-     * @return step The step this filter instance belongs to
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function get_step(): step {
-        if ($this->step === null) {
-            $this->step = step::get_by_id($this->stepid);
-        }
-
-        return $this->step;
-    }
-
-    /**
      * Returns the type of this sub-plugin
      *
      * @return subplugin_type The type of this sub-plugin
@@ -177,56 +132,10 @@ abstract class userdeletefilter {
      *
      * @return string A font-awesome icon CSS class string combination
      */
+    #[\Override]
     public static function get_icon_class(): string {
         return 'fa-solid fa-filter';
     }
-
-    /**
-     * Returns a descriptive title of this filter instance to be shown in the UI
-     *
-     * This should be a very short human-readable string that allows to identify
-     * what the filter does at a glance, e.g., 'Last access' for a filter that
-     * filters users based on their last access time.
-     *
-     * @return string A descriptive title of this filter instance to be shown in the UI
-     * @throws \coding_exception
-     */
-    public function get_instance_title(): string {
-        return get_string('pluginname', 'userdeletefilter_' . static::get_plugin_name());
-    }
-
-    /**
-     * Returns a descriptive string of this filter instance's settings to be shown in the UI
-     *
-     * This should be a human-readable string that describes the actual settings
-     * of this filter instance, e.g., '<= 3 months' for a filter instance that
-     * filters users based on their last access time with a threshold of 3 months.
-     *
-     * If no settings are defined, this function can simply return an empty string.
-     *
-     * @return string A descriptive string of this filter instance's settings to be shown in the UI
-     */
-    public function get_instance_details(): string {
-        return '';
-    }
-
-    /**
-     * Validates the settings of this filter instance and returns whether they
-     * are considered valid and ready for use or not.
-     *
-     * @return bool True if this instance is valid and ready, false otherwise
-     * @throws \dml_exception
-     */
-    public function is_valid(): bool {
-        return $this->is_all_required_instance_settings_set();
-    }
-
-    /**
-     * Returns the name of this filter sub-plugin, e.g., 'lastaccess' for 'userdeletefilter_lastaccess'
-     *
-     * @return string The name of this filter sub-plugin
-     */
-    abstract public static function get_plugin_name(): string;
 
     /**
      * Returns a userfilter_clause object defining the SQL where clause and parameters
