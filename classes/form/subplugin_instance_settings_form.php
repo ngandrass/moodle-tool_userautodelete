@@ -89,6 +89,31 @@ class subplugin_instance_settings_form extends dynamic_form {
             $element = 's_' . $descriptor->key;
 
             switch ($descriptor->mformtype) {
+                case 'autocomplete':
+                    $mform->addElement(
+                        'autocomplete',
+                        $element,
+                        $descriptor->title->out(),
+                        $descriptor->choices,
+                        ['multiple' => false]
+                    );
+                    break;
+                case 'autocomplete-multi':
+                    $mform->addElement(
+                        'autocomplete',
+                        $element,
+                        $descriptor->title->out(),
+                        $descriptor->choices,
+                        ['multiple' => true]
+                    );
+                    break;
+                case 'select':
+                    $mform->addElement('select', $element, $descriptor->title->out(), $descriptor->choices);
+                    break;
+                case 'select-multi':
+                    $select = $mform->addElement('select', $element, $descriptor->title->out(), $descriptor->choices);
+                    $select->setMultiple(true);
+                    break;
                 case 'text':
                     $mform->addElement('text', $element, $descriptor->title->out(), ['size' => 32]);
                     break;
