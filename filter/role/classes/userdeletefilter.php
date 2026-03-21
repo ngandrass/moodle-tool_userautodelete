@@ -31,6 +31,8 @@ use tool_userautodelete\local\type\userfilter_clause;
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+require_once("{$CFG->libdir}/accesslib.php");
+
 
 /**
  * User delete filter based on role assignments
@@ -67,7 +69,18 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * @return string A descriptive string of this filter instance's settings to be shown in the UI
      */
     public function get_instance_details(): string {
-        return $this->get_instance_setting('roleids'); // TODO (MDL-0): Implement properly.
+        $roleids = $this->get_instance_setting('roleids');
+
+        if (!$roleids) {
+            return '';
+        }
+
+        $availableroles = role_fix_names(get_all_roles(), null, ROLENAME_ORIGINAL, true);
+        $roles = array_map(fn ($roleid) => $availableroles[$roleid], $roleids);
+
+        $inverted = $this->get_instance_setting('inverted') ? '! ' : '';
+
+        return $inverted . join(', ', $roles);
     }
 
     /**
@@ -88,7 +101,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
 
         // Transform comma separated list of role IDs into SQL clause.
         [$insql, $inparams] = $DB->get_in_or_equal(
-            items: explode(',', $this->get_instance_setting('roleids')),
+            items: $this->get_instance_setting('roleids'),
             type: SQL_PARAMS_NAMED,
             prefix: 'roleparam',
             equal: !$this->get_instance_setting('inverted')
@@ -118,7 +131,10 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_TEXT,
                 required: true,
                 default: '',
-                readonly: false
+                choices: role_fix_names(get_all_roles(), null, ROLENAME_ORIGINAL, true),
+                serialize: true,
+                readonly: false,
+                mformtype: 'autocomplete-multi'
             ),
             new instance_setting_descriptor(
                 key: 'inverted',
