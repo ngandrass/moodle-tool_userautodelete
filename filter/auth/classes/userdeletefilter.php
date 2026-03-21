@@ -65,12 +65,22 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * If no settings are defined, this function can simply return an empty string.
      *
      * @return string A descriptive string of this filter instance's settings to be shown in the UI
+     * @throws \coding_exception
      */
     public function get_instance_details(): string {
-        $auths = explode(',', $this->get_instance_setting('auths'));
+        $auths = $this->get_instance_setting('auths');
         $inverted = $this->get_instance_setting('inverted');
 
-        return ($inverted ? '!' : '') . implode(', ', $auths);
+        if (!$auths) {
+            return '';
+        }
+
+        $authnames = array_map(
+            fn ($auth) => get_string('pluginname', 'auth_' . $auth),
+            $auths
+        );
+
+        return ($inverted ? '! ' : '') . implode(', ', $authnames);
     }
 
     /**
@@ -91,7 +101,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
 
         // Transform comma separated list of auth methods into SQL clause.
         [$insql, $inparams] = $DB->get_in_or_equal(
-            items: explode(',', $this->get_instance_setting('auths')),
+            items: $this->get_instance_setting('auths'),
             type: SQL_PARAMS_NAMED,
             prefix: 'authparam',
             equal: !$this->get_instance_setting('inverted')
@@ -108,6 +118,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * defines and exposes.
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
+     * @throws \coding_exception
      */
     #[\Override]
     public static function instance_setting_descriptors(): array {
@@ -118,7 +129,10 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_TEXT,
                 required: true,
                 default: 'manual',
-                readonly: false
+                choices: self::get_auth_plugins(),
+                serialize: true,
+                readonly: false,
+                mformtype: 'autocomplete-multi'
             ),
             new instance_setting_descriptor(
                 key: 'inverted',
@@ -130,5 +144,23 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 mformtype: 'selectyesno'
             ),
         ];
+    }
+
+    /**
+     * Generates a list of all installed auth plugins, indexed by their identifier
+     *
+     * @return array List of all installed auth plugins where the key is the plugin
+     * identifier and the value is the localized human-readable name
+     * @throws \coding_exception
+     */
+    public static function get_auth_plugins(): array {
+        return array_reduce(
+            array_keys(\core_component::get_plugin_list('auth')),
+            function ($carry, $item) {
+                $carry[$item] = get_string('pluginname', 'auth_' . $item);
+                return $carry;
+            },
+            []
+        );
     }
 }
