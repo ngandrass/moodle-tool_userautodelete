@@ -59,6 +59,21 @@ trait subplugin_instance_settings {
     abstract public function get_instance_id(): int;
 
     /**
+     * Determines which instance settings need to be (de-)serialized
+     *
+     * @return array List of setting keys that require (de-)serialization
+     */
+    public function get_serialized_settings(): array {
+        return array_reduce(static::instance_setting_descriptors(), function ($carry, $item) {
+            if ($item->serialize) {
+                $carry[] = $item->key;
+            }
+
+            return $carry;
+        }, []);
+    }
+
+    /**
      * Retrieves all setting key-value pairs for this sub-plugin instance.
      *
      * @return array An associative array of setting key-value pairs
@@ -75,9 +90,15 @@ trait subplugin_instance_settings {
             ]
         );
 
+        // Build response object.
         $settings = [];
+        $serializedsettings = $this->get_serialized_settings();
         foreach ($records as $record) {
-            $settings[$record->datakey] = $record->datavalue;
+            if (in_array($record->datakey, $serializedsettings)) {
+                $settings[$record->datakey] = json_decode($record->datavalue);
+            } else {
+                $settings[$record->datakey] = $record->datavalue;
+            }
         }
 
         return $settings;
@@ -92,8 +113,10 @@ trait subplugin_instance_settings {
     public function get_instance_setting(string $key): mixed {
         global $DB;
 
+        $serialized = in_array($key, $this->get_serialized_settings());
+
         try {
-            return $DB->get_field(
+            $value = $DB->get_field(
                 db_table::INSTANCE_SETTINGS->value,
                 'datavalue',
                 [
@@ -103,6 +126,12 @@ trait subplugin_instance_settings {
                 ],
                 MUST_EXIST
             );
+
+            if ($serialized) {
+                $value = json_decode($value);
+            }
+
+            return $value;
         } catch (\dml_exception $e) {
             return null;
         }
@@ -118,6 +147,10 @@ trait subplugin_instance_settings {
      */
     public function set_instance_setting(string $key, mixed $value): void {
         global $DB;
+
+        if (in_array($key, $this->get_serialized_settings())) {
+            $value = json_encode($value);
+        }
 
         try {
             $transaction = $DB->start_delegated_transaction();
@@ -176,6 +209,10 @@ trait subplugin_instance_settings {
             // Skip null values, as they indicate that the setting should not be set.
             if ($value === null) {
                 continue;
+            }
+
+            if ($descriptor->serialize) {
+                $value = json_encode($value);
             }
 
             $settings[] = (object) [

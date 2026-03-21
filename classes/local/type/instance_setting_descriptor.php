@@ -64,6 +64,13 @@ class instance_setting_descriptor {
         public readonly bool $required = false,
         /** @var mixed Default value to load if no concrete value is given */
         public readonly mixed $default = null,
+        /** @var null|array List of valid choices as key-value pairs where the
+         * key represents the data that will be stored and the value the title
+         * of the option when displaying in the UI */
+        public readonly ?array $choices = null,
+        /** @var bool If true, the value will be serialized before storing. This
+         * is required when working with complex structures, e.g., arrays */
+        public readonly bool $serialize = false,
         /** @var bool If true, the value can not be changed by the user */
         public readonly bool $readonly = false,
         /** @var string Moodle form element type that is rendered in the settings
