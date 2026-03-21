@@ -25,6 +25,7 @@
 
 namespace userdeletefilter_delay;
 
+use core\lang_string;
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 use tool_userautodelete\local\type\userfilter_clause;
@@ -115,8 +116,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'delaysec',
-                title: get_string('setting_delaysec', 'userdeletefilter_delay'),
-                description: get_string('setting_delaysec_desc', 'userdeletefilter_delay'),
+                title: new lang_string('setting_delaysec', 'userdeletefilter_delay'),
                 type: PARAM_INT,
                 required: true,
                 default: DAYSECS * 30,

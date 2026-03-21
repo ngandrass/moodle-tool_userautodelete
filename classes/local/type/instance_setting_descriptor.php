@@ -27,6 +27,8 @@ namespace tool_userautodelete\local\type;
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+use core\lang_string;
+
 
 /**
  * Descriptor for instance settings of sub-plugins
@@ -39,6 +41,9 @@ class instance_setting_descriptor {
      * instance exposes.
      *
      * @param string $key Internal string that uniquely identifies this setting
+     * @param lang_string $title Identifier and component that point to a localized
+     * human-readable title of this setting. A _help entry mus also be defined
+     * for every setting.
      * @param string $type Moodle parameter type (e.g., PARAM_INT)
      * @param bool $required If true, the value must be set for any instance
      * @param mixed|null $default Default value to load if no concrete value is given
@@ -47,10 +52,10 @@ class instance_setting_descriptor {
     public function __construct(
         /** @var string Internal string that uniquely identifies this setting */
         public readonly string $key,
-        /** @var string Localized human-readable title of this setting */
-        public readonly string $title,
-        /** @var string Localized human-readable description of this setting */
-        public readonly string $description,
+        /** @var lang_string Identifier and component that point to a localized
+         * human-readable title of this setting. A _help entry must also be
+         * defined for every setting. */
+        public readonly lang_string $title,
         /** @var string Moodle parameter type (e.g., PARAM_INT) */
         public readonly string $type,
         /** @var bool If true, the value must be set for any instance */

@@ -24,6 +24,7 @@
 
 namespace userdeletefilter_auth;
 
+use core\lang_string;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 use tool_userautodelete\local\type\userfilter_clause;
 
@@ -113,8 +114,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'auths',
-                title: get_string('setting_auths', 'userdeletefilter_auth'),
-                description: get_string('setting_auths_desc', 'userdeletefilter_auth'),
+                title: new lang_string('setting_auths', 'userdeletefilter_auth'),
                 type: PARAM_TEXT,
                 required: true,
                 default: 'manual',
@@ -122,8 +122,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
             ),
             new instance_setting_descriptor(
                 key: 'inverted',
-                title: get_string('setting_inverted', 'userdeletefilter_auth'),
-                description: get_string('setting_inverted_desc', 'userdeletefilter_auth'),
+                title: new lang_string('setting_inverted', 'userdeletefilter_auth'),
                 type: PARAM_BOOL,
                 required: false,
                 default: false,

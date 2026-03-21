@@ -29,3 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Send mail';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$string['setting_message'] = 'Message';
+$string['setting_message_help'] = 'TODO';
+$string['setting_subject'] = 'Subject';
+$string['setting_subject_help'] = 'TODO';

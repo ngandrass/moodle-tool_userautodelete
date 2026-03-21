@@ -24,6 +24,7 @@
 
 namespace userdeleteaction_mail;
 
+use core\lang_string;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 use tool_userautodelete\process;
 
@@ -110,15 +111,13 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
         return [
             new instance_setting_descriptor(
                 key: 'subject',
-                title: get_string('setting_subject', 'userdeleteaction_mail'),
-                description: get_string('setting_subject_desc', 'userdeleteaction_mail'),
+                title: new lang_string('setting_subject', 'userdeleteaction_mail'),
                 type: PARAM_TEXT,
                 required: true
             ),
             new instance_setting_descriptor(
                 key: 'message',
-                title: get_string('setting_message', 'userdeleteaction_mail'),
-                description: get_string('setting_message_desc', 'userdeleteaction_mail'),
+                title: new lang_string('setting_message', 'userdeleteaction_mail'),
                 type: PARAM_TEXT,
                 required: true
             ),

@@ -24,6 +24,7 @@
 
 namespace userdeletefilter_suspension;
 
+use core\lang_string;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 use tool_userautodelete\local\type\userfilter_clause;
 
@@ -110,8 +111,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'suspended',
-                title: get_string('suspended', 'userdeletefilter_suspension'),
-                description: get_string('suspended_desc', 'userdeletefilter_suspension'),
+                title: new lang_string('suspended', 'userdeletefilter_suspension'),
                 type: PARAM_BOOL,
                 required: true,
                 default: true,
