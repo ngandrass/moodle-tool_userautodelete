@@ -88,11 +88,15 @@ class subplugin_instance_settings_form extends dynamic_form {
         foreach ($instance::instance_setting_descriptors() as $descriptor) {
             $element = 's_' . $descriptor->key;
 
-            $mform->addElement(
-                'text',
-                $element,
-                $descriptor->title->out()
-            );
+            switch ($descriptor->mformtype) {
+                case 'text':
+                    $mform->addElement('text', $element, $descriptor->title->out(), ['size' => 32]);
+                    break;
+                default:
+                    $mform->addElement($descriptor->mformtype, $element, $descriptor->title->out());
+                    break;
+            }
+
             $mform->setType($element, $descriptor->type);
             $mform->setDefault($element, $descriptor->default);
             $mform->addHelpButton($element, $descriptor->title->get_identifier(), $descriptor->title->get_component());

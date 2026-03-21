@@ -113,13 +113,15 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
                 key: 'subject',
                 title: new lang_string('setting_subject', 'userdeleteaction_mail'),
                 type: PARAM_TEXT,
-                required: true
+                required: true,
+                mformtype: 'text'
             ),
             new instance_setting_descriptor(
                 key: 'message',
                 title: new lang_string('setting_message', 'userdeleteaction_mail'),
-                type: PARAM_TEXT,
-                required: true
+                type: PARAM_RAW,
+                required: true,
+                mformtype: 'editor',
             ),
         ];
     }

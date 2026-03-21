@@ -111,11 +111,12 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return [
             new instance_setting_descriptor(
                 key: 'suspended',
-                title: new lang_string('suspended', 'userdeletefilter_suspension'),
+                title: new lang_string('setting_suspended', 'userdeletefilter_suspension'),
                 type: PARAM_BOOL,
                 required: true,
                 default: true,
-                readonly: false
+                readonly: false,
+                mformtype: 'selectyesno'
             ),
         ];
     }

@@ -525,7 +525,8 @@
                                 args: {instanceid: {{id}}, instancetype: "filter"},
                                 modalConfig: {
                                     title: Str.get_string('edit_filter', 'tool_userautodelete'),
-                                    isVerticallyCentered: true
+                                    isVerticallyCentered: true,
+                                    large: true,
                                 },
                             });
                             await modalForm.show();
@@ -546,7 +547,8 @@
                                 args: {instanceid: {{id}}, instancetype: "action"},
                                 modalConfig: {
                                     title: Str.get_string('edit_action', 'tool_userautodelete'),
-                                    isVerticallyCentered: true
+                                    isVerticallyCentered: true,
+                                    large: true,
                                 },
                             });
                             await modalForm.show();

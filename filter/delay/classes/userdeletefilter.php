@@ -120,7 +120,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_INT,
                 required: true,
                 default: DAYSECS * 30,
-                readonly: false
+                readonly: false,
+                mformtype: 'duration'
             ),
         ];
     }

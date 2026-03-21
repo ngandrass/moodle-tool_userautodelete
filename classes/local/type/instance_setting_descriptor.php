@@ -48,6 +48,8 @@ class instance_setting_descriptor {
      * @param bool $required If true, the value must be set for any instance
      * @param mixed|null $default Default value to load if no concrete value is given
      * @param bool $readonly If true, the value can not be changed by the user
+     * @param string $mformtype Moodle form element type that is rendered in the
+     * settings edit form
      */
     public function __construct(
         /** @var string Internal string that uniquely identifies this setting */
@@ -64,6 +66,9 @@ class instance_setting_descriptor {
         public readonly mixed $default = null,
         /** @var bool If true, the value can not be changed by the user */
         public readonly bool $readonly = false,
+        /** @var string Moodle form element type that is rendered in the settings
+         * edit form */
+        public readonly string $mformtype = 'text',
     ) {
     }
 }

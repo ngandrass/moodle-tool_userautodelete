@@ -29,5 +29,5 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Suspension state';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
-$string['setting_suspension'] = 'Suspension state';
-$string['setting_suspension_help'] = 'TODO';
+$string['setting_suspended'] = 'Suspension state';
+$string['setting_suspended_help'] = 'TODO';

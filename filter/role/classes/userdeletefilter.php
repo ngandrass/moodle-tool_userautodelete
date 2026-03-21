@@ -126,7 +126,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_BOOL,
                 required: false,
                 default: false,
-                readonly: false
+                readonly: false,
+                mformtype: 'selectyesno'
             ),
         ];
     }

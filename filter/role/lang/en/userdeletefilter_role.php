@@ -29,5 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Role';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$string['setting_inverted'] = 'Inverted';
+$string['setting_inverted_help'] = 'TODO';
 $string['setting_roleids'] = 'Roles';
 $string['setting_roleids_help'] = 'TODO';
