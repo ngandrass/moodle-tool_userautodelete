@@ -468,8 +468,8 @@
 {{#js}}
     {{#isediting}}
         require(
-            ['jquery', 'core/modal', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str', 'tool_userautodelete/modal_delete_save_cancel'],
-            function($, Modal, ModalSaveCancel, ModalEvents, Templates, Str, ModalDeleteSaveCancel) {
+            ['jquery', 'core/modal', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str', 'core_form/modalform', 'tool_userautodelete/modal_delete_save_cancel'],
+            function($, Modal, ModalSaveCancel, ModalEvents, Templates, Str, ModalForm, ModalDeleteSaveCancel) {
                 // Deserialize available filters and actions
                 var availableFilters = JSON.parse(atob('{{{availablefilters}}}'));
                 var availableActions = JSON.parse(atob('{{{availableactions}}}'));
@@ -519,41 +519,43 @@
 
                     {{#filters}}
                         $('#edit-filter-modal-{{id}}').click(async() => {
-                            var modal = await ModalDeleteSaveCancel.create({
-                                title: Str.get_string('edit_filter', 'tool_userautodelete'),
-                                body: Templates.render('tool_userautodelete/modal/editfilter', {
-                                    id: {{id}},
-                                    submiturl: '{{{urls.edit}}}',
-                                }),
-                                isVerticallyCentered: true,
+                            var modalForm = new ModalForm({
+                                formClass: "tool_userautodelete\\form\\subplugin_instance_settings_form",
+                                moduleName: "tool_userautodelete/modal_delete_save_cancel",
+                                args: {instanceid: {{id}}, instancetype: "filter"},
+                                modalConfig: {
+                                    title: Str.get_string('edit_filter', 'tool_userautodelete'),
+                                    isVerticallyCentered: true
+                                },
                             });
-                            modal.getRoot().on(ModalEvents.save, (e) => {
-                                e.target.querySelector('form').submit();
+                            await modalForm.show();
+                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                                location.reload();
                             });
-                            modal.getRoot().on(ModalEvents.delete, (e) => {
+                            modalForm.modal.getRoot().on(ModalEvents.delete, (e) => {
                                 window.location.href = '{{{urls.delete}}}';
                             });
-                            modal.show();
                         });
                     {{/filters}}
 
                     {{#actions}}
                         $('#edit-action-modal-{{id}}').click(async() => {
-                            var modal = await ModalDeleteSaveCancel.create({
-                                title: Str.get_string('edit_action', 'tool_userautodelete'),
-                                body: Templates.render('tool_userautodelete/modal/editaction', {
-                                    id: {{id}},
-                                    submiturl: '{{{urls.edit}}}',
-                                }),
-                                isVerticallyCentered: true,
+                            var modalForm = new ModalForm({
+                                formClass: "tool_userautodelete\\form\\subplugin_instance_settings_form",
+                                moduleName: "tool_userautodelete/modal_delete_save_cancel",
+                                args: {instanceid: {{id}}, instancetype: "action"},
+                                modalConfig: {
+                                    title: Str.get_string('edit_action', 'tool_userautodelete'),
+                                    isVerticallyCentered: true
+                                },
                             });
-                            modal.getRoot().on(ModalEvents.save, (e) => {
-                                e.target.querySelector('form').submit();
+                            await modalForm.show();
+                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                                location.reload();
                             });
-                            modal.getRoot().on(ModalEvents.delete, (e) => {
+                            modalForm.modal.getRoot().on(ModalEvents.delete, (e) => {
                                 window.location.href = '{{{urls.delete}}}';
                             });
-                            modal.show();
                         });
                     {{/actions}}
                 {{/steps}}
