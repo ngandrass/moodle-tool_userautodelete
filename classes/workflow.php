@@ -539,7 +539,7 @@ class workflow {
             'LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON p.userid = u.id ' .
             'WHERE u.deleted = 0 ' .
             '    AND p.id IS NULL ' .
-            $userfilterclause->sql,
+            '    AND ' . $userfilterclause->sql,
             $userfilterclause->params
         );
     }
