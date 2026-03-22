@@ -95,7 +95,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         }
 
         return new userfilter_clause(
-            sql: 'u.suepended = :suspended',
+            sql: 'u.suspended = :suspended',
             params: ['suspended' => $suspended ? 1 : 0]
         );
     }
