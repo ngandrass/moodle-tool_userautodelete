@@ -89,6 +89,15 @@ if ($action) {
 // Prepare step data.
 $stepsmeta = [];
 $processesmeta = process::get_process_stats_for_workflow(workflowid: $workflow->id, indexbystepid: true);
+$globalprocessmeta = array_reduce(
+    $processesmeta,
+    function ($carry, $item) {
+        $carry['active'] += $item->active;
+        $carry['finished'] += $item->finished;
+        return $carry;
+    },
+    ['active' => 0, 'finished' => 0]
+);
 
 foreach ($workflow->steps as $step) {
     $stepsmeta[] = [
@@ -234,6 +243,7 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     ],
     'stepcount' => count($stepsmeta),
     'steps' => $stepsmeta,
+    'processes' => $globalprocessmeta,
     'availablefilters' => isset($availablefilters) ? base64_encode(json_encode($availablefilters)) : null,
     'availableactions' => isset($availableactions) ? base64_encode(json_encode($availableactions)) : null,
     'isediting' => $isediting,

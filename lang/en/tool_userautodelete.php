@@ -50,7 +50,7 @@ $string['description'] = 'Description';
 
 $string['workflow'] = 'Workflow';
 $string['manage_workflow'] = 'Manage workflow';
-$string['manage_workflow_desc'] = 'TODO';
+$string['manage_workflow_desc'] = 'This page displays a single user lifecycle workflow and allows you to edit it. Each workflow is composed of steps that each have filters and actions. The filters define a set of criteria for user selection and timing. The actions define what should happen to the user accounts that enter the given step.';
 $string['manage_workflows'] = 'Manage workflows';
 $string['manage_workflows_desc'] = 'All currently existing workflows are listed here.';
 $string['step'] = 'Step';

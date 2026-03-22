@@ -104,6 +104,21 @@
                         {{/active}}
                     </li>
                     <li class="list-group-item">
+                        <b>{{#str}} processes, tool_userautodelete {{/str}}:</b>
+                        <span>
+                            {{#str}}
+                                workflow_stat_processes_in_steps,
+                                tool_userautodelete,
+                                {
+                                    "active": {{processes.active}},
+                                    "finished": {{processes.finished}},
+                                    "steps": {{stepcount}}
+                                }
+                            {{/str}}
+                        </span>
+                    </li>
+
+                    <li class="list-group-item">
                         <b>{{#str}} lastmodified {{/str}}:</b>
                         <span>
                             {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
