@@ -78,12 +78,23 @@
             "activate": "https://foo.bar/baz",
             "delete": "https://foo.bar/baz",
             "edit": "https://foo.bar/baz",
+            "back": "https://foo.bar/baz"
         }
     }
 }}
 
-<h2>{{#str}} manage_workflow, tool_userautodelete {{/str}}</h2>
-<p>{{#str}} manage_workflow_desc, tool_userautodelete {{/str}}</p>
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>{{#str}} manage_workflow, tool_userautodelete {{/str}}</h2>
+            <p>{{#str}} manage_workflow_desc, tool_userautodelete {{/str}}</p>
+            <a href="{{{urls.back}}}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i>&nbsp;
+                {{#str}} back_to_overview, tool_userautodelete {{/str}}
+            </a>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="row mb-5">

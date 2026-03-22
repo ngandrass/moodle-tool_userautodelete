@@ -271,6 +271,7 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
                 'action' => $isediting ? '' : 'edit',
             ]
         ))->out(false),
+        'back' => (new moodle_url('/admin/tool/userautodelete/workflows.php'))->out(false),
     ],
 ]);
 echo $OUTPUT->footer();
