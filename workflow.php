@@ -248,10 +248,14 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
             '/admin/tool/userautodelete/manageworkflow.php',
             ['id' => $workflow->id, 'action' => 'addstep', 'returnurl' => $PAGE->url->out_as_local_url(true)]
         ))->out(false),
-        'delete' => (new moodle_url(
-            '/admin/tool/userautodelete/workflow.php',
-            ['id' => $workflow->id, 'action' => 'TODO'] // TODO (MDL-0): Implement.
-        ))->out(false),
+        'delete' => new moodle_url(
+            '/admin/tool/userautodelete/manageworkflow.php',
+            [
+                'id' => $workflow->id,
+                'action' => 'delete',
+                'returnurl' => (new moodle_url('/admin/tool/userautodelete/workflows.php'))->out(true),
+            ]
+        ),
         'edit' => (new moodle_url(
             '/admin/tool/userautodelete/workflow.php',
             [
@@ -259,6 +263,10 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
                 'action' => $isediting ? '' : 'edit',
             ]
         ))->out(false),
+        'update' => new moodle_url(
+            '/admin/tool/userautodelete/manageworkflow.php',
+            ['id' => $workflow->id, 'action' => 'edit', 'returnurl' => $PAGE->url->out_as_local_url(true)]
+        ),
         'back' => (new moodle_url('/admin/tool/userautodelete/workflows.php'))->out(false),
         'dryrun' => (new moodle_url(
             '/admin/tool/userautodelete/dryrun.php',

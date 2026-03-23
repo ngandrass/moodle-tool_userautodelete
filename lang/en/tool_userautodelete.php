@@ -78,6 +78,7 @@ $string['add_step'] = 'Add step';
 $string['edit_action'] = 'Edit action';
 $string['edit_filter'] = 'Edit filter';
 $string['edit_step'] = 'Edit step';
+$string['edit_workflow'] = 'Edit workflow';
 $string['delete_action'] = 'Delete action';
 $string['delete_filter'] = 'Delete filter';
 $string['delete_step'] = 'Delete step';

@@ -95,6 +95,9 @@ if ($action == 'enable') {
     $workflow->move(sort_move_direction::UP);
 } else if ($action == 'movedown') {
     $workflow->move(sort_move_direction::DOWN);
+} else if ($action == 'edit') {
+    $workflow->set_title(required_param('title', PARAM_TEXT));
+    $workflow->set_description(required_param('description', PARAM_TEXT));
 } else if ($action == 'addstep') {
     step::create($workflow);
 } else if ($action == 'add') {

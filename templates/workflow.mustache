@@ -99,93 +99,151 @@
 <div class="container">
     <div class="row mb-5">
         <div class="col-sm-12">
-            <div class="card m-auto" style="width: fit-content; min-width: 580px;">
-                <div class="card-header text-white bg-primary">
-                    <b>{{title}}</b><br>
-                    <span>{{description}}</span>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <b>{{#str}} status {{/str}}:</b>
-                        {{#active}}
-                            <span class="badge badge-success">{{#str}} active {{/str}}</span>
-                        {{/active}}
-                        {{^active}}
-                            <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
-                        {{/active}}
-                    </li>
-                    <li class="list-group-item">
-                        <b>{{#str}} processes, tool_userautodelete {{/str}}:</b>
-                        <span>
-                            {{#str}}
-                                workflow_stat_processes_in_steps,
-                                tool_userautodelete,
-                                {
-                                    "active": {{processes.active}},
-                                    "finished": {{processes.finished}},
-                                    "steps": {{stepcount}}
-                                }
-                            {{/str}}
-                        </span>
-                    </li>
-
-                    <li class="list-group-item">
-                        <b>{{#str}} lastmodified {{/str}}:</b>
-                        <span>
-                            {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
-                        </span>
-                        (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
-                    </li>
-                </ul>
-                <div class="card-footer text-center">
-                    {{^isediting}}
-                        <a
-                            class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{^isvalid}} disabled {{/isvalid}} {{/active}} mx-1"
-                            style="font-style: normal; {{^active}}{{^isvalid}} opacity: 0.65 !important; {{/isvalid}}{{/active}}"
-                            role="button"
-                            href="{{{urls.activate}}}"
-                        >
+            <div class="d-flex flex-row justify-content-center align-items-start">
+                <div
+                    class="card {{#isediting}} ms-5 {{/isediting}}"
+                    style="width: fit-content; min-width: 580px;"
+                >
+                    <div
+                        class="card-header text-white bg-primary"
+                        style="{{#isediting}} border-top-right-radius: 0; {{/isediting}}"
+                    >
+                        <b>{{title}}</b><br>
+                        <span>{{description}}</span>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <b>{{#str}} status {{/str}}:</b>
                             {{#active}}
-                                <i class="fa-solid fa-stop"></i>&nbsp;
-                                {{#str}} disable_workflow, tool_userautodelete {{/str}}
+                                <span class="badge badge-success">{{#str}} active {{/str}}</span>
                             {{/active}}
                             {{^active}}
-                                <i class="fa-solid fa-play"></i>&nbsp;
-                                {{#str}} enable_workflow, tool_userautodelete {{/str}}
+                                <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
                             {{/active}}
-                        </a>
-                    {{/isediting}}
-                    {{#isediting}}
+                        </li>
+                        <li class="list-group-item">
+                            <b>{{#str}} processes, tool_userautodelete {{/str}}:</b>
+                            <span>
+                                {{#str}}
+                                    workflow_stat_processes_in_steps,
+                                    tool_userautodelete,
+                                    {
+                                        "active": {{processes.active}},
+                                        "finished": {{processes.finished}},
+                                        "steps": {{stepcount}}
+                                    }
+                                {{/str}}
+                            </span>
+                        </li>
+
+                        <li class="list-group-item">
+                            <b>{{#str}} lastmodified {{/str}}:</b>
+                            <span>
+                                {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                            </span>
+                            (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
+                        </li>
+                    </ul>
+                    <div class="card-footer text-center">
+                        {{^isediting}}
+                            <a
+                                class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{^isvalid}} disabled {{/isvalid}} {{/active}} mx-1"
+                                style="font-style: normal; {{^active}}{{^isvalid}} opacity: 0.65 !important; {{/isvalid}}{{/active}}"
+                                role="button"
+                                href="{{{urls.activate}}}"
+                            >
+                                {{#active}}
+                                    <i class="fa-solid fa-stop"></i>&nbsp;
+                                    {{#str}} disable_workflow, tool_userautodelete {{/str}}
+                                {{/active}}
+                                {{^active}}
+                                    <i class="fa-solid fa-play"></i>&nbsp;
+                                    {{#str}} enable_workflow, tool_userautodelete {{/str}}
+                                {{/active}}
+                            </a>
+                        {{/isediting}}
+                        {{#isediting}}
+                            <a
+                                class="btn btn-warning mx-1"
+                                style="font-style: normal;"
+                                role="button"
+                                href="{{{urls.dryrun}}}"
+                            >
+                                <i class="fa-solid fa-flask"></i>&nbsp;
+                                {{#str}} dry_run, tool_userautodelete {{/str}}
+                            </a>
+                        {{/isediting}}
                         <a
-                            class="btn btn-warning mx-1"
+                            class="btn btn-primary {{#active}} btn-outline-primary disabled {{/active}} mx-1"
                             style="font-style: normal;"
                             role="button"
-                            href="{{{urls.dryrun}}}"
+                            href="{{{urls.edit}}}"
                         >
-                            <i class="fa-solid fa-flask"></i>&nbsp;
-                            {{#str}} dry_run, tool_userautodelete {{/str}}
+                            <i class="fa-solid fa-pencil"></i>&nbsp;
+                            {{#isediting}}
+                                {{#str}} turneditingoff {{/str}}
+                            {{/isediting}}
+                            {{^isediting}}
+                                {{#str}} turneditingon {{/str}}
+                            {{/isediting}}
                         </a>
-                    {{/isediting}}
-                    <a
-                        class="btn btn-primary {{#active}} btn-outline-primary disabled {{/active}} mx-1"
-                        style="font-style: normal;"
-                        role="button"
-                        href="{{{urls.edit}}}"
-                    >
-                        <i class="fa-solid fa-pencil"></i>&nbsp;
-                        {{#isediting}}
-                            {{#str}} turneditingoff {{/str}}
-                        {{/isediting}}
-                        {{^isediting}}
-                            {{#str}} turneditingon {{/str}}
-                        {{/isediting}}
-                    </a>
-                    {{#active}}
-                        <div class="mt-1">
-                            <i>{{#str}} can_not_edit_active_workflow, tool_userautodelete {{/str}}</i>
-                        </div>
-                    {{/active}}
+                        {{#active}}
+                            <div class="mt-1">
+                                <i>{{#str}} can_not_edit_active_workflow, tool_userautodelete {{/str}}</i>
+                            </div>
+                        {{/active}}
+                    </div>
                 </div>
+                {{#isediting}}
+                    <div style="margin-left: -1px; margin-top: 1px;">
+                        <div
+                            class="btn-group-vertical"
+                            role="group"
+                        >
+                            <a
+                                id="edit-workflow-modal-{{id}}"
+                                class="btn px-2 btn-outline-primary"
+                                style="border-top-left-radius: 0;"
+                                role="button"
+                                title="{{#str}} edit {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-title="{{#str}} edit {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="{{#str}} edit {{/str}}"
+                            >
+                                <i
+                                    class="icon fa-solid fa-pencil fa-fw mx-0"
+                                    title="{{#str}} edit {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} edit {{/str}}"
+                                ></i>
+                            </a>
+                            <a
+                                href="{{{urls.delete}}}"
+                                class="btn px-2 btn-outline-primary"
+                                style="border-bottom-left-radius: 0;"
+                                role="button"
+                                title="{{#str}} delete {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-title="{{#str}} delete {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="{{#str}} delete {{/str}}"
+                            >
+                                <i
+                                    class="icon fa-solid fa-trash fa-fw mx-0"
+                                    title="{{#str}} delete {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} delete {{/str}}"
+                                ></i>
+                            </a>
+                        </div>
+                    </div>
+                {{/isediting}}
+
             </div>
         </div>
     </div>
@@ -512,6 +570,23 @@
                 var availableActions = JSON.parse(atob('{{{availableactions}}}'));
 
                 // Setup modals
+                $('#edit-workflow-modal-{{id}}').click(async() => {
+                    var modal = await ModalSaveCancel.create({
+                        title: Str.get_string('edit_workflow', 'tool_userautodelete'),
+                        body: Templates.render('tool_userautodelete/modal/editworkflow', {
+                            id: {{id}},
+                            title: '{{title}}',
+                            description: '{{description}}',
+                            submiturl: '{{{urls.update}}}',
+                        }),
+                        isVerticallyCentered: true,
+                    });
+                    modal.getRoot().on(ModalEvents.save, (e) => {
+                        e.target.querySelector('form').submit();
+                    });
+                    modal.show();
+                });
+
                 {{#steps}}
                     $('#edit-step-modal-{{id}}').click(async() => {
                         var modal = await ModalSaveCancel.create({
