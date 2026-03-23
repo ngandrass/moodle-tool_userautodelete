@@ -31,6 +31,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Automatic user deletion';
 $string['back_to_settings'] = 'Back to settings';
 $string['back_to_overview'] = 'Back to overview';
+$string['back_to_workflow'] = 'Back to workflow';
 $string['task_executeworkflows'] = 'Execute workflows';
 $string['reltime_prefix_ago'] = '';
 $string['reltime_suffix_ago'] = 'ago';
@@ -49,6 +50,7 @@ $string['unnamed'] = 'Unnamed';
 $string['title'] = 'Title';
 $string['description'] = 'Description';
 $string['id'] = 'ID';
+$string['selection_filters'] = 'Selection filters';
 
 $string['workflow'] = 'Workflow';
 $string['manage_workflow'] = 'Manage workflow';

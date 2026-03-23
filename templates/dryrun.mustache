@@ -21,6 +21,22 @@
 
     Example context (json):
     {
+        "id": 123,
+        "title": "Workflow title",
+        "description": "Workflow description",
+        "affecteduserscount": 42,
+        "ingressfilters": [
+            "Filter 1",
+            "Filter 2",
+            "Filter 3"
+        ],
+        "ingressfilterscount": 3,
+        "timemodified": 1690000000,
+        "modifiedby": {
+            "id": 2,
+            "fullname": "Admin User",
+            "profileurl": "https://example.com/user/profile.php?id=2"
+        },
         "dryruntablehtml": "<table></table>",
         "url": {
             "back": "https://example.com/back"
@@ -33,15 +49,49 @@
     <div class="col-sm-12">
         <h2>{{#str}} dry_run, tool_userautodelete {{/str}}</h2>
         <p>{{#str}} dry_run_explanation, tool_userautodelete {{/str}}</p>
-        <a href="{{{urls.back}}}" class="btn btn-secondary">
-            <i class="fa-solid fa-arrow-left"></i>&nbsp;
-            {{#str}} back_to_overview, tool_userautodelete {{/str}}
-        </a>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-12">
+        <div class="card m-auto" style="width: fit-content; min-width: 580px;">
+            <div class="card-header text-white bg-primary">
+                <b>{{title}}</b><br>
+                <span>{{description}}</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <b>{{#str}} affected_users, tool_userautodelete {{/str}}:</b>
+                    {{affecteduserscount}}
+                </li>
+                <li class="list-group-item">
+                    <b>{{#str}} selection_filters, tool_userautodelete {{/str}}:</b>
+                    {{#ingressfilters}}
+                        <span class="badge rounded-pill badge-primary text-bg-primary">
+                            {{.}}
+                        </span>
+                    {{/ingressfilters}}
+                </li>
+                <li class="list-group-item">
+                    <b>{{#str}} lastmodified {{/str}}:</b>
+                    <span>
+                        {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                    </span>
+                    (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
+                </li>
+            </ul>
+            <div class="card-footer text-center">
+                <a href="{{{urls.back}}}" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i>&nbsp;
+                    {{#str}} back_to_workflow, tool_userautodelete {{/str}}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 mt-5">
         {{{dryruntablehtml}}}
     </div>
 </div>

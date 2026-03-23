@@ -545,6 +545,18 @@ class workflow {
     }
 
     /**
+     * Retrieves the number of users that are applicable for this workflow based
+     * on the filters defined in the first step of this workflow.
+     *
+     * @return int Number of users that are applicable for this workflow
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function get_applicable_users_count(): int {
+        return count($this->get_applicable_users());
+    }
+
+    /**
      * Loads the default workflow steps with their respective filters and
      * actions into this workflow.
      *

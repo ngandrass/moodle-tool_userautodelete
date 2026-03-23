@@ -49,6 +49,8 @@ adminpage_util::admin_hidden_externalpage_setup(
 
 // Get requested workflow and prepare table.
 $workflow = workflow::get_by_id($workflowid);
+$ingressfilters = $workflow->steps[0]->filters;
+
 $dryruntable = new dryrun_users_table("dryrun-{$workflowid}", $workflow);
 $dryruntable->define_baseurl($PAGE->url);
 ob_start();
@@ -62,7 +64,6 @@ echo $OUTPUT->render_from_template('tool_userautodelete/dryrun', [
     'id' => $workflow->id,
     'title' => $workflow->title,
     'description' => $workflow->description,
-    'active' => $workflow->active,
     'timecreated' => $workflow->timecreated,
     'timemodified' => $workflow->timemodified,
     'createdby' => [
@@ -75,7 +76,9 @@ echo $OUTPUT->render_from_template('tool_userautodelete/dryrun', [
         'fullname' => fullname(core_user::get_user($workflow->modifiedby)),
         'profileurl' => (new moodle_url('/user/profile.php', ['id' => $workflow->modifiedby]))->out(false),
     ],
-    'stepcount' => $workflow->get_step_count(),
+    'ingressfilters' => array_map(fn ($filter) => $filter->get_instance_title(), $ingressfilters),
+    'ingressfilterscount' => count($ingressfilters),
+    'affecteduserscount' => $workflow->get_applicable_users_count(),
     'dryruntablehtml' => $dryruntablehtml,
     'urls' => [
         'back' => (new moodle_url(
