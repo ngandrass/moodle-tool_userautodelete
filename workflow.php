@@ -260,6 +260,10 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
             ]
         ))->out(false),
         'back' => (new moodle_url('/admin/tool/userautodelete/workflows.php'))->out(false),
+        'dryrun' => (new moodle_url(
+            '/admin/tool/userautodelete/dryrun.php',
+            ['workflowid' => $workflow->id]
+        ))->out(false),
     ],
 ]);
 echo $OUTPUT->footer();

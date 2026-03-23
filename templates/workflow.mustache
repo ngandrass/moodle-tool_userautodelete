@@ -155,6 +155,17 @@
                             {{/active}}
                         </a>
                     {{/isediting}}
+                    {{#isediting}}
+                        <a
+                            class="btn btn-warning mx-1"
+                            style="font-style: normal;"
+                            role="button"
+                            href="{{{urls.dryrun}}}"
+                        >
+                            <i class="fa-solid fa-flask"></i>&nbsp;
+                            {{#str}} dry_run, tool_userautodelete {{/str}}
+                        </a>
+                    {{/isediting}}
                     <a
                         class="btn btn-primary {{#active}} btn-outline-primary disabled {{/active}} mx-1"
                         style="font-style: normal;"
