@@ -66,12 +66,19 @@
                     "movedown": "https://foo.bar/baz"
                 }
             }
-        ]
+        ],
+        "urls": {
+            "add": "https://foo.bar/add"
+        }
     }
 }}
 
-<h2>{{#str}} manage_workflows, tool_userautodelete {{/str}}</h2>
-<p>{{#str}} manage_workflows_desc, tool_userautodelete {{/str}}</p>
+<div class="row">
+    <div class="col-sm-12">
+        <h2>{{#str}} manage_workflows, tool_userautodelete {{/str}}</h2>
+        <p>{{#str}} manage_workflows_desc, tool_userautodelete {{/str}}</p>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-sm-12">
@@ -207,5 +214,18 @@
                 {{/workflows}}
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <a
+            href="{{{urls.add}}}"
+            class="btn btn-success"
+            role="button"
+        >
+            <i class="fa-regular fa-plus"></i>&nbsp;
+            {{#str}} create_new_workflow, tool_userautodelete {{/str}}
+        </a>
     </div>
 </div>

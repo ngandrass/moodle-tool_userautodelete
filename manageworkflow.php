@@ -37,7 +37,7 @@ global $CFG, $DB, $OUTPUT, $PAGE, $SITE, $USER;
 require_admin();
 
 // Request parameters.
-$workflowid = required_param('id', PARAM_INT);
+$workflowid = optional_param('id', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);
 $returnurl = optional_param('returnurl', null, PARAM_RAW);
 
@@ -53,7 +53,9 @@ adminpage_util::admin_hidden_externalpage_setup(
 );
 
 // Get requested workflow.
-$workflow = workflow::get_by_id($workflowid);
+if ($action != 'add') {
+    $workflow = workflow::get_by_id($workflowid);
+}
 
 // Handle actions.
 $output = '';
@@ -85,6 +87,19 @@ if ($action == 'enable') {
     $workflow->move(sort_move_direction::DOWN);
 } else if ($action == 'addstep') {
     step::create($workflow);
+} else if ($action == 'add') {
+    // Create new workflow with an empty step.
+    $workflow = workflow::create(
+        get_string('newworkflow_title', 'tool_userautodelete'),
+        get_string('newworkflow_desc', 'tool_userautodelete')
+    );
+    step::create($workflow);
+
+    // Redirect user into workflow editing mask.
+    redirect(new moodle_url(
+        '/admin/tool/userautodelete/workflow.php',
+        ['id' => $workflow->id, 'action' => 'edit']
+    ));
 } else {
     throw new moodle_exception('invalid_action', 'tool_userautodelete');
 }

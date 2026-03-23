@@ -51,6 +51,7 @@ $string['title'] = 'Title';
 $string['description'] = 'Description';
 $string['id'] = 'ID';
 $string['selection_filters'] = 'Selection filters';
+$string['create_new_workflow'] = 'Create new workflow';
 
 $string['workflow'] = 'Workflow';
 $string['manage_workflow'] = 'Manage workflow';
@@ -113,6 +114,8 @@ $string['defaultworkflow_warning_step_title'] = 'Warn inactive users';
 $string['defaultworkflow_warning_step_desc'] = 'Sends a warning mail to inactive users. Users are selected by the given filter criteria.';
 $string['defaultworkflow_delete_step_title'] = 'Delete inactive users';
 $string['defaultworkflow_delete_step_desc'] = 'Deletes users that have been inactive for a long time.';
+$string['newworkflow_title'] = 'New workflow';
+$string['newworkflow_desc'] = 'This is a freshly created workflow';
 
 // Task execution.
 $string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';

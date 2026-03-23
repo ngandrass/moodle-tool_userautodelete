@@ -98,5 +98,11 @@ foreach ($workflows as $workflow) {
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('tool_userautodelete/workflows', [
     'workflows' => $workflowmeta,
+    'urls' => [
+        'add' => new moodle_url(
+            '/admin/tool/userautodelete/manageworkflow.php',
+            ['action' => 'add']
+        ),
+    ],
 ]);
 echo $OUTPUT->footer();
