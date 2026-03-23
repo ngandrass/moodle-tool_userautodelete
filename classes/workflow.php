@@ -252,6 +252,9 @@ class workflow {
 
         $transaction = $DB->start_delegated_transaction();
 
+        // Deactivate workflow to stop all user processes.
+        $this->deactivate();
+
         // Delete all steps (including filters and actions) of this workflow.
         foreach ($this->get_steps() as $step) {
             $step->delete();
