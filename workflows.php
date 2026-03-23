@@ -80,7 +80,11 @@ foreach ($workflows as $workflow) {
             ),
             'delete' => new moodle_url(
                 '/admin/tool/userautodelete/manageworkflow.php',
-                ['id' => $workflow->id, 'action' => 'delete']
+                [
+                    'id' => $workflow->id,
+                    'action' => 'delete',
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ]
             ),
             'moveup' => new moodle_url(
                 '/admin/tool/userautodelete/manageworkflow.php',

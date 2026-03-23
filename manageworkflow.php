@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_userautodelete\form\workflow_delete_form;
 use tool_userautodelete\form\workflow_disable_form;
 use tool_userautodelete\form\workflow_enable_form;
 use tool_userautodelete\local\type\sort_move_direction;
@@ -80,6 +81,15 @@ if ($action == 'enable') {
         }
     } else {
         $output = $disableform->render();
+    }
+} else if ($action == 'delete') {
+    $deleteform = new workflow_delete_form();
+    if ($deleteform->is_submitted()) {
+        if (!$deleteform->is_cancelled()) {
+            $workflow->delete();
+        }
+    } else {
+        $output = $deleteform->render();
     }
 } else if ($action == 'moveup') {
     $workflow->move(sort_move_direction::UP);
