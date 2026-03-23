@@ -183,7 +183,7 @@ $string['setting_warning_email_body_default'] = '<p>Hello,</p><p>your account on
 // Page: info / dryrun
 $string['dry_run'] = 'Dry-run';
 $string['page_title_dryrun'] = 'Automatic user deletion (dry-run)';
-$string['dry_run_explanation'] = 'TODO';
+$string['dry_run_explanation'] = '<p>Below you will find all users that would be ingested by this workflow upon execution. None of the users is actually ingested at this point, so you can safely inspect the list to verify that the workflow is configured correctly.</p><p>Please note, that a single user can only be part of a single workflow at any point in time. Therefore, only users that match the defined filter criteria of the first workflow step and are not yet part of any workflow are listed below.</p>';
 $string['current_configuration'] = 'Current configuration';
 $string['current_configuration_table_desc'] = 'This table lists the next time a check for inactive users would be executed in the background as well as the configured thresholds for warning e-mails and user deletions. Additionally, user roles that are excluded from the deletion process are listed here.';
 $string['dry_run_affected_users_desc'] = 'Users listed here will either receive a warning email or will be deleted right away. If no users are listed, no user has been inactive for longer than the configured thresholds, or the user is ignored according to the plugin configuration. Accounts that have been created but to which no user ever logged in are listed with their creation date <i>"Time created"</i> instead of the last login date <i>"Last access"</i>.';
