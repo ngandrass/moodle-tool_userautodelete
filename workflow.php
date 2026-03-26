@@ -235,7 +235,6 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     'availablefilters' => isset($availablefilters) ? base64_encode(json_encode($availablefilters)) : null,
     'availableactions' => isset($availableactions) ? base64_encode(json_encode($availableactions)) : null,
     'isediting' => $isediting,
-    'canbeactivated' => false, // TODO (MDL-0): Create check if a workflow is valid.
     'urls' => [
         'activate' => (new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
