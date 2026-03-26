@@ -191,6 +191,14 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
+        // Define table tool_userautodelete_mail to be dropped.
+        $table = new xmldb_table('tool_userautodelete_mail');
+
+        // Conditionally launch drop table for tool_userautodelete_mail.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
         // VVV | Take existing old v1 settings and migrate them to a new corresponding workflow | VVV.
         $oldconfig = get_config('tool_userautodelete');
         $workflow = workflow::create(
