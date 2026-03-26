@@ -34,6 +34,8 @@ use core_privacy\local\request\writer;
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+// TODO (MDL-0): Update whole privacy provider to reflect v2 changes.
+
 
 /**
  * Privacy provider for tool_userautodelete
