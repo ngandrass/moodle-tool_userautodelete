@@ -43,13 +43,12 @@ final class manager_test extends \advanced_testcase {
     }
 
     /**
-     * Tests that the user deletion tasks are not executed when the plugin is disabled
+     * Tests that no workflows are executed when the plugin is disabled
      *
      * @covers \tool_userautodelete\manager
      *
      * @return void
      * @throws \coding_exception
-     * @throws \dml_exception
      */
     public function test_prevent_run_if_disabled(): void {
         $this->resetAfterTest();

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for the check_and_delete_users task
+ * Tests for the executeworkflows task
  *
  * @package   tool_userautodelete
  * @copyright 2026 Niels Gandraß <niels@gandrass.de>
@@ -28,11 +28,11 @@ namespace tool_userautodelete\task;
 /**
  * Tests for the logger class
  */
-final class check_and_delete_users_test extends \advanced_testcase {
+final class executeworkflows_test extends \advanced_testcase {
     /**
      * Tests that the task name getter does not throw any exceptions
      *
-     * @covers \tool_userautodelete\task\executeworkflows::get_name
+     * @covers \tool_userautodelete\task\executeworkflows
      *
      * @return void
      * @throws \coding_exception
@@ -47,7 +47,7 @@ final class check_and_delete_users_test extends \advanced_testcase {
      *
      * Everything else is covered in the manager_test class.
      *
-     * @covers \tool_userautodelete\task\executeworkflows::execute
+     * @covers \tool_userautodelete\task\executeworkflows
      *
      * @return void
      * @throws \coding_exception
@@ -55,6 +55,7 @@ final class check_and_delete_users_test extends \advanced_testcase {
      */
     public function test_execute(): void {
         $this->resetAfterTest();
+        set_config('enable', true, 'tool_userautodelete');
 
         $task = new executeworkflows();
         $task->execute();
