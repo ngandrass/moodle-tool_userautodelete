@@ -24,6 +24,7 @@
 
 namespace tool_userautodelete;
 
+use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\sort_move_direction;
 
 
@@ -107,8 +108,9 @@ final class step_test extends \advanced_testcase {
      */
     public function test_sorting_steps(): void {
         $this->resetAfterTest();
-        $workflow = workflow::create('Test Workflow', 'Description');
 
+        // Create workflow with three steps.
+        $workflow = workflow::create('Test Workflow', 'Description');
         $step1 = step::create(workflow: $workflow, title: 'Step 1', description: '');
         $step2 = step::create(workflow: $workflow, title: 'Step 2', description: '');
         $step3 = step::create(workflow: $workflow, title: 'Step 3', description: '');
@@ -149,5 +151,265 @@ final class step_test extends \advanced_testcase {
             array_map(fn(step $step): int => $step->id, step::get_all_workflow_steps($workflow)),
             'Sort order changed after boundary move attempts',
         );
+    }
+
+    /**
+     * Tests next/previous navigation helpers and first/final state checks.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_step_navigation_helpers(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step1 = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $step2 = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        $step3 = step::create(workflow: $workflow, title: 'Step 3', description: '');
+
+        $this->assertNull($step1->previous(), 'First step should not have a previous step');
+        $this->assertSame($step2->id, $step1->next()?->id, 'First step should point to second step');
+        $this->assertTrue($step1->is_first(), 'First step should be marked as first');
+        $this->assertFalse($step1->is_final(), 'First step should not be marked as final');
+
+        $this->assertSame($step1->id, $step2->previous()?->id, 'Second step should point to first as previous');
+        $this->assertSame($step3->id, $step2->next()?->id, 'Second step should point to third as next');
+        $this->assertFalse($step2->is_first(), 'Second step should not be marked as first');
+        $this->assertFalse($step2->is_final(), 'Second step should not be marked as final');
+
+        $this->assertSame($step2->id, $step3->previous()?->id, 'Third step should point to second as previous');
+        $this->assertNull($step3->next(), 'Final step should not have a next step');
+        $this->assertFalse($step3->is_first(), 'Final step should not be marked as first');
+        $this->assertTrue($step3->is_final(), 'Final step should be marked as final');
+    }
+
+    /**
+     * Tests title and description setters including nullification for empty values.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_updating_step_metadata(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Initial title', description: 'Initial description');
+
+        $step->set_title('Updated title');
+        $step->set_description('Updated description');
+        $updated = step::get_by_id($step->id);
+        $this->assertSame('Updated title', $updated->title, 'Updated step title was not persisted');
+        $this->assertSame('Updated description', $updated->description, 'Updated step description was not persisted');
+
+        $step->set_title('');
+        $step->set_description('');
+        $nullified = step::get_by_id($step->id);
+        $this->assertNull($nullified->title, 'Empty title should be persisted as null');
+        $this->assertNull($nullified->description, 'Empty description should be persisted as null');
+    }
+
+    /**
+     * Tests step validity handling for missing and required sub-plugin settings.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_step_validity_checks(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Validity step', description: '');
+
+        $this->assertFalse($step->is_valid(), 'Step without filters/actions should be invalid');
+
+        userdeletefilter::create_instance($step, 'suspension');
+        $this->assertFalse($step->is_valid(), 'Step with only one filter but no action should be invalid');
+
+        $mailaction = userdeleteaction::create_instance($step, 'mail');
+        $this->assertFalse($step->is_valid(), 'Step with missing required mail settings should be invalid');
+
+        $mailaction->set_instance_setting('subject', 'Subject');
+        $mailaction->set_instance_setting('message', 'Message body');
+        $this->assertTrue($step->is_valid(), 'Step should be valid after required settings are set');
+    }
+
+    /**
+     * Tests generation of the combined SQL filter clause for a step.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_generate_user_filter_clause(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        // Prepare a step with a filter instance.
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Filter step', description: '');
+        userdeletefilter::create_instance($step, 'suspension', ['suspended' => true]);
+
+        // Generate user filter clause and validate.
+        $clause = $step->generate_user_filter_clause();
+        $paramkey = 'f' . $step->id . 'suspended';
+
+        $this->assertStringContainsString('u.suspended = :' . $paramkey, $clause->sql, 'Suspension filter SQL is missing');
+        $this->assertArrayHasKey($paramkey, $clause->params, 'Renamed filter parameter is missing');
+        $this->assertSame(1, $clause->params[$paramkey], 'Suspension parameter value is incorrect');
+        $this->assertStringContainsString('(u.id NOT IN (', $clause->sql, 'Ignored-user SQL clause is missing');
+
+        foreach (array_map('intval', explode(',', $CFG->siteadmins)) as $adminid) {
+            $this->assertStringContainsString(
+                (string) $adminid,
+                $clause->sql,
+                'Admin ID is missing from ignored users clause'
+            );
+        }
+        $this->assertStringContainsString(
+            (string) $CFG->siteguest,
+            $clause->sql,
+            'Guest user ID is missing from ignored users clause'
+        );
+    }
+
+    /**
+     * Tests that deleting a step cascades to linked sub-plugins and reindexes sorts.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_deleting_step_reindexes_and_cascades(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare workflow with three steps, one of them having linked filter and action instances.
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step1 = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $step2 = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        $step3 = step::create(workflow: $workflow, title: 'Step 3', description: '');
+
+        $filter = userdeletefilter::create_instance($step2, 'suspension');
+        $action = userdeleteaction::create_instance($step2, 'suspend');
+
+        // Ensure that filter and action were actually created (just a safeguard ...).
+        $this->assertTrue(
+            $DB->record_exists(db_table::WORKFLOW_FILTER->value, ['id' => $filter->id]),
+            'Filter record does not exist in database'
+        );
+        $this->assertTrue(
+            $DB->record_exists(db_table::WORKFLOW_ACTION->value, ['id' => $action->id]),
+            'Action record does not exist in database'
+        );
+
+        // Delete step with filter and action. Validate deletion cascade and sort order re-indexing.
+        $step2->delete();
+
+        $remainingsteps = step::get_all_workflow_steps($workflow);
+        $this->assertCount(2, $remainingsteps, 'Unexpected number of steps after deletion');
+        $this->assertSame(
+            [$step1->id, $step3->id],
+            array_map(fn(step $step): int => $step->id, $remainingsteps),
+            'Unexpected step sort order'
+        );
+        $this->assertSame(1, $remainingsteps[0]->sort, 'First remaining step sort should be 1');
+        $this->assertSame(2, $remainingsteps[1]->sort, 'Second remaining step sort should be 2');
+
+        $this->assertFalse(
+            $DB->record_exists(db_table::WORKFLOW_FILTER->value, ['id' => $filter->id]),
+            'Filter record still exists in database after step deletion'
+        );
+        $this->assertFalse(
+            $DB->record_exists(db_table::WORKFLOW_ACTION->value, ['id' => $action->id]),
+            'Action record still exists in database after step deletion'
+        );
+    }
+
+    /**
+     * Tests that requesting a non-existing read-only property throws an exception.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_invalid_property_throws(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step', description: '');
+
+        $this->expectException(\coding_exception::class);
+        $unused = $step->nonexistingproperty;
+    }
+
+    /**
+     * Tests that touching a step clears lazy-loaded sub-plugin caches and
+     * propagates touch to workflow.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_step_touch(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare workflow with step.
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step', description: '');
+
+        // Prime lazy-loaded caches.
+        $this->assertCount(0, $step->filters, 'Expected no filters before fixture setup');
+        $this->assertCount(0, $step->actions, 'Expected no actions before fixture setup');
+
+        // Insert records directly to keep existing lazy caches stale until step::touch() is called.
+        $filterid = $DB->insert_record(db_table::WORKFLOW_FILTER->value, [
+            'stepid' => $step->id,
+            'pluginname' => 'suspension',
+        ]);
+        $actionid = $DB->insert_record(db_table::WORKFLOW_ACTION->value, [
+            'stepid' => $step->id,
+            'pluginname' => 'suspend',
+        ]);
+
+        $this->assertCount(0, $step->filters, 'Filter cache should still be stale before touch');
+        $this->assertCount(0, $step->actions, 'Action cache should still be stale before touch');
+
+        // Switch user so workflow::touch() can be asserted via modifiedby.
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $beforetouch = $step->workflow->timemodified;
+        sleep(1); // Wait one second to ensure that timemodified gets advanced.
+
+        $step->touch();
+
+        // Validate that everything got "touched".
+        $this->assertCount(1, $step->filters, 'Filter cache should be refreshed after touch');
+        $this->assertCount(1, $step->actions, 'Action cache should be refreshed after touch');
+        $this->assertSame($filterid, $step->filters[0]->id, 'Touched step returned unexpected filter instance');
+        $this->assertSame($actionid, $step->actions[0]->id, 'Touched step returned unexpected action instance');
+        $this->assertSame((int) $user->id, $step->workflow->modifiedby, 'Workflow modifiedby was not updated by touch');
+        $this->assertGreaterThanOrEqual($beforetouch, $step->workflow->timemodified, 'Workflow timemodified was not updated');
     }
 }

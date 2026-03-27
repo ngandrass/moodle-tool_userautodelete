@@ -110,6 +110,9 @@ class step {
             'description' => $description,
         ]);
 
+        // Mark workflow as modified.
+        $workflow->touch();
+
         $transaction->allow_commit();
 
         return self::get_by_id($stepid);
