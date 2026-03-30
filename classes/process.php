@@ -220,11 +220,11 @@ class process {
         $res = [];
         foreach ($stepstats as $stepstat) {
             $res[] = (object) [
-                'stepid' => $stepstat->stepid,
-                'total' => $stepstat->total,
-                'finished' => $stepstat->finished,
-                'active' => $stepstat->active,
-                'aborted' => $stepstat->aborted,
+                'stepid' => (int) $stepstat->stepid,
+                'total' => (int) $stepstat->total,
+                'finished' => (int) $stepstat->finished,
+                'active' => (int) $stepstat->active,
+                'aborted' => (int) $stepstat->aborted,
             ];
         }
 
