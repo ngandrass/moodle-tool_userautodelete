@@ -359,7 +359,9 @@ class process {
                 userid: $userid,
                 workflowid: $workflow->id,
                 stepid: $initialstep->id,
-                state: process_state::ACTIVE,
+                // We can determine the target state early because the transaction will result in
+                // a roleback if any action execution fails.
+                state: $initialstep->is_final() ? process_state::FINISHED : process_state::ACTIVE,
                 timecreated: $now,
                 timemodified: $now
             );
