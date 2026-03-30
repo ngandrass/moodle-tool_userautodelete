@@ -1,0 +1,118 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+use tool_userautodelete\step;
+use tool_userautodelete\userdeleteaction;
+use tool_userautodelete\userdeletefilter;
+use tool_userautodelete\workflow;
+
+// phpcs:ignore
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
+
+/**
+ * Tests generator for the tool_userautodelete plugin
+ *
+ * @package   tool_userautodelete
+ * @copyright 2026 Niels Gandraß <niels@gandrass.de>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class tool_userautodelete_generator extends \testing_data_generator {
+    /**
+     * Creates a new workflow and loads the default workflow steps
+     *
+     * @param string|null $title Custom title for the workflow
+     * @param string|null $description Custom description for the workflow
+     * @param bool $active If true, the workflow will be active after creation
+     * @return workflow
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function create_default_workflow(
+        ?string $title = null,
+        ?string $description = null,
+        bool $active = true
+    ): workflow {
+        $workflow = workflow::create(
+            $title ?? 'Default Workflow',
+            $description ?? 'This is the default workflow created by the generator.',
+        );
+        $workflow->load_default_workflow();
+
+        if ($active) {
+            $workflow->activate();
+        }
+
+        return $workflow;
+    }
+
+    /**
+     * Creates a new workflow with a single step containing a suspension state
+     * filter and an unsuspend action used for unit tests.
+     *
+     * @param string|null $title Custom title for the workflow
+     * @param string|null $description Custom description for the workflow
+     * @param bool $active If true, the workflow will be active after creation
+     * @return workflow
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function create_simple_suspend_workflow(
+        ?string $title,
+        ?string $description,
+        bool $active = true
+    ): workflow {
+        $workflow = workflow::create(
+            $title ?? 'Suspend Test Workflow',
+            $description ?? 'Simple workflow used for unit tests.',
+        );
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        userdeletefilter::create_instance($step, 'suspension', ['suspended' => true]);
+        userdeleteaction::create_instance($step, 'unsuspend');
+
+        if ($active) {
+            $workflow->activate();
+        }
+
+        return $workflow;
+    }
+
+    /**
+     * Creates a new workflow with two steps where the first step unsuspends a
+     * previously suspended user and the second step re-suspends the previously
+     * unsuspended user.
+     *
+     * @param string|null $title Custom title for the workflow
+     * @param string|null $description Custom title for the workflow
+     * @param bool $active If true, the workflow will be active after creation
+     * @return workflow
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function create_multistep_suspend_workflow(
+        ?string $title,
+        ?string $description,
+        bool $active = true
+    ): workflow {
+        $workflow = $this->create_simple_suspend_workflow($title, $description, $active);
+
+        $step = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        userdeletefilter::create_instance($step, 'suspension', ['suspended' => false]);
+        userdeleteaction::create_instance($step, 'suspend');
+
+        return $workflow;
+    }
+}
