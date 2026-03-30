@@ -267,7 +267,7 @@ class process {
                 'JOIN {user} u ON proc.userid = u.id ' .
                 'WHERE proc.stepid = :stepid ' .
                 'AND proc.state = :stateactive ' .
-                $userfilterclause->sql,
+                'AND ' . $userfilterclause->sql,
                 array_merge(
                     ['stepid' => $step->id, 'stateactive' => process_state::ACTIVE->value],
                     $userfilterclause->params
