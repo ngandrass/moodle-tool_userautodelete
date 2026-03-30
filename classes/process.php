@@ -435,7 +435,8 @@ class process {
             }
 
             if (!$targetstep) {
-                throw new \moodle_exception('process_unfinished_no_next_step', 'tool_userautodelete');
+                // Just a safeguard. Should not happen in reality but who knows ...
+                throw new \moodle_exception('process_unfinished_no_next_step', 'tool_userautodelete');  // @codeCoverageIgnore
             }
 
             // Step must belong to the same workflow as the current step.
@@ -445,7 +446,8 @@ class process {
 
             // Only process active workflows.
             if (!$targetstep->workflow->active) {
-                throw new \moodle_exception('workflow_inactive', 'tool_userautodelete');
+                // Just a safeguard since all processes are terminated once a workflow is deactivated ...
+                throw new \moodle_exception('workflow_inactive', 'tool_userautodelete');  // @codeCoverageIgnore
             }
 
             // Update process record and internal representation.
