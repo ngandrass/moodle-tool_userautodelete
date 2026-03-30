@@ -471,7 +471,7 @@ class process {
             }
 
             // Mark step as finished if the target step is the last step of the workflow.
-            if (!$targetstep->is_final()) {
+            if ($targetstep->is_final()) {
                 $DB->update_record(db_table::USER_PROCESS->value, [
                     'id' => $this->id,
                     'state' => process_state::FINISHED->value,
