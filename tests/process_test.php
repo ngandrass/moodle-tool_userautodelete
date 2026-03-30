@@ -234,8 +234,8 @@ final class process_test extends \advanced_testcase {
 
         $transitionable = process::get_active_processes_for_step($step, transitionableonly: true);
         $this->assertCount(1, $transitionable, 'Transitionable query should apply step filter criteria');
-        $this->assertArrayHasKey($process1->id, $transitionable, 'Suspended user should be transitionable');
-        $this->assertArrayNotHasKey($process2->id, $transitionable, 'Unsuspended user should not be transitionable');
+        $this->assertArrayNotHasKey($process1->id, $transitionable, 'Suspended user should not be transitionable');
+        $this->assertArrayHasKey($process2->id, $transitionable, 'Unsuspended user should be transitionable');
     }
 
     /**

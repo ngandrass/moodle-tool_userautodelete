@@ -256,7 +256,11 @@ class process {
         global $DB;
 
         if ($transitionableonly) {
-            $userfilterclause = $step->generate_user_filter_clause();
+            if (!$nextstep = $step->next()) {
+                return [];
+            }
+
+            $userfilterclause = $nextstep->generate_user_filter_clause();
 
             // Fetch all active process records that match the given user filter
             // clause for the given step.
