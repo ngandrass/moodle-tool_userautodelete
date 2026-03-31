@@ -25,12 +25,24 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\sort_move_direction;
 
 /**
  * Tests for the workflow class
  */
 final class workflow_test extends \advanced_testcase {
+    /**
+     * Returns the plugin-specific test data generator.
+     *
+     * @return \tool_userautodelete_generator
+     */
+    private function get_userautodelete_generator(): \tool_userautodelete_generator {
+        /** @var \tool_userautodelete_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_userautodelete');
+        return $generator;
+    }
+
     /**
      * Tests creation, retrieval and deletion of a workflow.
      *
@@ -324,6 +336,62 @@ final class workflow_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that deactivating a workflow aborts all still active processes.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_deactivate_aborts_active_processes(): void {
+        $this->resetAfterTest();
+
+        // Prepare active multi-step workflow with two active processes.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $steps = $workflow->steps;
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $process1 = process::create((int) $user1->id, $workflow);
+        $process2 = process::create((int) $user2->id, $workflow);
+
+        $this->assertSame(process_state::ACTIVE, $process1->state, 'First fixture process should start active');
+        $this->assertSame(process_state::ACTIVE, $process2->state, 'Second fixture process should start active');
+        $this->assertCount(
+            2,
+            process::get_active_processes_for_step($steps[0]),
+            'Expected two active processes before deactivation'
+        );
+
+        // Deactivate workflow and ensure all active processes are aborted.
+        $workflow->deactivate();
+
+        $this->assertFalse($workflow->active, 'Workflow should be inactive after deactivation');
+        $this->assertSame(
+            process_state::ABORTED,
+            process::get_by_id($process1->id)->state,
+            'First active process should be aborted during workflow deactivation'
+        );
+        $this->assertSame(
+            process_state::ABORTED,
+            process::get_by_id($process2->id)->state,
+            'Second active process should be aborted during workflow deactivation'
+        );
+        $this->assertCount(
+            0,
+            process::get_active_processes_for_step($steps[0]),
+            'No active processes should remain in the first step'
+        );
+        $this->assertCount(
+            0,
+            process::get_active_processes_for_step($steps[1]),
+            'No active processes should remain in the final step'
+        );
+    }
+
+    /**
      * Tests loading the default workflow into an empty workflow.
      *
      * @covers \tool_userautodelete\workflow
@@ -370,6 +438,140 @@ final class workflow_test extends \advanced_testcase {
 
         $workflow->load_default_workflow(true);
         $this->assertCount(2, $workflow->steps, 'Forced default workflow load should replace existing steps');
+    }
+
+    /**
+     * Tests workflow::get_applicable_users_count().
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_applicable_users_count(): void {
+        $this->resetAfterTest();
+
+        // Prepare workflow fixture and matching/non-matching users.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_simple_suspend_workflow('Workflow', 'Description', false);
+
+        $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $this->getDataGenerator()->create_user(['suspended' => 0]);
+
+        // Add a suspended user already covered by another workflow process.
+        $blockeduser = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $otherworkflow = $generator->create_multistep_suspend_workflow('Other workflow', 'Description', true);
+        process::create((int) $blockeduser->id, $otherworkflow);
+
+        // Assert that only users matching the first-step filter and without any process are counted.
+        $this->assertSame(2, $workflow->get_applicable_users_count(), 'Applicable user count is incorrect');
+    }
+
+    /**
+     * Tests that inactive workflows are ignored by workflow::process().
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_ignores_inactive_workflow(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare valid but inactive workflow with one matching user.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_simple_suspend_workflow('Workflow', 'Description', false);
+        $user = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Processing an inactive workflow must be a no-op.
+        $workflow->process();
+
+        $this->assertSame(
+            0,
+            $DB->count_records(db_table::USER_PROCESS->value),
+            'Inactive workflow should not create any processes'
+        );
+        $this->assertSame(
+            1,
+            (int) $DB->get_field('user', 'suspended', ['id' => $user->id]),
+            'Inactive workflow should not execute step actions'
+        );
+    }
+
+    /**
+     * Tests that workflow::process() progresses existing processes and ingests new users.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_progresses_existing_processes_and_ingests_new_users(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active multi-step workflow.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+
+        // Seed one existing process and one yet-to-be-ingested matching user.
+        $existinguser = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $newuser = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $nonmatchinguser = $this->getDataGenerator()->create_user(['suspended' => 0]);
+
+        $existingprocess = process::create((int) $existinguser->id, $workflow);
+
+        // Process workflow and assert both transition and ingestion effects.
+        $workflow->process();
+
+        $existingreloaded = process::get_by_id($existingprocess->id);
+        $this->assertSame(
+            $workflow->steps[1]->id,
+            $existingreloaded->stepid,
+            'Existing process did not transition to the second step'
+        );
+        $this->assertSame(
+            process_state::FINISHED,
+            $existingreloaded->state,
+            'Existing process should finish in the final step'
+        );
+        $this->assertSame(
+            1,
+            (int) $DB->get_field('user', 'suspended', ['id' => $existinguser->id]),
+            'Second step should re-suspend transitioned user'
+        );
+
+        $newprocesses = process::get_user_processes((int) $newuser->id, includefinished: true);
+        $this->assertCount(1, $newprocesses, 'New applicable user should be ingested into the workflow');
+        $newprocess = reset($newprocesses);
+        $this->assertSame(
+            $workflow->steps[0]->id,
+            $newprocess->stepid,
+            'Newly ingested user should start in first step'
+        );
+        $this->assertSame(
+            process_state::ACTIVE,
+            $newprocess->state,
+            'Newly ingested user should remain active in first step'
+        );
+        $this->assertSame(
+            0,
+            (int) $DB->get_field('user', 'suspended', ['id' => $newuser->id]),
+            'Initial step should unsuspend newly ingested user'
+        );
+
+        $this->assertEmpty(
+            process::get_user_processes((int) $nonmatchinguser->id, includefinished: true),
+            'Non-matching user should not be ingested into the workflow'
+        );
     }
 
     /**

@@ -508,7 +508,7 @@ class workflow {
         // Steps are processed in reverse order to ensure that users that
         // progress to the next step within this run are not processed again
         // within the same run.
-        foreach (array_reverse($this->steps) as $step) {
+        foreach (array_reverse($this->get_steps()) as $step) {
             foreach (process::get_active_processes_for_step($step, transitionableonly: true) as $process) {
                 $process->transition();
             }
@@ -532,7 +532,7 @@ class workflow {
     protected function get_applicable_users(): array {
         global $DB;
 
-        $userfilterclause = $this->steps[0]->generate_user_filter_clause();
+        $userfilterclause = $this->get_steps()[0]->generate_user_filter_clause();
 
         // Get all users this workflow is sensitive to and that are not yet part
         // of any other workflow.
