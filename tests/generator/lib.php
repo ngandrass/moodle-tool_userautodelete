@@ -32,6 +32,27 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  */
 class tool_userautodelete_generator extends \testing_data_generator {
     /**
+     * Prepares request and page globals for form instantiation.
+     *
+     * @param string $path Page path for the form
+     * @param array $params Request parameters
+     * @return void
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     * @throws \dml_exception
+     */
+    public function prepare_form_environment(string $path, array $params): void {
+        global $PAGE;
+
+        $_GET = $params;
+        $_POST = [];
+        $_REQUEST = $params;
+
+        $PAGE->set_context(\context_system::instance());
+        $PAGE->set_url(new \moodle_url($path, $params));
+    }
+
+    /**
      * Creates a new workflow and loads the default workflow steps
      *
      * @param string|null $title Custom title for the workflow
