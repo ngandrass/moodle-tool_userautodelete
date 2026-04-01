@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     tool_userautodelete
- * @copyright   2025 Niels Gandraß <niels@gandrass.de>
+ * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,5 +29,5 @@ $plugin->component = 'tool_userautodelete';
 $plugin->release = '1.5.0';
 $plugin->version = 2025112500;
 $plugin->requires = 2022112800;
-$plugin->supported = [401, 501]; // X meta-supported-moodle{4.1 - 5.1} meta-supported-php{7.4 - 8.4}.
+$plugin->supported = [401, 502]; // X meta-supported-moodle{4.1 - 5.2} meta-supported-php{7.4 - 8.4}.
 $plugin->maturity = MATURITY_STABLE;

@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Ensure Moodle 5.2 compatibility
+
+
 ## Version 1.5.0 (2025112500)
 
 - List accounts that were created but to which no user ever logged into with their "Time created" instead of "Last
