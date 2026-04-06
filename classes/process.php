@@ -398,16 +398,46 @@ class process {
      * @throws \dml_exception
      */
     public function abort(): void {
+        self::abort_multiple([$this->id]);
+
+        $this->timemodified = time();
+        $this->state = process_state::ABORTED;
+    }
+
+    /**
+     * Aborts all processes in bulk, identified by their IDs
+     *
+     * @param int[] $processids List of process IDs to abort
+     * @return void
+     * @throws \dml_transaction_exception
+     */
+    public static function abort_multiple(array $processids): void {
         global $DB;
 
         $now = time();
-        $DB->update_record(db_table::USER_PROCESS->value, [
-            'id' => $this->id,
-            'state' => process_state::ABORTED->value,
-            'timemodified' => $now,
-        ]);
-        $this->state = process_state::ABORTED;
-        $this->timemodified = $now;
+
+        try {
+            $transaction = $DB->start_delegated_transaction();
+
+            foreach (array_chunk($processids, 128) as $chunk) {
+                [$insql, $inparams] = $DB->get_in_or_equal($chunk, SQL_PARAMS_NAMED, 'p');
+                $DB->execute(
+                    '
+                        UPDATE {' . db_table::USER_PROCESS->value . '}
+                        SET state = :abortedstate, timemodified = :timemodified
+                        WHERE id ' . $insql . '
+                    ',
+                    array_merge([
+                        'abortedstate' => process_state::ABORTED->value,
+                        'timemodified' => $now,
+                    ], $inparams)
+                );
+            }
+
+            $transaction->allow_commit();
+        } catch (\Exception $e) {
+            $transaction->rollback($e);
+        }
     }
 
     /**

@@ -42,6 +42,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @property-read workflow $workflow The workflow this step belongs to
  * @property-read userdeletefilter[] $filters The user filters linked to this step
  * @property-read userdeleteaction[] $actions The user actions linked to this step
+ * @property-read int|null $timeoutsec Number of seconds after which a process in this step
+ * is considered as inactive and can be aborted. Null values indicate that there is no timeout.
  * @property-read int $sort Position of this step in relation to the steps of the same workflow
  * @property-read string|null $title Optional custom title for this step
  * @property-read string|null $description Optional custom description for this step
@@ -134,6 +136,8 @@ class step {
                 return $this->get_filters();
             case 'actions':
                 return $this->get_actions();
+            case 'timeoutsec':
+                return $this->get_timeoutsec();
         }
 
         // Generic fallback.
@@ -166,6 +170,34 @@ class step {
         }
 
         return $this->filters;
+    }
+
+    /**
+     * Determines the number of seconds a user process has to stay untouched
+     * within this step to be considered as inactive and applicable for cleanup
+     *
+     * @return int|null Number of seconds before a process in this step is
+     * considered as timed out
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function get_timeoutsec(): ?int {
+        if (!$nextstep = $this->next()) {
+            return null;
+        }
+
+        // Use longest delay if present as filter.
+        $maxdelaysec = 0;
+        foreach ($nextstep->get_filters() as $filter) {
+            if ($filter->get_plugin_name() === 'delay') {
+                $delaysec = $filter->get_instance_setting('delaysec');
+                if ($delaysec > $maxdelaysec) {
+                    $maxdelaysec = $delaysec;
+                }
+            }
+        }
+
+        return $maxdelaysec ?: WEEKSECS;
     }
 
     /**

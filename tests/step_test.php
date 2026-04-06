@@ -412,4 +412,36 @@ final class step_test extends \advanced_testcase {
         $this->assertSame((int) $user->id, $step->workflow->modifiedby, 'Workflow modifiedby was not updated by touch');
         $this->assertGreaterThanOrEqual($beforetouch, $step->workflow->timemodified, 'Workflow timemodified was not updated');
     }
+
+    /**
+     * Tests timeout determination based on next-step delay filters.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_timeoutsec(): void {
+        $this->resetAfterTest();
+
+        // If next step has no delay filter, timeout should fall back to WEEKSECS.
+        $workflow = workflow::create('Workflow', 'Description');
+        $step1 = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $step2 = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        userdeletefilter::create_instance($step2, 'suspension');
+
+        $this->assertSame(WEEKSECS, $step1->timeoutsec, 'Timeout should default to one week when no delay filter is present');
+        $this->assertNull($step2->timeoutsec, 'Final step should not have a timeout');
+
+        // If next step has multiple delay filters, the longest one should be used.
+        $workflow2 = workflow::create('Workflow 2', 'Description');
+        $entry = step::create(workflow: $workflow2, title: 'Entry', description: '');
+        $delayed = step::create(workflow: $workflow2, title: 'Delayed', description: '');
+        userdeletefilter::create_instance($delayed, 'delay', ['delaysec' => DAYSECS]);
+        userdeletefilter::create_instance($delayed, 'delay', ['delaysec' => DAYSECS * 3]);
+        userdeletefilter::create_instance($delayed, 'suspension');
+
+        $this->assertSame(DAYSECS * 3, $entry->timeoutsec, 'Timeout should use the longest configured delay in the next step');
+    }
 }

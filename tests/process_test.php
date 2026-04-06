@@ -463,4 +463,85 @@ final class process_test extends \advanced_testcase {
         $this->expectException(\coding_exception::class);
         $unused = $process->nonexistingproperty;
     }
+
+    /**
+     * Tests that abort_multiple() aborts only selected processes.
+     *
+     * @covers \tool_userautodelete\process
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_abort_multiple_aborts_selected_processes(): void {
+        $this->resetAfterTest();
+
+        // Prepare active multi-step workflow and three active processes.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        $process1 = process::create((int) $user1->id, $workflow);
+        $process2 = process::create((int) $user2->id, $workflow);
+        $process3 = process::create((int) $user3->id, $workflow);
+
+        $before1 = $process1->timemodified;
+        $before2 = $process2->timemodified;
+        $before3 = $process3->timemodified;
+
+        sleep(1); // Ensure timemodified can advance.
+
+        process::abort_multiple([$process1->id, $process2->id]);
+
+        $aborted1 = process::get_by_id($process1->id);
+        $aborted2 = process::get_by_id($process2->id);
+        $untouched3 = process::get_by_id($process3->id);
+
+        $this->assertSame(process_state::ABORTED, $aborted1->state, 'First selected process should be aborted');
+        $this->assertSame(process_state::ABORTED, $aborted2->state, 'Second selected process should be aborted');
+        $this->assertSame(process_state::ACTIVE, $untouched3->state, 'Non-selected process should remain active');
+        $this->assertGreaterThan($before1, $aborted1->timemodified, 'First selected process timemodified should advance');
+        $this->assertGreaterThan($before2, $aborted2->timemodified, 'Second selected process timemodified should advance');
+        $this->assertSame($before3, $untouched3->timemodified, 'Non-selected process timemodified should remain unchanged');
+    }
+
+    /**
+     * Tests that abort_multiple() can handle larger process ID lists.
+     *
+     * @covers \tool_userautodelete\process
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_abort_multiple_with_large_batches(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active multi-step workflow and >128 active processes.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+
+        $processids = [];
+        for ($i = 0; $i < 130; $i++) {
+            $user = $this->getDataGenerator()->create_user(['suspended' => 1]);
+            $processids[] = process::create((int) $user->id, $workflow)->id;
+        }
+
+        process::abort_multiple($processids);
+
+        $records = $DB->get_records_list(db_table::USER_PROCESS->value, 'id', $processids, '', 'id,state');
+        $this->assertCount(130, $records, 'Expected all processes to be present after bulk abort');
+        foreach ($records as $record) {
+            $this->assertSame(
+                process_state::ABORTED->value,
+                (int) $record->state,
+                'All processes in the large batch should be aborted'
+            );
+        }
+    }
 }
