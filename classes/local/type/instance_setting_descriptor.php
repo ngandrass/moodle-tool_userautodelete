@@ -32,6 +32,8 @@ use core\lang_string;
 
 /**
  * Descriptor for instance settings of sub-plugins
+ *
+ * @codeCoverageIgnore
  */
 class instance_setting_descriptor {
     /**

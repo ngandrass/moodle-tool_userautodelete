@@ -30,6 +30,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 /**
  * SQL where clause with parameters to be used for filtering user datasets
+ *
+ * @codeCoverageIgnore
  */
 class userfilter_clause {
     /**
