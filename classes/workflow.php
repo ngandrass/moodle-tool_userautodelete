@@ -25,6 +25,7 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\sort_move_direction;
 
 // @codingStandardsIgnoreLine
@@ -541,9 +542,12 @@ class workflow {
             'FROM {user} u ' .
             'LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON p.userid = u.id ' .
             'WHERE u.deleted = 0 ' .
-            '    AND p.id IS NULL ' .
+            '    AND (p.id IS NULL OR p.state != :activestate) ' .
             '    AND ' . $userfilterclause->sql,
-            $userfilterclause->params
+            array_merge(
+                ['activestate' => process_state::ACTIVE->value],
+                $userfilterclause->params
+            )
         );
     }
 

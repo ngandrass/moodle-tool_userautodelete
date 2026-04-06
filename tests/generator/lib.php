@@ -136,4 +136,29 @@ class tool_userautodelete_generator extends \testing_data_generator {
 
         return $workflow;
     }
+
+    /**
+     * Creates a new workflow with two steps where the first step unsuspends a
+     * previously suspended user and the second step deletes the user.
+     *
+     * @param string|null $title Custom title for the workflow
+     * @param string|null $description Custom title for the workflow
+     * @param bool $active If true, the workflow will be active after creation
+     * @return workflow
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function create_multistep_suspend_delete_workflow(
+        ?string $title,
+        ?string $description,
+        bool $active = true
+    ): workflow {
+        $workflow = $this->create_simple_suspend_workflow($title, $description, $active);
+
+        $step = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        userdeletefilter::create_instance($step, 'suspension', ['suspended' => false]);
+        userdeleteaction::create_instance($step, 'delete');
+
+        return $workflow;
+    }
 }

@@ -518,9 +518,9 @@ final class workflow_test extends \advanced_testcase {
 
         $this->resetAfterTest();
 
-        // Prepare active multi-step workflow.
+        // Prepare active multi-step workflow with final deletion step.
         $generator = $this->get_userautodelete_generator();
-        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $workflow = $generator->create_multistep_suspend_delete_workflow('Workflow', 'Description', true);
 
         // Seed one existing process and one yet-to-be-ingested matching user.
         $existinguser = $this->getDataGenerator()->create_user(['suspended' => 1]);
@@ -545,8 +545,13 @@ final class workflow_test extends \advanced_testcase {
         );
         $this->assertSame(
             1,
-            (int) $DB->get_field('user', 'suspended', ['id' => $existinguser->id]),
-            'Second step should re-suspend transitioned user'
+            (int) $DB->get_field('user', 'deleted', ['id' => $existinguser->id]),
+            'Final step should delete transitioned user'
+        );
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $existinguser->id, includefinished: true),
+            'Transitioned user should not be re-ingested into the same workflow run'
         );
 
         $newprocesses = process::get_user_processes((int) $newuser->id, includefinished: true);
@@ -590,5 +595,63 @@ final class workflow_test extends \advanced_testcase {
 
         $this->expectException(\coding_exception::class);
         $unused = $workflow->nonexistingproperty;
+    }
+
+    /**
+     * Tests that users with aborted processes can be ingested again.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_reingests_user_after_aborted_process(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active multi-step workflow and one matching suspended user.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $user = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Create and abort an initial process for the user.
+        $abortedprocess = process::create((int) $user->id, $workflow);
+        $abortedprocess->abort();
+        $this->assertSame(process_state::ABORTED, $abortedprocess->state, 'Fixture process should be aborted');
+
+        // Restore matching filter state so the user is applicable again.
+        $DB->set_field('user', 'suspended', 1, ['id' => $user->id]);
+
+        // Process workflow and ensure a new process is ingested.
+        $workflow->process();
+
+        $allprocesses = process::get_user_processes((int) $user->id, includefinished: true, includeaborted: true);
+        $this->assertCount(2, $allprocesses, 'User should have historical aborted and newly ingested process records');
+
+        $abortedcount = count(array_filter(
+            $allprocesses,
+            fn(process $process): bool => $process->state === process_state::ABORTED
+        ));
+        $this->assertSame(1, $abortedcount, 'Exactly one aborted process should remain');
+
+        $activeprocesses = array_values(array_filter(
+            $allprocesses,
+            fn(process $process): bool => $process->state === process_state::ACTIVE
+        ));
+        $this->assertCount(1, $activeprocesses, 'Exactly one new active process should be created');
+        $this->assertSame(
+            $workflow->steps[0]->id,
+            $activeprocesses[0]->stepid,
+            'Newly ingested process should start in first workflow step'
+        );
+
+        // First-step action should have been executed for the newly ingested process.
+        $this->assertSame(
+            0,
+            (int) $DB->get_field('user', 'suspended', ['id' => $user->id]),
+            'Re-ingested user should be unsuspended by first-step action'
+        );
     }
 }
