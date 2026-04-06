@@ -63,7 +63,8 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      */
     public function execute(process $process): bool {
         return delete_user(
-            (object) ['id' => $process->userid]  // The delete_user() function re-fetches the full user record anyway ...
+            // The delete_user() function re-fetches the full user record anyway ...
+            (object) ['id' => $process->userid, 'username' => '']
         );
     }
 
