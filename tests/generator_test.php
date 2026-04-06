@@ -233,4 +233,51 @@ final class generator_test extends \advanced_testcase {
             'Second multistep filter should target active users'
         );
     }
+
+    /**
+     * Tests creation of the multi-step suspension-delete workflow fixture.
+     *
+     * @covers \tool_userautodelete_generator
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_create_multistep_suspend_delete_workflow(): void {
+        $this->resetAfterTest();
+
+        // Create multi-step suspension-delete workflow fixture using generator defaults.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_delete_workflow(null, null, true);
+
+        // Validate workflow metadata and that it remains active after the second step is added.
+        $this->assertSame('Suspend Test Workflow', $workflow->title, 'Multistep suspend-delete workflow title is incorrect');
+        $this->assertSame(
+            'Simple workflow used for unit tests.',
+            $workflow->description,
+            'Multistep suspend-delete workflow description is incorrect'
+        );
+        $this->assertTrue($workflow->active, 'Multistep suspend-delete workflow fixture should stay active');
+        $this->assertTrue($workflow->is_valid(), 'Multistep suspend-delete workflow fixture should be valid');
+
+        // Validate the two generated steps and their deletion flow.
+        $reloaded = workflow::get_by_id($workflow->id);
+        $steps = $reloaded->steps;
+        $this->assertCount(2, $steps, 'Multistep suspend-delete workflow should contain two steps');
+        $this->assertSame(['Step 1', 'Step 2'], array_map(static fn(step $step): ?string => $step->title, $steps));
+
+        $this->assert_step_subplugins($steps[0], ['suspension'], ['unsuspend']);
+        $this->assertSame(
+            1,
+            (int) $steps[0]->filters[0]->get_instance_setting('suspended'),
+            'First suspend-delete filter should target suspended users'
+        );
+
+        $this->assert_step_subplugins($steps[1], ['suspension'], ['delete']);
+        $this->assertSame(
+            0,
+            (int) $steps[1]->filters[0]->get_instance_setting('suspended'),
+            'Second suspend-delete filter should target active users'
+        );
+    }
 }
