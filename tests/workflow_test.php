@@ -654,4 +654,98 @@ final class workflow_test extends \advanced_testcase {
             'Re-ingested user should be unsuspended by first-step action'
         );
     }
+
+    /**
+     * Tests that cleanup_processes() aborts only timed-out active processes.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_cleanup_processes_aborts_only_timed_out_active_processes(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active workflow with two steps so first step has a timeout.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $firststep = $workflow->steps[0];
+
+        $timedoutuser = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $freshuser = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $finisheduser = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        $timedoutprocess = process::create((int) $timedoutuser->id, $workflow);
+        $freshprocess = process::create((int) $freshuser->id, $workflow);
+        $finishedprocess = process::create((int) $finisheduser->id, $workflow);
+
+        // Make one process timed-out active, one fresh active, and one old but finished.
+        $oldtimestamp = time() - $firststep->timeoutsec - 30;
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $timedoutprocess->id,
+            'timemodified' => $oldtimestamp,
+        ]);
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $finishedprocess->id,
+            'state' => process_state::FINISHED->value,
+            'timemodified' => $oldtimestamp,
+        ]);
+
+        $workflow->cleanup_processes();
+
+        $this->assertSame(
+            process_state::ABORTED,
+            process::get_by_id($timedoutprocess->id)->state,
+            'Timed-out active process should be aborted by cleanup'
+        );
+        $this->assertSame(
+            process_state::ACTIVE,
+            process::get_by_id($freshprocess->id)->state,
+            'Fresh active process should remain active after cleanup'
+        );
+        $this->assertSame(
+            process_state::FINISHED,
+            process::get_by_id($finishedprocess->id)->state,
+            'Finished process should not be changed by cleanup'
+        );
+    }
+
+    /**
+     * Tests that cleanup_processes() is a no-op when no process timed out.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_cleanup_processes_noop_without_timed_out_processes(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active workflow and a fresh active process in first step.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $user = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $process = process::create((int) $user->id, $workflow);
+
+        $freshstatebefore = process::get_by_id($process->id)->state;
+        $freshmodifiedbefore = (int) $DB->get_field(db_table::USER_PROCESS->value, 'timemodified', ['id' => $process->id]);
+
+        $workflow->cleanup_processes();
+
+        $freshreloaded = process::get_by_id($process->id);
+        $freshmodifiedafter = (int) $DB->get_field(db_table::USER_PROCESS->value, 'timemodified', ['id' => $process->id]);
+
+        $this->assertSame($freshstatebefore, $freshreloaded->state, 'Cleanup should not change state when nothing timed out');
+        $this->assertSame(
+            $freshmodifiedbefore,
+            $freshmodifiedafter,
+            'Cleanup should not update timemodified when no process timed out'
+        );
+    }
 }

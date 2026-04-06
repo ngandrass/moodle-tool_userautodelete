@@ -523,6 +523,47 @@ class workflow {
     }
 
     /**
+     * Cleans up timed out user processes from all steps of this workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \moodle_exception
+     */
+    public function cleanup_processes(): void {
+        global $DB;
+
+        $inactiveprocidbatches = [];
+        foreach ($this->get_steps() as $step) {
+            // Catch steps without a timeout.
+            if ($step->timeoutsec === null) {
+                continue;
+            }
+
+            // Process steps with timeout.
+            $procs = $DB->get_records_sql(
+                '
+                    SELECT id
+                    FROM {' . db_table::USER_PROCESS->value . '}
+                    WHERE
+                        stepid = :stepid AND
+                        state = :activestate AND
+                        timemodified < :thresholdsec
+                ',
+                [
+                    'stepid' => $step->id,
+                    'activestate' => process_state::ACTIVE->value,
+                    'thresholdsec' => time() - $step->timeoutsec,
+                ]
+            );
+
+            $inactiveprocidbatches[] = array_keys($procs);
+        }
+
+        process::abort_multiple(array_merge(...$inactiveprocidbatches));
+    }
+
+    /**
      * Retrieves all users that are applicable for this workflow based on
      * the filters defined in the first step of this workflow.
      *
