@@ -27,6 +27,9 @@ namespace tool_userautodelete\plugininfo;
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+use tool_userautodelete\local\type\db_table;
+
+
 /**
  * Subplugin info class for userdeletefilter
  */
@@ -37,11 +40,16 @@ class userdeletefilter extends \core\plugininfo\base {
      * By default uninstallation is not allowed, plugin developers must enable it explicitly!
      *
      * @return bool
+     * @throws \dml_exception
      */
     #[\Override]
     public function is_uninstall_allowed(): bool {
-        // TODO (MDL-0): Only allow uninstall if no instance is using this plugin.
-        return !$this->is_standard();
+        global $DB;
+
+        return !$DB->record_exists(
+            db_table::WORKFLOW_FILTER->value,
+            ['pluginname' => $this->name]
+        );
     }
 
     /**
