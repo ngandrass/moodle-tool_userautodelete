@@ -280,4 +280,54 @@ final class generator_test extends \advanced_testcase {
             'Second suspend-delete filter should target active users'
         );
     }
+
+    /**
+     * Tests prepare_form_environment().
+     *
+     * @covers \tool_userautodelete_generator::prepare_form_environment
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_prepare_form_environment(): void {
+        global $PAGE;
+
+        $this->resetAfterTest();
+
+        $generator = $this->get_userautodelete_generator();
+        $path = '/admin/tool/userautodelete/workflow.php';
+        $params = ['id' => 42, 'action' => 'edit'];
+        $expectedurl = new \moodle_url($path, $params);
+
+        // Preserve superglobals to avoid test side effects.
+        $oldget = $_GET;
+        $oldpost = $_POST;
+        $oldrequest = $_REQUEST;
+
+        try {
+            $_POST = ['stale' => 'value'];
+
+            $generator->prepare_form_environment($path, $params);
+
+            $this->assertSame($params, $_GET, 'GET superglobal was not populated as expected');
+            $this->assertSame([], $_POST, 'POST superglobal should be reset to an empty array');
+            $this->assertSame($params, $_REQUEST, 'REQUEST superglobal was not populated as expected');
+            $this->assertSame(
+                \context_system::instance()->id,
+                $PAGE->context->id,
+                'Page context was not set to system context'
+            );
+            $this->assertSame(
+                $expectedurl->out(false),
+                $PAGE->url->out(false),
+                'Page URL was not set as expected'
+            );
+        } finally {
+            $_GET = $oldget;
+            $_POST = $oldpost;
+            $_REQUEST = $oldrequest;
+        }
+    }
 }
