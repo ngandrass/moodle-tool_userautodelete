@@ -76,4 +76,29 @@ class manager {
 
         return true;
     }
+
+    /**
+     * Performs cleanup operations on a regular basis.
+     *
+     * This method is called regularly by the cleanup scheduled task.
+     *
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \moodle_exception
+     */
+    public function cleanup(): bool {
+        if (!$this->config->enable) {
+            logger::info(get_string('plugin_disabled_skipping_execution', 'tool_userautodelete'));
+            return false;
+        }
+
+        foreach (workflow::get_all() as $workflow) {
+            logger::info("Triggering user process cleanup for workflow: {$workflow->title} (ID: {$workflow->id})");
+            $workflow->cleanup_processes();
+        }
+
+        return true;
+    }
 }
