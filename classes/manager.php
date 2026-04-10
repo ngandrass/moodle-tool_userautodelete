@@ -52,6 +52,8 @@ class manager {
      *
      * @return bool True, if executed successfully
      * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function execute(): bool {
         if (!$this->config->enable) {
@@ -59,7 +61,18 @@ class manager {
             return false;
         }
 
-        // TODO (MDL-0): Implement.
+        $workflows = workflow::get_all();
+        $workflowstoprocess = array_filter(
+            $workflows,
+            fn ($workflow) => ($workflow->active && $workflow->is_valid())
+        );
+        logger::info('Got ' . count($workflowstoprocess) . ' active and valid workflow(s) to process out of ' .
+            count($workflows) . ' total workflows.');
+
+        foreach ($workflowstoprocess as $workflow) {
+            logger::info("Start processing workfow: {$workflow->title} (ID: {$workflow->id})");
+            $workflow->process();
+        }
 
         return true;
     }
