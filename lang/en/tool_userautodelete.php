@@ -113,6 +113,7 @@ $string['subplugintype_userdeleteaction'] = 'User lifecycle action';
 $string['subplugintype_userdeleteaction_plural'] = 'User lifecycle actions';
 $string['subplugintype_userdeletefilter'] = 'User lifecycle filter';
 $string['subplugintype_userdeletefilter_plural'] = 'User lifecycle filters';
+$string['task_cleanup'] = 'Cleanup';
 $string['task_executeworkflows'] = 'Execute workflows';
 $string['title'] = 'Title';
 $string['unnamed'] = 'Unnamed';

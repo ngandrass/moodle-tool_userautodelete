@@ -15,19 +15,44 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Scheduled task that executes performs cleanup operations (e.g., deleting old
+ * timed out user processes)
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_userautodelete\task;
+
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$plugin->component = 'tool_userautodelete';
-$plugin->release = '1.5.0';
-$plugin->version = 2026012401;
-$plugin->requires = 2022112800;
-$plugin->supported = [401, 501]; // X meta-supported-moodle{4.1 - 5.1} meta-supported-php{7.4 - 8.4}.
-$plugin->maturity = MATURITY_STABLE;
+
+/**
+ *  Scheduled task that executes performs cleanup operations (e.g., deleting old
+ *  timed out user processes)
+ */
+class cleanup extends \core\task\scheduled_task {
+    /**
+     * Get a descriptive name for the task (shown to admins)
+     *
+     * @return string Localized name of this task
+     * @throws \coding_exception
+     */
+    public function get_name() {
+        return get_string('task_cleanup', 'tool_userautodelete');
+    }
+
+    /**
+     * Do the job.
+     * Throw exceptions on errors (the job will be retried).
+     *
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function execute() {
+        $manager = new \tool_userautodelete\manager();
+        $manager->cleanup();
+    }
+}
