@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * External service definitions for tool_userautodelete.
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
@@ -25,9 +25,12 @@
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$plugin->component = 'tool_userautodelete';
-$plugin->release = '1.5.0';
-$plugin->version = 2026012402;
-$plugin->requires = 2022112800;
-$plugin->supported = [401, 501]; // X meta-supported-moodle{4.1 - 5.1} meta-supported-php{7.4 - 8.4}.
-$plugin->maturity = MATURITY_STABLE;
+$functions = [
+    'tool_userautodelete_get_step_user_processes' => [
+        'classname'   => 'tool_userautodelete\external\get_step_user_processes',
+        'description' => 'Returns metadata for all user processes within a given workflow step.',
+        'type'        => 'read',
+        'ajax'        => true,
+        'capabilities' => 'moodle/site:config',
+    ],
+];
