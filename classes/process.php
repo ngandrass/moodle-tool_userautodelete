@@ -309,6 +309,34 @@ class process {
     }
 
     /**
+     * Retrieves metadata for all users processes inside a given step
+     *
+     * @param step $step The step to retrieve user process metadata for
+     * @param bool $activeonly If true, only active processes will be included
+     * @return array List of user metadata objects, sorted by their process modification time
+     * @throws \dml_exception
+     */
+    public static function get_user_process_metadata_for_step(step $step, bool $activeonly = true): array {
+        global $DB;
+
+        // Build state filter condition.
+        $processstatesql = $activeonly ? 'AND proc.state = :stateactive ' : ' ';
+
+        // Retrieve user process metadata.
+        return array_values($DB->get_records_sql(
+            'SELECT proc.*, step.workflowid, u.username, u.firstname, u.lastname, u.lastaccess ' .
+            'FROM {' . db_table::USER_PROCESS->value . '} proc ' .
+            'JOIN {' . db_table::WORKFLOW_STEP->value . '} step ON proc.stepid = step.id ' .
+            'JOIN {user} u ON proc.userid = u.id ' .
+            'WHERE proc.stepid = :stepid ' .
+            $processstatesql .
+            'ORDER BY timemodified DESC',
+            ['stepid' => $step->id, 'stateactive' => process_state::ACTIVE->value],
+            IGNORE_MISSING
+        ));
+    }
+
+    /**
      * Creates a new user process in the given workflow and executes the step
      * action during creation
      *

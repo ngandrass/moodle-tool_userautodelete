@@ -544,4 +544,80 @@ final class process_test extends \advanced_testcase {
             );
         }
     }
+
+    /**
+     * Tests get_user_process_metadata_for_step() retrieves metadata with proper filtering.
+     *
+     * @covers \tool_userautodelete\process
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_user_process_metadata_for_step(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare workflow and multiple users with processes in different states.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $step = $workflow->steps[0];
+
+        $user1 = $this->getDataGenerator()->create_user([
+            'suspended' => 1,
+            'firstname' => 'Alice',
+            'lastname' => 'Smith',
+        ]);
+        $user2 = $this->getDataGenerator()->create_user([
+            'suspended' => 1,
+            'firstname' => 'Bob',
+            'lastname' => 'Jones',
+        ]);
+        $user3 = $this->getDataGenerator()->create_user([
+            'suspended' => 1,
+            'firstname' => 'Charlie',
+            'lastname' => 'Brown',
+        ]);
+
+        // Create three processes with different states.
+        $process1 = process::create((int) $user1->id, $workflow, $step);
+        $process2 = process::create((int) $user2->id, $workflow, $step);
+        $process3 = process::create((int) $user3->id, $workflow, $step);
+
+        // Mark one as finished and one as aborted.
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $process2->id,
+            'state' => process_state::FINISHED->value,
+            'timemodified' => time(),
+        ]);
+        $process3->abort();
+
+        // Test activeonly=true (default): should return only active process.
+        $activeonly = process::get_user_process_metadata_for_step($step, activeonly: true);
+        $this->assertCount(1, $activeonly, 'Should return only active processes when activeonly is true');
+        $this->assertSame((int) $user1->id, (int) $activeonly[0]->userid, 'Should return active process for user 1');
+        $this->assertSame('Alice', $activeonly[0]->firstname, 'Should include user firstname in metadata');
+        $this->assertSame('Smith', $activeonly[0]->lastname, 'Should include user lastname in metadata');
+        $this->assertNotEmpty($activeonly[0]->username, 'Should include user username in metadata');
+        $this->assertGreaterThanOrEqual(0, (int) $activeonly[0]->lastaccess, 'Should include user lastaccess timestamp');
+        $this->assertSame($process1->id, (int) $activeonly[0]->id, 'Should include process ID in metadata');
+
+        // Test activeonly=false: should return all processes.
+        $allstates = process::get_user_process_metadata_for_step($step, activeonly: false);
+        $this->assertCount(3, $allstates, 'Should return all processes when activeonly is false');
+
+        // Verify sorting by timemodified DESC: newest first.
+        $userids = array_map(fn($m) => (int) $m->userid, $allstates);
+        $this->assertContains((int) $user1->id, $userids, 'Metadata should include user 1');
+        $this->assertContains((int) $user2->id, $userids, 'Metadata should include user 2');
+        $this->assertContains((int) $user3->id, $userids, 'Metadata should include user 3');
+
+        // Verify first record is sorted by timemodified (most recently modified first).
+        $this->assertGreaterThanOrEqual(
+            $allstates[1]->timemodified,
+            $allstates[0]->timemodified,
+            'Should be sorted by timemodified DESC'
+        );
+    }
 }
