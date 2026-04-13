@@ -430,25 +430,27 @@
                                 {{/isediting}}
                             </div>
                         </div>
-                        <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+                        <div class="card-footer text-muted d-flex align-items-center {{#isediting}}justify-content-center{{/isediting}} {{^isediting}}justify-content-between{{/isediting}}">
                             <span>
                                 <i class="fa-solid fa-user"></i>&nbsp;
                                 {{#str}} active_processes, tool_userautodelete, {{processes.active}} {{/str}}
                             </span>
-                            <button
-                                class="btn btn-sm btn-outline-secondary"
-                                data-action="view-step-processes"
-                                data-stepid="{{id}}"
-                                title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
-                            >
-                                <i class="fa-solid fa-users-gear"></i>
-                            </button>
+                            {{^isediting}}
+                                <button
+                                    class="btn btn-sm btn-outline-secondary"
+                                    data-action="view-step-processes"
+                                    data-stepid="{{id}}"
+                                    title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
+                                >
+                                    <i class="fa-solid fa-users-gear"></i>
+                                </button>
+                            {{/isediting}}
                         </div>
                     </div>
 
