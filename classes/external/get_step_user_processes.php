@@ -123,7 +123,7 @@ class get_step_user_processes extends external_api {
                 'processid'       => (int) $record->id,
                 'userid'          => (int) $record->userid,
                 'username'        => (string) $record->username,
-                'fullname'        => fullname($record),
+                'fullname'        => "{$record->firstname} {$record->lastname}",
                 'profileurl'      => (new \moodle_url('/user/profile.php', ['id' => $record->userid]))->out(false),
                 'isactive'        => $state === process_state::ACTIVE,
                 'isfinished'      => $state === process_state::FINISHED,
