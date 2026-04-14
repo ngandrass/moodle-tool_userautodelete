@@ -68,7 +68,12 @@ if ($hassiteconfig) {
     $ADMIN->add($category->name, $settings);
     $ADMIN->add($category->name, new admin_externalpage(
         'tool_userautodelete_workflows',
-        get_string('manage_workflows', 'tool_userautodelete'),
+        get_string('workflows', 'tool_userautodelete'),
         new moodle_url('/admin/tool/userautodelete/workflows.php')
+    ));
+    $ADMIN->add($category->name, new admin_externalpage(
+        'tool_userautodelete_log',
+        get_string('logs', 'tool_userautodelete'),
+        new moodle_url('/admin/tool/userautodelete/log.php')
     ));
 }
