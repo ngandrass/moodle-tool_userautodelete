@@ -23,12 +23,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// @codingStandardsIgnoreLine
 use tool_userautodelete\step;
 use tool_userautodelete\userdeleteaction;
 use tool_userautodelete\userdeletefilter;
 use tool_userautodelete\workflow;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 /**
@@ -187,6 +187,28 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
 
         // Conditionally launch create table for tool_userautodelete_process.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_actionlog to be created.
+        $table = new xmldb_table('tool_userautodelete_actionlog');
+
+        // Adding fields to table tool_userautodelete_actionlog.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('workflowid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('stepid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('affectedusers', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('action', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('details', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table tool_userautodelete_actionlog.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('workflowid', XMLDB_KEY_FOREIGN, ['workflowid'], 'tool_userautodelete_workflow', ['id']);
+        $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_actionlog.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }

@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" COMMENT="XMLDB file for Moodle admin/tool/userautodelete" PATH="admin/tool/userautodelete/db" VERSION="2026012400" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
   <TABLES>
-    <TABLE NAME="tool_userautodelete_log" COMMENT="Anonymous log of plugin activity">
+    <TABLE NAME="tool_userautodelete_actionlog" COMMENT="Logs actions performed by the plugin">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="runtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp of the task run"/>
-        <FIELD NAME="warned" TYPE="int" LENGTH="8" NOTNULL="true" SEQUENCE="false" COMMENT="Number of users warned"/>
-        <FIELD NAME="deleted" TYPE="int" LENGTH="8" NOTNULL="true" SEQUENCE="false" COMMENT="Number of users deleted"/>
-        <FIELD NAME="recovered" TYPE="int" LENGTH="8" NOTNULL="true" SEQUENCE="false" COMMENT="Number of users recovered"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID of the workflow that performed this action"/>
+        <FIELD NAME="stepid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID of the workflow step that performed this action"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp of the performed action"/>
+        <FIELD NAME="affectedusers" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Count of users affected by the performed action"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="Name of the action sub-plugin that was executed"/>
+        <FIELD NAME="details" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON-serialized object that contains additional context information"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="workflowid" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_userautodelete_workflow" REFFIELDS="id"/>
+        <KEY NAME="stepid" TYPE="foreign" FIELDS="stepid" REFTABLE="tool_userautodelete_step" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="tool_userautodelete_process" COMMENT="Data about users that are currently part of a workflow">
