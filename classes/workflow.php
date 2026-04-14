@@ -505,13 +505,33 @@ class workflow {
             return;
         }
 
+        $now = time();
+
         // Progress existing processes.
         // Steps are processed in reverse order to ensure that users that
         // progress to the next step within this run are not processed again
         // within the same run.
         foreach (array_reverse($this->get_steps()) as $step) {
-            foreach (process::get_active_processes_for_step($step, transitionableonly: true) as $process) {
+            $processes = process::get_active_processes_for_step($step, transitionableonly: true);
+            $targetstep = $step->next();
+            if (empty($processes) || !$targetstep) {
+                continue;
+            }
+
+            // Perform transition.
+            foreach ($processes as $process) {
                 $process->transition();
+            }
+
+            // Log executed actions.
+            foreach ($targetstep->actions as $action) {
+                logger::action(
+                    name: $action::get_plugin_name(),
+                    affectedusers: count($processes),
+                    workflowid: $this->id,
+                    stepid: $targetstep->id,
+                    timestamp: $now,
+                );
             }
         }
 
@@ -519,6 +539,19 @@ class workflow {
         $newusers = $this->get_applicable_users();
         foreach ($newusers as $userid) {
             process::create($userid, $this);
+        }
+
+        if (count($newusers) > 0) {
+            $initialstep = $this->get_steps()[0];
+            foreach ($initialstep->actions as $action) {
+                logger::action(
+                    name: $action::get_plugin_name(),
+                    affectedusers: count($newusers),
+                    workflowid: $this->id,
+                    stepid: $initialstep->id,
+                    timestamp: $now,
+                );
+            }
         }
     }
 
