@@ -504,6 +504,100 @@ final class workflow_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that workflow::process() creates action logs for transitioned existing processes.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_logs_transitioned_existing_processes(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active workflow and one existing process that will transition.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_delete_workflow('Workflow', 'Description', true);
+        $user = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $process = process::create((int) $user->id, $workflow);
+        $secondstep = $workflow->steps[1];
+
+        $this->assertSame(0, $DB->count_records(db_table::ACTIONLOG->value), 'Unexpected pre-existing action log rows');
+
+        // Process workflow and ensure existing process transitions.
+        $workflow->process();
+        $this->assertSame(process_state::FINISHED, process::get_by_id($process->id)->state, 'Fixture process should finish');
+
+        // Assert that an action log entry was created for the transitioned process.
+        $logs = $DB->get_records(db_table::ACTIONLOG->value, ['workflowid' => $workflow->id]);
+        $this->assertCount(1, $logs, 'Expected one positive action log row for transitioned processes');
+
+        $log = reset($logs);
+        $this->assertSame($secondstep->id, (int) $log->stepid, 'Action log step ID mismatch for transitioned process');
+        $this->assertSame(1, (int) $log->affectedusers, 'Transition log should report exactly one affected user');
+        $this->assertSame(
+            $secondstep->actions[0]::get_plugin_name(),
+            $log->action,
+            'Transition log action does not match second step action plugin name'
+        );
+    }
+
+    /**
+     * Tests that workflow::process() creates action logs for newly ingested users.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_logs_newly_ingested_users(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active workflow and two users matching the initial-step filter.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_simple_suspend_workflow('Workflow', 'Description', true);
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $firststep = $workflow->steps[0];
+
+        $this->assertSame(0, $DB->count_records(db_table::ACTIONLOG->value), 'Unexpected pre-existing action log rows');
+
+        // Process workflow and ingest both users into new processes.
+        $workflow->process();
+
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $user1->id, includefinished: true),
+            'First matching user should have one process after ingestion'
+        );
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $user2->id, includefinished: true),
+            'Second matching user should have one process after ingestion'
+        );
+
+        // Assert that one matching action log exists for user ingestion.
+        $logs = $DB->get_records(db_table::ACTIONLOG->value, [
+            'workflowid' => $workflow->id,
+            'stepid' => $firststep->id,
+        ]);
+
+        $this->assertCount(1, $logs, 'Expected one action log row for newly ingested users');
+        $log = reset($logs);
+        $this->assertSame(2, (int) $log->affectedusers, 'Number of affacted users is incorrect');
+        $this->assertSame(
+            $firststep->actions[0]::get_plugin_name(),
+            $log->action,
+            'Ingestion log action does not match first-step action plugin name'
+        );
+    }
+
+    /**
      * Tests that workflow::process() progresses existing processes and ingests new users.
      *
      * @covers \tool_userautodelete\workflow
