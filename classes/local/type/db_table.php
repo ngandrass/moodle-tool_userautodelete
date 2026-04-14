@@ -52,6 +52,6 @@ enum db_table: string {
     /** @var string Name of the table that contains state data for users that are currently part of workflows */
     case USER_PROCESS = 'tool_userautodelete_process';
 
-    /** @var string Name of the table that stores logs */
-    case LOG = 'tool_userautodelete_log';
+    /** @var string Name of the table that stores action logs */
+    case ACTIONLOG = 'tool_userautodelete_actionlog';
 }
