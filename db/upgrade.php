@@ -74,6 +74,7 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025052600, 'tool', 'userautodelete');
     }
 
+    // The big v1 to v2 migration.
     if ($oldversion < 2026012400) {
         // Define table tool_userautodelete_workflow to be created.
         $table = new xmldb_table('tool_userautodelete_workflow');
@@ -308,6 +309,52 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         // Enable migrated workflow if plugin was active.
         if ($oldconfig->enable) {
             $workflow->activate();
+        }
+
+        // Migrate logs.
+        $oldlogs = $DB->get_recordset('tool_userautodelete_log');
+        $chunk = [];
+        foreach ($oldlogs as $record) {
+            // Warned users.
+            if ($record->warned) {
+                $chunk[] = (object) [
+                    'timestamp' => $record->runtime,
+                    'workflowid' => $workflow->id,
+                    'stepid' => $warningstep->id ?? null,
+                    'affectedusers' => $record->warned,
+                    'action' => 'mail',
+                ];
+            }
+
+            // Deleted users.
+            if ($record->deleted) {
+                $chunk[] = (object) [
+                    'timestamp' => $record->runtime,
+                    'workflowid' => $workflow->id,
+                    'stepid' => $deletionstep->id ?? null,
+                    'affectedusers' => $record->deleted,
+                    'action' => 'delete',
+                ];
+            }
+
+            // Persist.
+            if (count($chunk) >= 128) {
+                $DB->insert_records('tool_userautodelete_actionlog', $chunk);
+                $chunk = [];
+            }
+        }
+
+        if (count($chunk) > 0) {
+            $DB->insert_records('tool_userautodelete_actionlog', $chunk);
+        }
+        $oldlogs->close();
+
+        // Define table tool_userautodelete_log to be dropped.
+        $table = new xmldb_table('tool_userautodelete_log');
+
+        // Conditionally launch drop table for tool_userautodelete_log.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
         }
 
         // Userautodelete savepoint reached.
