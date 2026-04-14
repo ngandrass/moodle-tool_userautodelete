@@ -23,19 +23,19 @@
  */
 
 require_once(__DIR__ . '/../../../config.php');
+require_once("{$CFG->libdir}/adminlib.php");
 
-global $DB, $OUTPUT, $PAGE, $USER;
+global $OUTPUT, $PAGE;
 
-require_admin();
+// Login and capability checks as well as $PAGE setup are performed by admin_externalpage_setup.
+admin_externalpage_setup('tool_userautodelete_log');
 
-// Setup page.
-$url = new moodle_url('/admin/tool/userautodelete/log.php');
-$PAGE->set_context(\context_system::instance());
-$PAGE->set_title(get_string('page_title_log', 'tool_userautodelete'));
-$PAGE->set_heading(get_string('pluginname', 'tool_userautodelete'));
-$PAGE->set_url($url);
+// TODO: Add filter bar
+$logtbl = new \tool_userautodelete\output\log_table('logtable', null, null);
+$logtbl->define_baseurl($PAGE->url);
 
 // Render main output.
 echo $OUTPUT->header();
-echo "TODO ;)";
+// TODO: Add heading and description
+$logtbl->out(50, false);
 echo $OUTPUT->footer();
