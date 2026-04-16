@@ -128,7 +128,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 title: new lang_string('setting_auths', 'userdeletefilter_auth'),
                 type: PARAM_TEXT,
                 required: true,
-                default: 'manual',
+                default: [],
                 choices: self::get_auth_plugins(),
                 serialize: true,
                 readonly: false,
