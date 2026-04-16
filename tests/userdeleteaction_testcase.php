@@ -137,7 +137,6 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
     /**
      * Tests that get_plugin_name() returns the expected plugin name.
      *
-     * @covers \tool_userautodelete\userdeleteaction
      * @return void
      * @throws \moodle_exception
      */
@@ -154,7 +153,6 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
     /**
      * Tests that get_plugin_type() reports subplugin_type::ACTION.
      *
-     * @covers \tool_userautodelete\userdeleteaction
      * @return void
      * @throws \moodle_exception
      */
@@ -211,7 +209,6 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
      * returns an object of the correct concrete sub-plugin class, and that
      * reloading by ID preserves the class.
      *
-     * @covers \tool_userautodelete\userdeleteaction
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -240,7 +237,6 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
     /**
      * Tests that the instance's get_plugin_name() matches the expected plugin name.
      *
-     * @covers \tool_userautodelete\userdeleteaction
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -261,7 +257,6 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
     /**
      * Tests that delete() removes the action instance record from the database.
      *
-     * @covers \tool_userautodelete\userdeleteaction
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception

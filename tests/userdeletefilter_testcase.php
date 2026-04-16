@@ -146,7 +146,6 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
     /**
      * Tests that get_plugin_name() returns the expected plugin name.
      *
-     * @covers \tool_userautodelete\userdeletefilter
      * @return void
      * @throws \moodle_exception
      */
@@ -163,7 +162,6 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
     /**
      * Tests that get_plugin_type() reports subplugin_type::FILTER.
      *
-     * @covers \tool_userautodelete\userdeletefilter
      * @return void
      * @throws \moodle_exception
      */
@@ -220,7 +218,6 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
      * returns an object of the correct concrete sub-plugin class, and that
      * reloading by ID preserves the class.
      *
-     * @covers \tool_userautodelete\userdeletefilter
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -249,7 +246,6 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
     /**
      * Tests that the instance's get_plugin_name() matches the expected plugin name.
      *
-     * @covers \tool_userautodelete\userdeletefilter
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -271,7 +267,6 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
      * Tests that user_records_filter_clause() returns a userfilter_clause with
      * a non-empty SQL string and an array of parameters.
      *
-     * @covers \tool_userautodelete\userdeletefilter
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -295,7 +290,6 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
     /**
      * Tests that delete() removes the filter instance record from the database.
      *
-     * @covers \tool_userautodelete\userdeletefilter
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
