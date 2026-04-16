@@ -104,11 +104,12 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
             items: $this->get_instance_setting('roleids'),
             type: SQL_PARAMS_NAMED,
             prefix: 'roleparam',
-            equal: !$this->get_instance_setting('inverted')
         );
 
+        $sqlverb = $this->get_instance_setting('inverted') ? 'NOT EXISTS' : 'EXISTS';
+
         return new userfilter_clause(
-            sql: "EXISTS (
+            sql: "{$sqlverb} (
                       SELECT 1 FROM {role_assignments} ra
                       WHERE ra.userid = u.id AND ra.roleid {$insql}
                   )",
@@ -130,7 +131,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 title: new lang_string('setting_roleids', 'userdeletefilter_role'),
                 type: PARAM_TEXT,
                 required: true,
-                default: '',
+                default: [],
                 choices: role_fix_names(get_all_roles(), null, ROLENAME_ORIGINAL, true),
                 serialize: true,
                 readonly: false,
