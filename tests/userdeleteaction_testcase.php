@@ -142,6 +142,7 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_plugin_name_is_correct(): void {
+        /** @var userdeleteaction $cls */
         $cls = plugin_util::get_subplugin_class('userdeleteaction', $this->get_plugin_name());
         $this->assertSame(
             $this->get_plugin_name(),
@@ -158,6 +159,7 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_plugin_type_is_action(): void {
+        /** @var userdeleteaction $cls */
         $cls = plugin_util::get_subplugin_class('userdeleteaction', $this->get_plugin_name());
         $this->assertSame(
             subplugin_type::ACTION,
@@ -173,6 +175,7 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_icon_class_is_correct(): void {
+        /** @var userdeleteaction $cls */
         $cls = plugin_util::get_subplugin_class('userdeleteaction', $this->get_plugin_name());
         $this->assertSame(
             $this->get_expected_icon_class(),
@@ -189,6 +192,7 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_instance_setting_descriptors_returns_array(): void {
+        /** @var userdeleteaction $cls */
         $cls = plugin_util::get_subplugin_class('userdeleteaction', $this->get_plugin_name());
         $descriptors = $cls::instance_setting_descriptors();
 

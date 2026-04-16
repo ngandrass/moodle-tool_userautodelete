@@ -151,6 +151,7 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_plugin_name_is_correct(): void {
+        /** @var userdeletefilter $cls */
         $cls = plugin_util::get_subplugin_class('userdeletefilter', $this->get_plugin_name());
         $this->assertSame(
             $this->get_plugin_name(),
@@ -167,6 +168,7 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_plugin_type_is_filter(): void {
+        /** @var userdeletefilter $cls */
         $cls = plugin_util::get_subplugin_class('userdeletefilter', $this->get_plugin_name());
         $this->assertSame(
             subplugin_type::FILTER,
@@ -182,6 +184,7 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_icon_class_is_correct(): void {
+        /** @var userdeletefilter $cls */
         $cls = plugin_util::get_subplugin_class('userdeletefilter', $this->get_plugin_name());
         $this->assertSame(
             $this->get_expected_icon_class(),
@@ -198,6 +201,7 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_instance_setting_descriptors_returns_array(): void {
+        /** @var userdeletefilter $cls */
         $cls = plugin_util::get_subplugin_class('userdeletefilter', $this->get_plugin_name());
         $descriptors = $cls::instance_setting_descriptors();
 
