@@ -161,4 +161,26 @@ class tool_userautodelete_generator extends \testing_data_generator {
 
         return $workflow;
     }
+
+    /**
+     * Creates a new workflow with a single empty step and returns both objects.
+     *
+     * This is a lightweight fixture helper used by base test cases that need a
+     * step to attach sub-plugin instances to without any pre-configured filters
+     * or actions.
+     *
+     * @param string|null $workflowtitle Optional workflow title (defaults to 'Test Workflow')
+     * @param string|null $steptitle     Optional step title (defaults to 'Step 1')
+     * @return array{0: workflow, 1: step} Tuple of [$workflow, $step]
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function create_workflow_with_empty_step(
+        ?string $workflowtitle = null,
+        ?string $steptitle = null
+    ): array {
+        $workflow = workflow::create($workflowtitle ?? 'Test Workflow', '');
+        $step = step::create(workflow: $workflow, title: $steptitle ?? 'Step 1', description: '');
+        return [$workflow, $step];
+    }
 }
