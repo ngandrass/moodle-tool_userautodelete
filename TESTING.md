@@ -44,6 +44,10 @@ you can run the tests using the following commands:
   ```text
   vendor/bin/phpunit --colors --testdox -v --filter "tool_userautodelete"
   ```
+- Running all tests for the main plugin **and all sub-plugins** (recommended):
+  ```text
+  vendor/bin/phpunit --configuration phpunit.xml --test-suffix _test.php --colors --testdox -v admin/tool/userautodelete
+  ```
 - Running a single test suite:
   ```text
   vendor/bin/phpunit --colors --testdox -v admin/tool/userautodelete/tests/manager_test.php
@@ -73,7 +77,7 @@ To generate code coverage reports, follow these steps:
 
 1. Run PHPUnit with coverage report:
    ```text
-   XDEBUG_MODE=coverage vendor/bin/phpunit --colors --testdox -v --coverage-html /tmp/coverage --filter "tool_userautodelete"
+   XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit.xml --test-suffix _test.php --colors --testdox -v --coverage-html /tmp/coverage admin/tool/userautodelete
    ```
 2. Open the report in your browser:
    ```text
