@@ -37,11 +37,6 @@ require_once(__DIR__ . '/../../../tests/userdeletefilter_testcase.php');
  * Unit tests for the userdeletefilter_suspension sub-plugin
  */
 final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_testcase {
-
-    // =========================================================================
-    // Abstract method implementations
-    // =========================================================================
-
     /**
      * @inheritDoc
      */
@@ -63,15 +58,11 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         return $this->create_filter($step, ['suspended' => true]);
     }
 
-    // =========================================================================
-    // Concrete tests
-    // =========================================================================
-
     /**
      * Tests that the filter clause correctly includes suspended users and
      * excludes active users (and vice versa) based on the suspended setting.
      *
-     * @covers \userdeletefilter_suspension\userdeletefilter::user_records_filter_clause
+     * @covers \userdeletefilter_suspension\userdeletefilter
      *
      * @return void
      * @throws \dml_exception
@@ -122,7 +113,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
      * Tests that user_records_filter_clause() throws a moodle_exception when
      * the required 'suspended' setting has not been configured.
      *
-     * @covers \userdeletefilter_suspension\userdeletefilter::user_records_filter_clause
+     * @covers \userdeletefilter_suspension\userdeletefilter
      *
      * @return void
      * @throws \dml_exception
@@ -166,5 +157,41 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         $filter = userdeletefilter::get_instance_by_id($filter->id);
         $this->assertFalse($filter->is_valid(), 'suspension filter without suspended setting must be invalid');
     }
-}
 
+    /**
+     * Tests that get_instance_details() returns the expected human-readable
+     * summary string for each branch of the suspension filter.
+     *
+     * When the 'inverted' flag is falsy the filter targets suspended users, so
+     * the returned string should equal get_string('suspended').
+     * When the 'inverted' flag is truthy the filter targets active users, so
+     * the returned string should equal get_string('active').
+     *
+     * @covers \userdeletefilter_suspension\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_instance_details(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+
+        // Default: inverted is not set → details must describe "suspended" users.
+        $filter = $this->create_filter($step, ['suspended' => true]);
+        $this->assertSame(
+            get_string('suspended'),
+            $filter->get_instance_details(),
+            'get_instance_details() must return the "suspended" string when inverted is falsy'
+        );
+
+        // Set the inverted flag → details must describe "active" users.
+        $filter->set_instance_setting('inverted', true);
+        $this->assertSame(
+            get_string('active'),
+            $filter->get_instance_details(),
+            'get_instance_details() must return the "active" string when inverted is truthy'
+        );
+    }
+}

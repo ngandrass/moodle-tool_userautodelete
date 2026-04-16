@@ -31,7 +31,7 @@ use tool_userautodelete\local\type\userfilter_clause;
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-require_once("{$CFG->libdir}/accesslib.php");
+require_once("{$CFG->libdir}/accesslib.php"); // @codeCoverageIgnore
 
 
 /**

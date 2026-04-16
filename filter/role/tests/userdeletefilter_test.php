@@ -194,7 +194,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
      * Tests that get_instance_details() returns an empty string when no roles
      * are configured, and a non-empty string once role IDs are set.
      *
-     * @covers \userdeletefilter_role\userdeletefilter::get_instance_details
+     * @covers \userdeletefilter_role\userdeletefilter
      *
      * @return void
      * @throws \dml_exception

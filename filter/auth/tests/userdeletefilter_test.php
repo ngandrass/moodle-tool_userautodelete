@@ -169,7 +169,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
      * Tests that get_instance_details() returns an empty string when no auths
      * are configured, and a non-empty string once auth plugins are set.
      *
-     * @covers \userdeletefilter_auth\userdeletefilter::get_instance_details
+     * @covers \userdeletefilter_auth\userdeletefilter
      *
      * @return void
      * @throws \dml_exception
