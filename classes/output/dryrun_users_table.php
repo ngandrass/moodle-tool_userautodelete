@@ -47,6 +47,7 @@ class dryrun_users_table extends \table_sql {
      *
      * @param string $uniqueid all tables have to have a unique id, this is used
      *      as a key when storing table properties like sort order in the session.
+     * @param workflow $workflow Workflow object this dry-run table is for
      *
      * @throws \coding_exception
      * @throws \moodle_exception

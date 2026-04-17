@@ -49,6 +49,11 @@ class instance_setting_descriptor {
      * @param string $type Moodle parameter type (e.g., PARAM_INT)
      * @param bool $required If true, the value must be set for any instance
      * @param mixed|null $default Default value to load if no concrete value is given
+     * @param array|null $choices List of valid choices as key-value pairs where the
+     * key represents the data that will be stored and the value the title of the
+     * option when displaying in the UI
+     * @param bool $serialize If true, the value will be serialized before storing.
+     * This is required when working with complex structures, e.g., arrays
      * @param bool $readonly If true, the value can not be changed by the user
      * @param string $mformtype Moodle form element type that is rendered in the
      * settings edit form
