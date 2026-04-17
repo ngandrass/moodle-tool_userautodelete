@@ -114,8 +114,17 @@ abstract class userdeleteaction extends step_subplugin {
     public function delete(): void {
         global $DB;
 
-        $DB->delete_records(db_table::WORKFLOW_ACTION->value, ['id' => $this->get_instance_id()]);
-        $this->get_step()->touch();
+        try {
+            $transaction = $DB->start_delegated_transaction();
+
+            $this->delete_all_instance_settings();
+            $DB->delete_records(db_table::WORKFLOW_ACTION->value, ['id' => $this->get_instance_id()]);
+            $this->get_step()->touch();
+
+            $transaction->allow_commit();
+        } catch (\Exception $e) {
+            $transaction->rollback($e);
+        }
     }
 
     /**

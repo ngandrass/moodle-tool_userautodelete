@@ -106,6 +106,45 @@ final class userdeleteaction_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that instance settings are deleted when an action instance is deleted.
+     *
+     * @covers \tool_userautodelete\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_action_instance_settings_deleted_on_delete(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step', description: '');
+
+        // Create a mail action instance, which has required settings (subject + message).
+        $action = userdeleteaction::create_instance($step, 'mail', [
+            'subject' => 'Test subject',
+            'message' => 'Test message',
+        ]);
+
+        // Verify that settings were persisted to the database.
+        $this->assertGreaterThan(
+            0,
+            $DB->count_records('tool_userautodelete_instance_settings', ['instanceid' => $action->id]),
+            'Action instance settings were not created'
+        );
+
+        // Delete the action instance and assert that all settings are removed.
+        $action->delete();
+        $this->assertSame(
+            0,
+            $DB->count_records('tool_userautodelete_instance_settings', ['instanceid' => $action->id]),
+            'Action instance settings still exist after delete()'
+        );
+    }
+
+    /**
      * Tests that creating an action instance with invalid plugin name fails.
      *
      * @covers \tool_userautodelete\userdeleteaction
