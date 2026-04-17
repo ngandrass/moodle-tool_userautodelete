@@ -17,7 +17,7 @@
 /**
  * Privacy provider class for this plugin.
  *
- * @package   userdeleetefilter_suspension
+ * @package   userdeletefilter_suspension
  * @copyright 2026 Niels Gandraß <niels@gandrass.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

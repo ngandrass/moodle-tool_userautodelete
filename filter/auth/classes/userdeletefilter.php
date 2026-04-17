@@ -17,7 +17,7 @@
 /**
  * User delete filter based on authentication plugin / method
  *
- * @package     userdeletefilter_lastaccess
+ * @package     userdeletefilter_auth
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
