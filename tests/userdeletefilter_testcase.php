@@ -315,9 +315,3 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
         );
     }
 }
-
-
-
-
-
-

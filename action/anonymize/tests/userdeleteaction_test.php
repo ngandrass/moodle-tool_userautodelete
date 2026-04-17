@@ -35,14 +35,15 @@ require_once(__DIR__ . '/../../../tests/userdeleteaction_testcase.php');
  */
 final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_testcase {
     /**
-     * @inheritDoc
+     * Returns the short plugin name of the action sub-plugin under test.
      */
     protected function get_plugin_name(): string {
         return 'anonymize';
     }
 
     /**
-     * @inheritDoc
+     * Returns the expected font-awesome icon CSS class string for the action
+     * sub-plugin under test, e.g. 'fa-solid fa-gear'.
      */
     protected function get_expected_icon_class(): string {
         return 'fa-solid fa-user-secret';
@@ -154,4 +155,3 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $this->assertSame('', $action->get_instance_details(), 'anonymize action get_instance_details() must return empty string');
     }
 }
-

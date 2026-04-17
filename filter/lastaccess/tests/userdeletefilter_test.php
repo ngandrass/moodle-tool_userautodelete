@@ -38,21 +38,28 @@ require_once(__DIR__ . '/../../../tests/userdeletefilter_testcase.php');
  */
 final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_testcase {
     /**
-     * @inheritDoc
+     * Returns the short plugin name of the filter sub-plugin under test.
      */
     protected function get_plugin_name(): string {
         return 'lastaccess';
     }
 
     /**
-     * @inheritDoc
+     * Returns the expected font-awesome icon CSS class string for the filter
+     * sub-plugin under test, e.g. 'fa-solid fa-filter'.
      */
     protected function get_expected_icon_class(): string {
         return 'fa-solid fa-clock-rotate-left';
     }
 
     /**
-     * @inheritDoc
+     * Creates and returns a filter instance that carries valid settings so that
+     * user_records_filter_clause() can be called without throwing.
+     *
+     * @param step $step The step to attach the filter instance to
+     * @return userdeletefilter A properly configured filter instance
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     protected function create_valid_filter_instance(step $step): userdeletefilter {
         // Default value is YEARSECS * 3; any positive integer is valid.
@@ -168,4 +175,3 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         $this->assertNotEmpty($details, 'get_instance_details() must return a non-empty string');
     }
 }
-

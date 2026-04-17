@@ -282,4 +282,3 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
         );
     }
 }
-
