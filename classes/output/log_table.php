@@ -121,10 +121,10 @@ class log_table extends \table_sql {
         try {
             /** @var userdeleteaction $action */
             $action = plugin_util::get_subplugin_class('userdeleteaction', $values->action);
-            $title = '<i class="' . $action::get_icon_class() . '"></i>&nbsp;';
+            $title = '<i class="me-2 ' . $action::get_icon_class() . '"></i>&nbsp;';
             $title .= get_string('pluginname', 'userdeleteaction_' . $values->action);
         } catch (\moodle_exception $e) {
-            $title = '<i class="' . userdeleteaction::get_icon_class() . '"></i>&nbsp;';
+            $title = '<i class="me-2 ' . userdeleteaction::get_icon_class() . '"></i>';
             $title .= $values->action;
         }
 
@@ -145,8 +145,9 @@ class log_table extends \table_sql {
 
         $workflow = $this->get_workflow($values->workflowid);
         $workflowurl = new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflow->id]);
+        $title = "{$workflow->title} (ID: {$workflow->id})";
 
-        return '<a href="' . $workflowurl . '">' . s($workflow->title) . '</a>';
+        return '<a href="' . $workflowurl . '">' . s($title) . '</a>';
     }
 
     /**
@@ -163,8 +164,10 @@ class log_table extends \table_sql {
 
         $step = $this->get_step($values->stepid);
         $workflowurl = new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $step->workflow->id]);
+        $title = get_string('step', 'tool_userautodelete') . " {$step->sort}: " .
+            ($step->title ? s($step->title) : '<i>' . get_string('unnamed', 'tool_userautodelete') . '</i>');
 
-        return '<a href="' . $workflowurl . '#step-' . $step->id . '">' . s($step->title) . '</a>';
+        return '<a href="' . $workflowurl . '#step-' . $step->id . '">' . $title . '</a>';
     }
 
     /**
