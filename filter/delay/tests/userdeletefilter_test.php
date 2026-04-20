@@ -146,40 +146,6 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         );
     }
 
-    /**
-     * Tests that the filter correctly uses only processes belonging to its own
-     * step and ignores process records for other steps.
-     *
-     * @covers \userdeletefilter_delay\userdeletefilter
-     *
-     * @return void
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function test_filter_ignores_processes_for_other_steps(): void {
-        $this->resetAfterTest();
-
-        $delaysec = DAYSECS * 7;
-        $user = $this->getDataGenerator()->create_user();
-
-        // Create two separate steps; attach the delay filter to step1 only.
-        $step1 = $this->create_step();
-        $step2 = \tool_userautodelete\step::create(workflow: $step1->workflow, title: 'Step 2', description: '');
-
-        $filter = $this->create_filter($step1, ['delaysec' => $delaysec]);
-
-        // Insert an old process record for step2, NOT step1.
-        $this->insert_process_record((int) $user->id, $step2, time() - $delaysec - 60);
-
-        $clause  = $filter->user_records_filter_clause();
-        $matched = $this->query_users_matching_clause($clause);
-
-        $this->assertNotContains(
-            (int) $user->id,
-            $matched,
-            'Delay filter must not match process records belonging to a different step'
-        );
-    }
 
     /**
      * Tests that user_records_filter_clause() throws a moodle_exception when

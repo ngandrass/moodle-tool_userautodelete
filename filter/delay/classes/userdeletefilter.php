@@ -96,10 +96,9 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         return new userfilter_clause(
             'u.id IN (' .
                 'SELECT userid FROM {' . db_table::USER_PROCESS->value . '} ' .
-                'WHERE stepid = :stepid AND timemodified <= :procmodtime' .
+                'WHERE timemodified <= :procmodtime' .
             ')',
             [
-                'stepid' => $this->stepid,
                 'procmodtime' => time() - $delaysec,
             ]
         );
