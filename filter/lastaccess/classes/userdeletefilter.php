@@ -91,8 +91,10 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
             throw new \moodle_exception('negative_thresholdsec', 'userdeletefilter_lastaccess');
         }
 
+        // For users that have never logged in (lastaccess = 0), fall back to
+        // timecreated so that freshly registered users are not matched immediately.
         return new userfilter_clause(
-            'u.lastaccess < :lastaccesstime',
+            '(CASE WHEN u.lastaccess = 0 THEN u.timecreated ELSE u.lastaccess END) < :lastaccesstime',
             ['lastaccesstime' => time() - $thresholdsec]
         );
     }

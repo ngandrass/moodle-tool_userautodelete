@@ -115,6 +115,78 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
     }
 
     /**
+     * Tests that a user who has never logged in is matched when their account
+     * creation time exceeds the threshold (timecreated fallback).
+     *
+     * @covers \userdeletefilter_lastaccess\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_filter_matches_never_logged_in_user_past_threshold(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $thresholdsec = DAYSECS * 30;
+
+        // User that was created long ago and has never logged in.
+        $oldneverloggedin = $this->getDataGenerator()->create_user();
+        $DB->update_record('user', [
+            'id'          => $oldneverloggedin->id,
+            'lastaccess'  => 0,
+            'timecreated' => time() - $thresholdsec - 60,
+        ]);
+
+        $step = $this->create_step();
+        $filter = $this->create_filter($step, ['thresholdsec' => $thresholdsec]);
+        $clause = $filter->user_records_filter_clause();
+        $matched = $this->query_users_matching_clause($clause);
+
+        $this->assertContains(
+            (int) $oldneverloggedin->id,
+            $matched,
+            'Filter must include a never-logged-in user whose account creation time exceeds the threshold'
+        );
+    }
+
+    /**
+     * Tests that a user who has never logged in is not matched when their account
+     * creation time is within the threshold (timecreated fallback).
+     *
+     * @covers \userdeletefilter_lastaccess\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_filter_excludes_never_logged_in_user_within_threshold(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $thresholdsec = DAYSECS * 30;
+
+        // User created recently who has never logged in.
+        $freshneverloggedin = $this->getDataGenerator()->create_user();
+        $DB->update_record('user', [
+            'id'          => $freshneverloggedin->id,
+            'lastaccess'  => 0,
+            'timecreated' => time() - DAYSECS,
+        ]);
+
+        $step = $this->create_step();
+        $filter = $this->create_filter($step, ['thresholdsec' => $thresholdsec]);
+        $clause = $filter->user_records_filter_clause();
+        $matched = $this->query_users_matching_clause($clause);
+
+        $this->assertNotContains(
+            (int) $freshneverloggedin->id,
+            $matched,
+            'Filter must exclude a never-logged-in user whose account creation time is within the threshold'
+        );
+    }
+
+    /**
      * Tests that user_records_filter_clause() throws a moodle_exception when
      * the configured threshold is zero or negative.
      *
