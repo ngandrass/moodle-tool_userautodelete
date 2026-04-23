@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     userdeletefilter_cohort
- * @copyright   2026 Niels Gandraß <niels@gandrass.de>
+ * @copyright   2026 ssystems GmbH <oss@ssystems.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

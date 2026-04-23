@@ -18,7 +18,7 @@
  * Unit tests for the userdeletefilter_cohort sub-plugin
  *
  * @package   userdeletefilter_cohort
- * @copyright 2026 Niels Gandraß <niels@gandrass.de>
+ * @copyright 2026 ssystems GmbH <oss@ssystems.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -113,8 +113,16 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         $invertedclause = $invertedfilter->user_records_filter_clause();
         $invertedmatched = $this->query_users_matching_clause($invertedclause);
 
-        $this->assertContains((int) $nonmember->id, $invertedmatched, 'Inverted cohort filter must include users outside the selected cohort');
-        $this->assertNotContains((int) $cohortmember->id, $invertedmatched, 'Inverted cohort filter must exclude users inside the selected cohort');
+        $this->assertContains(
+            (int) $nonmember->id,
+            $invertedmatched,
+            'Inverted cohort filter must include users outside the selected cohort'
+        );
+        $this->assertNotContains(
+            (int) $cohortmember->id,
+            $invertedmatched,
+            'Inverted cohort filter must exclude users inside the selected cohort'
+        );
     }
 
     /**
