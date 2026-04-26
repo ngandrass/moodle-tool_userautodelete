@@ -46,7 +46,7 @@ if ($hassiteconfig) {
             'tool_userautodelete/enable',
             get_string('setting_enable', 'tool_userautodelete'),
             get_string('setting_enable_desc', 'tool_userautodelete'),
-            '0'
+            '1'
         ));
 
         // Task execution interval.
