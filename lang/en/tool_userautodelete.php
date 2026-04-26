@@ -29,13 +29,13 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['aborted'] = 'Aborted';
 $string['action'] = 'Action';
-$string['action_is_invalid'] = 'This action is invalid and must be fixed before the workflow can be enabled. Please make sure that all required configuration fields of this action are properly filled.';
+$string['action_is_invalid'] = 'This action is currently invalid and must be fixed before the workflow can be enabled. Please make sure that all required configuration fields of this action are properly filled.';
 $string['actions'] = 'Actions';
 $string['active_processes'] = '{$a} active process(es)';
 $string['add_action'] = 'Add action';
-$string['add_action_desc'] = 'Click on the type of action you want to add to the workflow step.';
+$string['add_action_desc'] = 'Click on the action you want to add to the workflow step.';
 $string['add_filter'] = 'Add filter';
-$string['add_filter_desc'] = 'Click on the type of filter you want to add to the workflow step.';
+$string['add_filter_desc'] = 'Click on the filter you want to add to the workflow step.';
 $string['add_step'] = 'Add step';
 $string['affected_users'] = 'Affected users';
 $string['back_to_overview'] = 'Back to overview';
@@ -117,8 +117,8 @@ $string['reltime_suffix_ago'] = 'ago';
 $string['reltime_suffix_in'] = '';
 $string['selection_filters'] = 'Selection filters';
 $string['setting_enable'] = 'Enable plugin';
-$string['setting_enable_desc'] = 'Enables or disables the plugin globally. If this is disabled, no action will be performed.';
-$string['setting_plugin_desc'] = 'This plugin automatically deletes users that have not logged in for a configurable number of days. This is useful to keep your database clean and remove old accounts that are no longer needed. The plugin can be configured to send warning emails a number of days before the user is deleted. This gives users the chance to log back in and keep their accounts active. It furthermore supports deleting users in a GDPR-compliant way, leaving no trace of personally identifiable information (PII) inside the user record.';
+$string['setting_enable_desc'] = 'Enables or disables the plugin globally. If this is disabled, no action will be performed, even if some workflows are activated.';
+$string['setting_plugin_desc'] = '<p>This plugin manages the full lifecycle of Moodle user accounts using freely configurable, multi-step workflows.</p><p>Each workflow can consist of multiple steps with one or more filters (e.g. last access, authentication method, role assignment, ...) that determine which users are selected, and actions (e.g. send email, suspend, delete, ...) that are executed when a user enters a step. This allows building simple as well as sophisticated user lifecycle workflows, i.e., warn inactive users, suspend them after a grace period, and finally delete their accounts in a GDPR-compliant way. A built-in dry-run mode and action log let administrators safely preview and audit all automated activity. The default filters and actions can easily be extended by further subplugins.</p>';
 $string['setting_task_execution_interval'] = 'Check interval';
 $string['setting_task_execution_interval_button'] = 'Configure check interval';
 $string['setting_task_execution_interval_desc'] = 'The check for inactive users is performed using a scheduled task that is executed via the Moodle cron. You can configure the interval at which it runs by clicking the following button.';
