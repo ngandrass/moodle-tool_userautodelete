@@ -666,6 +666,7 @@ class workflow {
         }
 
         // TODO (MDL-0): Customize filter and step settings.
+        // TODO (MDL-0): Load default workflow on fresh installs.
 
         // Warning phase.
         $warningstep = step::create(workflow: $this);
