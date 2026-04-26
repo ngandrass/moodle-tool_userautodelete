@@ -125,6 +125,7 @@ $string['state'] = 'State';
 $string['aborted'] = 'Aborted';
 $string['view_user_processes'] = 'View user processes';
 $string['steps'] = 'Steps';
+$string['subplugin_has_no_instance_settings'] = 'This subplugin does not have any instance-specific settings.';
 $string['subplugintype_userdeleteaction'] = 'User lifecycle action';
 $string['subplugintype_userdeleteaction_plural'] = 'User lifecycle actions';
 $string['subplugintype_userdeletefilter'] = 'User lifecycle filter';

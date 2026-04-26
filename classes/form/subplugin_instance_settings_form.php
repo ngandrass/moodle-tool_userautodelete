@@ -67,7 +67,7 @@ class subplugin_instance_settings_form extends dynamic_form {
      * Form definition.
      *
      * @throws \dml_exception
-     * @throws \coding_exception
+     * @throws \moodle_exception
      */
     public function definition() {
         $mform = $this->_form;
@@ -75,6 +75,7 @@ class subplugin_instance_settings_form extends dynamic_form {
             $this->optional_param('instanceid', null, PARAM_INT),
             $this->optional_param('instancetype', null, PARAM_TEXT)
         );
+        $settingdescriptors = $instance::instance_setting_descriptors();
 
         // Add internal information.
         $mform->addElement('hidden', 'instanceid', $instance->get_instance_id());
@@ -84,8 +85,15 @@ class subplugin_instance_settings_form extends dynamic_form {
         $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
         $mform->setType('returnurl', PARAM_RAW);
 
+        // Display message if no settings are available.
+        if (empty($settingdescriptors)) {
+            $mform->addElement('html', '<div class="alert alert-info mx-auto my-2" style="width: fit-content;">'
+                . get_string('subplugin_has_no_instance_settings', 'tool_userautodelete') .
+            '</div>');
+        }
+
         // Add all instance settings form based on instance descriptors.
-        foreach ($instance::instance_setting_descriptors() as $descriptor) {
+        foreach ($settingdescriptors as $descriptor) {
             $element = 's_' . $descriptor->key;
 
             switch ($descriptor->mformtype) {
