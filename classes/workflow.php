@@ -665,25 +665,38 @@ class workflow {
             }
         }
 
-        // TODO (MDL-0): Customize filter and step settings.
-        // TODO (MDL-0): Load default workflow on fresh installs.
-
         // Warning phase.
-        $warningstep = step::create(workflow: $this);
-        userdeletefilter::create_instance($warningstep, 'lastaccess');
+        $warningstep = step::create(
+            workflow: $this,
+            title: get_string('defaultworkflow_warning_step_title', 'tool_userautodelete'),
+            description: get_string('defaultworkflow_warning_step_desc', 'tool_userautodelete'),
+        );
+        userdeletefilter::create_instance($warningstep, 'lastaccess', [
+            'thresholdsec' => YEARSECS * 3,
+        ]);
         userdeleteaction::create_instance($warningstep, 'mail', [
             'subject' => get_string('defaultworkflow_warningmail_subject', 'tool_userautodelete'),
             'message' => get_string('defaultworkflow_warningmail_message', 'tool_userautodelete'),
         ]);
 
         // Deletion phase.
-        $deletionstep = step::create(workflow: $this);
-        userdeletefilter::create_instance($deletionstep, 'delay');
+        $deletionstep = step::create(
+            workflow: $this,
+            title: get_string('defaultworkflow_delete_step_title', 'tool_userautodelete'),
+            description: get_string('defaultworkflow_delete_step_desc', 'tool_userautodelete'),
+        );
+        userdeletefilter::create_instance($deletionstep, 'delay', [
+            'delaysec' => DAYSECS * 30,
+        ]);
         userdeleteaction::create_instance($deletionstep, 'mail', [
             'subject' => get_string('defaultworkflow_deletemail_subject', 'tool_userautodelete'),
             'message' => get_string('defaultworkflow_deletemail_message', 'tool_userautodelete'),
         ]);
         userdeleteaction::create_instance($deletionstep, 'delete');
         userdeleteaction::create_instance($deletionstep, 'anonymize');
+
+        // Update title and description.
+        $this->set_title(get_string('defaultworkflow_title', 'tool_userautodelete'));
+        $this->set_description(get_string('defaultworkflow_desc', 'tool_userautodelete'));
     }
 }
