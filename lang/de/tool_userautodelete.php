@@ -72,3 +72,4 @@ $string['users_to_delete'] = 'Zu löschende Nutzer';
 $string['users_to_warn'] = 'Zu warnende Nutzer';
 $string['warned'] = 'Gewarnt';
 $string['workflow'] = 'Ablauf';
+$string['workflows_plugin_disabled_warning'] = 'Mindestens ein Ablauf ist aktiv, aber das Plugin ist <b>global deaktiviert</b>. Aktivieren Sie es in den <a href="{$a}">Plugin-Einstellungen</a>, damit die Ausführung aufgenommen wird.';

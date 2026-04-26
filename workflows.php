@@ -38,7 +38,10 @@ admin_externalpage_setup('tool_userautodelete_workflows');
 // Generate context data for page template.
 $workflows = workflow::get_all();
 $workflowmeta = [];
+$activeworkflowsexist = false;
 foreach ($workflows as $workflow) {
+    $activeworkflowsexist |= $workflow->active;
+
     // Calculate process stats for this workflow.
     $processmeta = array_reduce(
         process::get_process_stats_for_workflow($workflow->id),
@@ -112,8 +115,20 @@ $tplctx = [
     ],
 ];
 
+// Add warning about globally disabled plugin.
+$notificationshtml = '';
+if ($activeworkflowsexist && !get_config('tool_userautodelete', 'enable')) {
+    $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'tool_userautodelete_settings']);
+    $notificationshtml = $OUTPUT->notification(
+        get_string('workflows_plugin_disabled_warning', 'tool_userautodelete', $settingsurl->out(false)),
+        \core\output\notification::NOTIFY_WARNING,
+        false,
+    );
+}
+
 // Render main output.
 echo $OUTPUT->header();
+echo $notificationshtml;
 echo $OUTPUT->render_from_template(
     count($workflows) > 0 ? 'tool_userautodelete/workflows' : 'tool_userautodelete/workflows_empty',
     $tplctx

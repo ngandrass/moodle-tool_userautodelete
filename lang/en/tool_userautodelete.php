@@ -143,4 +143,5 @@ $string['users_to_warn'] = 'Users to warn';
 $string['warned'] = 'Warned';
 $string['workflow'] = 'Workflow';
 $string['workflows'] = 'Workflows';
+$string['workflows_plugin_disabled_warning'] = 'At least one workflow is active, but the plugin is <b>globally disabled</b>. Enable it in the <a href="{$a}">plugin settings</a> to allow workflow execution.';
 $string['workflow_stat_processes_in_steps'] = '{$a->active} active ({$a->finished} finished) process(es) in {$a->steps} step(s)';
