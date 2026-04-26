@@ -73,6 +73,14 @@ class tool_userautodelete_generator extends \testing_data_generator {
         );
         $workflow->load_default_workflow();
 
+        if ($title !== null) {
+            $workflow->set_title($title);
+        }
+
+        if ($description !== null) {
+            $workflow->set_description($description);
+        }
+
         if ($active) {
             $workflow->activate();
         }

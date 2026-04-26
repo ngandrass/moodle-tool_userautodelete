@@ -78,9 +78,13 @@ final class generator_test extends \advanced_testcase {
 
         // Validate basic workflow metadata and activation state.
         $this->assertInstanceOf(workflow::class, $workflow, 'Generator did not return a workflow instance');
-        $this->assertSame('Default Workflow', $workflow->title, 'Default workflow title is incorrect');
         $this->assertSame(
-            'This is the default workflow created by the generator.',
+            get_string('defaultworkflow_title', 'tool_userautodelete'),
+            $workflow->title,
+            'Default workflow title is incorrect'
+        );
+        $this->assertSame(
+            get_string('defaultworkflow_desc', 'tool_userautodelete'),
             $workflow->description,
             'Default workflow description is incorrect'
         );
