@@ -106,7 +106,13 @@ if ($action == 'enable') {
         get_string('newworkflow_title', 'tool_userautodelete'),
         get_string('newworkflow_desc', 'tool_userautodelete')
     );
-    step::create($workflow);
+
+    // Populate workflow according to args.
+    if (optional_param('loaddefault', 0, PARAM_BOOL)) {
+        $workflow->load_default_workflow();
+    } else {
+        step::create($workflow);
+    }
 
     // Redirect user into workflow editing mask.
     redirect(new moodle_url(

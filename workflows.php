@@ -98,15 +98,24 @@ foreach ($workflows as $workflow) {
     ];
 }
 
-// Render main output.
-echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('tool_userautodelete/workflows', [
+$tplctx = [
     'workflows' => $workflowmeta,
     'urls' => [
         'add' => new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
             ['action' => 'add']
         ),
+        'adddefault' => new moodle_url(
+            '/admin/tool/userautodelete/manageworkflow.php',
+            ['action' => 'add', 'loaddefault' => 1]
+        ),
     ],
-]);
+];
+
+// Render main output.
+echo $OUTPUT->header();
+echo $OUTPUT->render_from_template(
+    count($workflows) > 0 ? 'tool_userautodelete/workflows' : 'tool_userautodelete/workflows_empty',
+    $tplctx
+);
 echo $OUTPUT->footer();

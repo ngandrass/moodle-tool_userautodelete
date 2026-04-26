@@ -1,0 +1,71 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/workflows_empty
+
+    Landing page for the workflow-management page if no workflows exist yet.
+
+    Example context (json):
+    {
+        "urls": {
+            "addnew": "https://foo.bar/addnew",
+            "adddefault": "https://foo.bar/adddefault"
+        }
+    }
+}}
+
+
+{{> tool_userautodelete/workflows_header }}
+
+<div class="row mb-4">
+    <div class="col-sm-12 text-center">
+        <a
+            href="{{{urls.adddefault}}}"
+            class="btn btn-primary align-content-center font-weight-bold fw-bold"
+            style="width: 256px; height: 256px;"
+            role="button"
+            title="{{#str}} create_default_workflow_desc, tool_userautodelete {{/str}}"
+            data-title="{{#str}} create_default_workflow_desc, tool_userautodelete {{/str}}"
+            data-bs-title="{{#str}} create_default_workflow_desc, tool_userautodelete {{/str}}"
+            data-toggle="tooltip"
+            data-bs-toggle="tooltip"
+
+        >
+            <i class="fa-solid fa-file-import fa-5x mb-3"></i>
+            <br>
+            {{#str}} create_default_workflow, tool_userautodelete {{/str}}
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <a
+            href="{{{urls.add}}}"
+            class="btn btn-outline-success"
+            role="button"
+            title="{{#str}} create_empty_workflow_desc, tool_userautodelete {{/str}}"
+            data-title="{{#str}} create_empty_workflow_desc, tool_userautodelete {{/str}}"
+            data-bs-title="{{#str}} create_empty_workflow_desc, tool_userautodelete {{/str}}"
+            data-toggle="tooltip"
+            data-bs-toggle="tooltip"
+        >
+            <i class="fa-regular fa-plus"></i>&nbsp;
+            {{#str}} create_empty_workflow, tool_userautodelete {{/str}}
+        </a>
+    </div>
+</div>
