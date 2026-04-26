@@ -611,9 +611,24 @@
 
     {{#isediting}}
         require(
-            ['jquery', 'core/modal', 'core/modal_save_cancel', 'core/modal_events', 'core/templates', 'core/str', 'core_form/modalform', 'tool_userautodelete/modal_delete_save_cancel'],
-            function($, Modal, ModalSaveCancel, ModalEvents, Templates, Str, ModalForm, ModalDeleteSaveCancel
-        ) {
+            [
+                'jquery',
+                'core/modal',
+                'core/modal_save_cancel',
+                'core/modal_events',
+                'core/templates',
+                'core/str',
+                'core_form/modalform',
+            ],
+            function(
+                $,
+                Modal,
+                ModalSaveCancel,
+                ModalEvents,
+                Templates,
+                Str,
+                ModalForm,
+            ) {
                 // Deserialize available filters and actions
                 var availableFilters = JSON.parse(atob('{{{availablefilters}}}'));
                 var availableActions = JSON.parse(atob('{{{availableactions}}}'));
@@ -691,10 +706,10 @@
                                 },
                             });
                             await modalForm.show();
-                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
                                 location.reload();
                             });
-                            modalForm.modal.getRoot().on(ModalEvents.delete, (e) => {
+                            modalForm.modal.getRoot().on(ModalEvents.delete, () => {
                                 window.location.href = '{{{urls.delete}}}';
                             });
                         });
@@ -713,10 +728,10 @@
                                 },
                             });
                             await modalForm.show();
-                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
                                 location.reload();
                             });
-                            modalForm.modal.getRoot().on(ModalEvents.delete, (e) => {
+                            modalForm.modal.getRoot().on(ModalEvents.delete, () => {
                                 window.location.href = '{{{urls.delete}}}';
                             });
                         });
