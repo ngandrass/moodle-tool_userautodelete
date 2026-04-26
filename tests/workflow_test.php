@@ -413,6 +413,18 @@ final class workflow_test extends \advanced_testcase {
         $this->assertCount(1, $steps[0]->actions, 'Warning step should contain one action');
         $this->assertCount(1, $steps[1]->filters, 'Deletion step should contain one filter');
         $this->assertCount(3, $steps[1]->actions, 'Deletion step should contain three actions');
+
+        // Assert that the title and descriptions are set accordingly.
+        $this->assertSame(
+            get_string('defaultworkflow_title', 'tool_userautodelete'),
+            $workflow->title,
+            'Default workflow title was not loaded'
+        );
+        $this->assertSame(
+            get_string('defaultworkflow_desc', 'tool_userautodelete'),
+            $workflow->description,
+            'Default workflow description was not loaded'
+        );
     }
 
     /**
