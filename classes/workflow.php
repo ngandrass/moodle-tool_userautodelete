@@ -672,7 +672,7 @@ class workflow {
             description: get_string('defaultworkflow_warning_step_desc', 'tool_userautodelete'),
         );
         userdeletefilter::create_instance($warningstep, 'lastaccess', [
-            'thresholdsec' => YEARSECS * 3,
+            'thresholdsec' => YEARSECS * 3 - 30 * DAYSECS,
         ]);
         userdeleteaction::create_instance($warningstep, 'mail', [
             'subject' => get_string('defaultworkflow_warningmail_subject', 'tool_userautodelete'),
@@ -687,6 +687,9 @@ class workflow {
         );
         userdeletefilter::create_instance($deletionstep, 'delay', [
             'delaysec' => DAYSECS * 30,
+        ]);
+        userdeletefilter::create_instance($deletionstep, 'lastaccess', [
+            'thresholdsec' => YEARSECS * 3,
         ]);
         userdeleteaction::create_instance($deletionstep, 'mail', [
             'subject' => get_string('defaultworkflow_deletemail_subject', 'tool_userautodelete'),

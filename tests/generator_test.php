@@ -100,10 +100,13 @@ final class generator_test extends \advanced_testcase {
         $this->assertSame(2, $steps[1]->sort, 'Second generated step sort index is incorrect');
 
         $this->assert_step_subplugins($steps[0], ['lastaccess'], ['mail']);
-        $this->assert_step_subplugins($steps[1], ['delay'], ['mail', 'delete', 'anonymize']);
+        $this->assert_step_subplugins($steps[1], ['delay', 'lastaccess'], ['mail', 'delete', 'anonymize']);
 
         // Validate relevant default sub-plugin settings.
-        $this->assertSame(YEARSECS * 3, (int) $steps[0]->filters[0]->get_instance_setting('thresholdsec'));
+        $this->assertSame(
+            YEARSECS * 3 - 30 * DAYSECS,
+            (int) $steps[0]->filters[0]->get_instance_setting('thresholdsec')
+        );
         $this->assertSame(
             get_string('defaultworkflow_warningmail_subject', 'tool_userautodelete'),
             $steps[0]->actions[0]->get_instance_setting('subject'),
@@ -114,7 +117,14 @@ final class generator_test extends \advanced_testcase {
             $steps[0]->actions[0]->get_instance_setting('message'),
             'Default warning mail message is incorrect'
         );
-        $this->assertSame(DAYSECS * 30, (int) $steps[1]->filters[0]->get_instance_setting('delaysec'));
+        $this->assertSame(
+            DAYSECS * 30,
+            (int) $steps[1]->filters[0]->get_instance_setting('delaysec')
+        );
+        $this->assertSame(
+            YEARSECS * 3,
+            (int) $steps[1]->filters[1]->get_instance_setting('thresholdsec')
+        );
         $this->assertSame(
             get_string('defaultworkflow_deletemail_subject', 'tool_userautodelete'),
             $steps[1]->actions[0]->get_instance_setting('subject'),

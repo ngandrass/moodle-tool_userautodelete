@@ -411,7 +411,7 @@ final class workflow_test extends \advanced_testcase {
         $this->assertCount(2, $steps, 'Default workflow should contain two steps');
         $this->assertCount(1, $steps[0]->filters, 'Warning step should contain one filter');
         $this->assertCount(1, $steps[0]->actions, 'Warning step should contain one action');
-        $this->assertCount(1, $steps[1]->filters, 'Deletion step should contain one filter');
+        $this->assertCount(2, $steps[1]->filters, 'Deletion step should contain two filters');
         $this->assertCount(3, $steps[1]->actions, 'Deletion step should contain three actions');
 
         // Assert that the title and descriptions are set accordingly.
