@@ -29,3 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'E-Mail senden';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['setting_message'] = 'Nachricht';
+$string['setting_message_help'] = 'Der Inhalt der E-Mail, die an den Nutzer gesendet wird. Sie können alle verfügbaren Formatierungsoptionen verwenden.';
+$string['setting_subject'] = 'Betreff';
+$string['setting_subject_help'] = 'Der Betreff der E-Mail, die an den Nutzer gesendet wird.';
