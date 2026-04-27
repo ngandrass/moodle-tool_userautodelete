@@ -234,14 +234,21 @@ class subplugin_instance_settings_form extends dynamic_form {
      */
     public function process_dynamic_submission() {
         $data = $this->get_data();
-        $instance = $this->get_subplugin_instance(
-            $data->instanceid,
-            $data->instancetype
-        );
+        $instance = $this->get_subplugin_instance($data->instanceid, $data->instancetype);
+        $descriptors = [];
+        foreach ($instance::instance_setting_descriptors() as $descriptor) {
+            $descriptors[$descriptor->key] = $descriptor;
+        }
 
         foreach ($data as $key => $value) {
             if (str_starts_with($key, 's_')) {
                 $settingkey = substr($key, 2);
+
+                // Persist editor values as plain text.
+                if (($descriptors[$settingkey]->mformtype ?? null) === 'editor' && is_array($value)) {
+                    $value = $value['text'] ?? '';
+                }
+
                 $instance->set_instance_setting($settingkey, $value);
             }
         }
@@ -262,20 +269,36 @@ class subplugin_instance_settings_form extends dynamic_form {
      *     $this->set_data($data);
      */
     public function set_data_for_dynamic_submission(): void {
-            $instance = $this->get_subplugin_instance(
-                $this->optional_param('instanceid', null, PARAM_INT),
-                $this->optional_param('instancetype', null, PARAM_TEXT)
-            );
+        // Gather info.
+        $instance = $this->get_subplugin_instance(
+            $this->optional_param('instanceid', null, PARAM_INT),
+            $this->optional_param('instancetype', null, PARAM_TEXT)
+        );
+        $descriptors = [];
+        foreach ($instance::instance_setting_descriptors() as $descriptor) {
+            $descriptors[$descriptor->key] = $descriptor;
+        }
 
-            $data = [
-                'instanceid' => $instance->get_instance_id(),
-                'instancetype' => $instance::get_plugin_type()->value,
-            ];
-            foreach ($instance->get_all_instance_settings() as $key => $value) {
-                $data["s_{$key}"] = $value;
+        // Build form data array.
+        $data = [
+            'instanceid' => $instance->get_instance_id(),
+            'instancetype' => $instance::get_plugin_type()->value,
+        ];
+        foreach ($instance->get_all_instance_settings() as $key => $value) {
+            // Prepare Moodle editor fields.
+            if (($descriptors[$key]->mformtype ?? null) === 'editor') {
+                $value = [
+                    'text' => (string) $value,
+                    'format' => FORMAT_HTML,
+                    'itemid' => 0,
+                ];
             }
 
-            $this->set_data($data);
+            // Set instance setting data key.
+            $data["s_{$key}"] = $value;
+        }
+
+        $this->set_data($data);
     }
 
     /**
