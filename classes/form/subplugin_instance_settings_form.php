@@ -181,6 +181,42 @@ class subplugin_instance_settings_form extends dynamic_form {
     }
 
     /**
+     * Validates the submitted form data, including sub-plugin instance settings.
+     *
+     * Delegates per-setting validation to the sub-plugin's own
+     * validate_instance_settings() method and maps any returned errors back to
+     * their corresponding form element names.
+     *
+     * @param array $data Submitted and cleaned form data
+     * @param array $files Submitted files
+     * @return string[] Array of form element name => localized error message for each invalid element
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function validation($data, $files): array {
+        $errors = parent::validation($data, $files);
+
+        // Extract instance settings from form data by stripping the 's_' prefix.
+        $settings = [];
+        foreach ($data as $key => $value) {
+            if (str_starts_with($key, 's_')) {
+                $settings[substr($key, 2)] = $value;
+            }
+        }
+
+        // Delegate per-setting validation to the sub-plugin instance.
+        $instance = $this->get_subplugin_instance(
+            $data['instanceid'],
+            $data['instancetype']
+        );
+        foreach ($instance->validate_instance_settings($settings) as $key => $error) {
+            $errors['s_' . $key] = $error;
+        }
+
+        return $errors;
+    }
+
+    /**
      * Process the form submission, used if form was submitted via AJAX
      *
      * This method can return scalar values or arrays that can be json-encoded, they will be passed to the caller JS.
