@@ -251,4 +251,89 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
             'The submitted setting value was not saved to the database'
         );
     }
+
+    /**
+     * Tests that process_dynamic_submission() stores editor settings as text.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::process_dynamic_submission
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_dynamic_submission_persists_editor_text_for_action(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $action = userdeleteaction::create_instance($step, 'mail', [
+            'subject' => 'Initial subject',
+            'message' => 'Initial body',
+        ]);
+
+        $requestparams = [
+            'instanceid' => $action->id,
+            'instancetype' => 'action',
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+        ];
+        $postdata = $requestparams + [
+            's_subject' => 'Updated subject',
+            's_message' => [
+                'text' => '<p>Updated body</p>',
+                'format' => FORMAT_HTML,
+                'itemid' => 0,
+            ],
+            'sesskey' => sesskey(),
+            '_qf__tool_userautodelete_form_subplugin_instance_settings_form' => 1,
+        ];
+        $this->get_generator()->prepare_form_environment(
+            '/admin/tool/userautodelete/manageaction.php',
+            $requestparams
+        );
+        $_POST = $postdata;
+        $_REQUEST = $postdata;
+
+        $form = new subplugin_instance_settings_form();
+        $form->process_dynamic_submission();
+
+        $updatedaction = userdeleteaction::get_instance_by_id($action->id);
+        $this->assertSame('Updated subject', $updatedaction->get_instance_setting('subject'));
+        $this->assertSame('<p>Updated body</p>', $updatedaction->get_instance_setting('message'));
+    }
+
+    /**
+     * Tests that set_data_for_dynamic_submission() rehydrates editor defaults.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::set_data_for_dynamic_submission
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_set_data_for_dynamic_submission_reloads_editor_value_for_action(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $action = userdeleteaction::create_instance($step, 'mail', [
+            'subject' => 'Subject',
+            'message' => '<p>Persisted body value</p>',
+        ]);
+        $this->get_generator()->prepare_form_environment('/admin/tool/userautodelete/manageaction.php', [
+            'instanceid' => $action->id,
+            'instancetype' => 'action',
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+        ]);
+
+        $form = new subplugin_instance_settings_form();
+        $form->set_data_for_dynamic_submission();
+
+        $this->assertStringContainsString(
+            'Persisted body value',
+            $form->render(),
+            'The editor body value was not restored in the form output.'
+        );
+    }
 }
