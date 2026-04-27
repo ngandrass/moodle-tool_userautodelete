@@ -58,6 +58,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * Returns a descriptive string of this filter instance's settings to be shown in the UI.
      *
      * @return string A descriptive string of this filter instance's settings to be shown in the UI
+     * @throws \dml_exception
      */
     public function get_instance_details(): string {
         $cohortids = $this->get_instance_setting('cohortids');
@@ -109,6 +110,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * defines and exposes.
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
+     * @throws \dml_exception
      */
     #[\Override]
     public static function instance_setting_descriptors(): array {
