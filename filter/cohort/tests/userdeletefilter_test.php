@@ -32,7 +32,6 @@ use tool_userautodelete\userdeletefilter;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../../tests/userdeletefilter_testcase.php');
-require_once($CFG->dirroot . '/cohort/lib.php');
 
 /**
  * Unit tests for the userdeletefilter_cohort sub-plugin
@@ -82,6 +81,23 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
     }
 
     /**
+     * Adds a user to a cohort after loading the cohort helper functions in method scope.
+     *
+     * Loading cohort/lib.php here avoids depending on PHPUnit's file-loader scope when this
+     * test file is executed directly.
+     *
+     * @param int $cohortid Cohort ID
+     * @param int $userid User ID
+     * @return void
+     */
+    private function add_cohort_member(int $cohortid, int $userid): void {
+        global $CFG;
+
+        require_once($CFG->dirroot . '/cohort/lib.php');
+        cohort_add_member($cohortid, $userid);
+    }
+
+    /**
      * Tests that the filter clause includes users who are members of the selected cohort
      * and excludes users outside it, and vice versa when inverted.
      *
@@ -98,7 +114,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         $cohortmember = $this->getDataGenerator()->create_user();
         $nonmember = $this->getDataGenerator()->create_user();
 
-        cohort_add_member($cohort->id, $cohortmember->id);
+        $this->add_cohort_member((int) $cohort->id, (int) $cohortmember->id);
 
         $step = $this->create_step();
 
@@ -143,8 +159,8 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         $userb = $this->getDataGenerator()->create_user();
         $userc = $this->getDataGenerator()->create_user();
 
-        cohort_add_member($cohorta->id, $usera->id);
-        cohort_add_member($cohortb->id, $userb->id);
+        $this->add_cohort_member((int) $cohorta->id, (int) $usera->id);
+        $this->add_cohort_member((int) $cohortb->id, (int) $userb->id);
 
         $step = $this->create_step();
         $filter = $this->create_filter($step, ['cohortids' => [$cohorta->id, $cohortb->id], 'inverted' => false]);
