@@ -30,4 +30,4 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Suspension state';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['setting_suspended'] = 'Suspension state';
-$string['setting_suspended_help'] = 'TODO';
+$string['setting_suspended_help'] = 'If this option is set to yes, only users that are currently suspended will be targeted by this filter. If set to no, only users that are not suspended will be targeted.';

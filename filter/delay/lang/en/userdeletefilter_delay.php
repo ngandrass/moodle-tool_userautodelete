@@ -30,4 +30,4 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Delay';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['setting_delaysec'] = 'Delay';
-$string['setting_delaysec_help'] = 'TODO';
+$string['setting_delaysec_help'] = 'The minimum amount of time a user process has to spend in the previous step before being allowed to transition to the step this filter is part of.';

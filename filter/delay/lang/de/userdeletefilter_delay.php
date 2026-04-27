@@ -29,3 +29,5 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Verzögerung';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['setting_delaysec'] = 'Verzögerung';
+$string['setting_delaysec_help'] = 'Die minimale Zeit, die ein Nutzerprozess im vorherigen Schritt verbringen muss, bevor er zu dem Schritt übergehen darf zu dem dieser Filter gehört.';

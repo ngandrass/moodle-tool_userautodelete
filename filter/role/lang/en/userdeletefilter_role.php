@@ -30,6 +30,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Role';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['setting_inverted'] = 'Inverted';
-$string['setting_inverted_help'] = 'TODO';
+$string['setting_inverted_help'] = 'If this option is set to yes, only users that have <b>none of the above selected roles assigned in any context</b> will be targeted. If set to no, only users that have all of the above selected roles assigned will be targeted.';
 $string['setting_roleids'] = 'Roles';
-$string['setting_roleids_help'] = 'TODO';
+$string['setting_roleids_help'] = 'Select one or more roles that a user has to be assigned to in order to be affected by this filter. Role assignments are checked regardless of the context level of the assignments. This means, that filtering for manager users, both global as well as course-level manager users will be affected.';

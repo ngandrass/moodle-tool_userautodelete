@@ -29,3 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Auth Methode';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['setting_auths'] = 'Authentifizierungsmethoden';
+$string['setting_auths_help'] = 'Wählen Sie eine oder mehrere Authentifizierungsmethoden aus die für die Filterung genutzt werden sollen.';
+$string['setting_inverted'] = 'Invertierte Übereinstimmung';
+$string['setting_inverted_help'] = 'Wenn diese Option aktiviert ist, werden alle Nutzer mit Authentifizierungsmethoden die <b>von den gewählten abweichen</b> ausgewählt. Wenn diese Option deaktiviert ist, werden ausschließlich Nutzer die eine der oben gewählten Authentifizierungsmethoden nutzen ausgewählt.';

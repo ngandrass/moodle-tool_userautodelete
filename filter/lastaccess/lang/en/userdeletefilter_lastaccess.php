@@ -30,4 +30,4 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Last access';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['setting_thresholdsec'] = 'Threshold';
-$string['setting_thresholdsec_help'] = 'TODO';
+$string['setting_thresholdsec_help'] = 'The amount of time a user has to be inactive (no site visit / login) before it is considered by this filter. For any user with at least one previous login, this filter checks the last access date. For freshly created users that never logged into the site yet, the registration date will be checked instead.';

@@ -29,3 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Rolle';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['setting_inverted'] = 'Invertiert';
+$string['setting_inverted_help'] = 'Wenn diese Option aktiviert ist, werden nur Nutzer ausgewählt, die <b>keine der oben ausgewählten Rollen in irgendeinem Kontext zugewiesen haben</b>. Wenn diese Option deaktiviert ist, werden nur Nutzer ausgewählt, die alle der oben ausgewählten Rollen zugewiesen haben.';
+$string['setting_roleids'] = 'Rollen';
+$string['setting_roleids_help'] = 'Wählen Sie eine oder mehrere Rollen aus, die einem Nutzer zugewiesen sein müssen, damit dieser von diesem Filter betroffen ist. Rollenzuweisungen werden unabhängig vom Kontextlevel der Zuweisung überprüft. Das bedeutet, dass bei der Filterung von Manager-Nutzern sowohl globale als auch Kurs-Manager-Nutzer betroffen sein werden.';

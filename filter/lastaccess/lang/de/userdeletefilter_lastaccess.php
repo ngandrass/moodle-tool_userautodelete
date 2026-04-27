@@ -29,3 +29,5 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Letzter Zugriff';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['setting_thresholdsec'] = 'Schwellenwert';
+$string['setting_thresholdsec_help'] = 'Die Zeitspanne die Nutzer inaktiv sein müssen (kein Besuch der Seite / kein Login), bevor sie von diesem Filter berücksichtigt werden. Für alle Nutzer mit mindestens einem vorherigen Login überprüft dieser Filter das Datum des letzten Zugriffs. Für frisch erstellte Nutzer, die sich noch nie auf der Seite angemeldet haben, wird stattdessen das Registrierungsdatum überprüft.';
