@@ -93,6 +93,90 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
+     * Tests that execute() resolves user and site variable references in both
+     * subject and message body before sending.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_resolves_variables_in_subject_and_message(): void {
+        global $SITE, $CFG;
+
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user([
+            'firstname' => 'John',
+            'lastname' => 'Doe',
+            'email' => 'jd@example.com',
+            'city' => 'Hamburg',
+        ]);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'subject' => 'Hi {{user.firstname}}, account on {{site.name}}',
+            'message' => '<p>Dear {{user.firstname}} {{user.lastname}}, visit {{urls.home}}.</p>',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $action->execute($process);
+        $mailsink->close();
+
+        $messages = $mailsink->get_messages();
+        $this->assertCount(1, $messages, 'Exactly one email must be sent.');
+        $this->assertSame(
+            "Hi John, account on {$SITE->fullname}",
+            $messages[0]->subject,
+            'Variables in subject must be resolved before sending.'
+        );
+        $this->assertStringContainsString(
+            'Dear John Doe',
+            $messages[0]->body,
+            'User name variables in message body must be resolved.'
+        );
+        $this->assertStringContainsString(
+            $CFG->wwwroot,
+            $messages[0]->body,
+            'Site URL variable in message body must be resolved.'
+        );
+    }
+
+    /**
+     * Tests that execute() leaves unknown variable references unreplaced in the
+     * sent email rather than stripping or failing on them.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_leaves_unknown_variables_unreplaced(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'user@example.com']);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'subject' => 'Hello {{user.firstname}}',
+            'message' => 'Token: {{user.invalidvariable}} End.',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $result = $action->execute($process);
+        $mailsink->close();
+
+        $this->assertTrue($result, 'execute() must return true even when unknown variables are present.');
+        $this->assertStringContainsString(
+            '{{user.invalidvariable}}',
+            $mailsink->get_messages()[0]->body,
+            'Unknown variable references must remain literally in the sent message.'
+        );
+    }
+
+    /**
      * Tests that execute() returns false when the target user has no email address.
      *
      * @covers \userdeleteaction_mail\userdeleteaction
@@ -213,5 +297,138 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
             $action->get_instance_details(),
             'get_instance_details() must return an empty string when no subject is configured'
         );
+    }
+
+    /**
+     * Tests that validate_instance_settings() returns an empty array when both
+     * subject and message contain only valid variable references.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_no_errors_for_valid_variables(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings([
+            'subject' => 'Hello {{user.firstname}} on {{site.name}}',
+            'message' => '<p>Dear {{user.firstname}} {{user.lastname}}, visit {{urls.home}}.</p>',
+        ]);
+
+        $this->assertSame([], $errors, 'Settings with only valid variable references must produce no validation errors.');
+    }
+
+    /**
+     * Tests that validate_instance_settings() returns an empty array when
+     * settings contain plain text with no variable references at all.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_no_errors_for_plain_text(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings([
+            'subject' => 'Your account will be deleted',
+            'message' => '<p>Please log in to keep your account.</p>',
+        ]);
+
+        $this->assertSame([], $errors, 'Settings without variable references must produce no validation errors.');
+    }
+
+    /**
+     * Tests that validate_instance_settings() returns an error for the subject
+     * when it contains an unknown variable reference.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_error_for_unknown_variable_in_subject(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings([
+            'subject' => 'Hello {{user.nonexistentfield}}',
+            'message' => '<p>Valid message.</p>',
+        ]);
+
+        $this->assertArrayHasKey('subject', $errors, 'An error must be reported for the subject key.');
+        $this->assertArrayNotHasKey('message', $errors, 'No error must be reported for a valid message.');
+        $this->assertStringContainsString(
+            '{{user.nonexistentfield}}',
+            $errors['subject'],
+            'The error message must name the unknown variable reference.'
+        );
+    }
+
+    /**
+     * Tests that validate_instance_settings() returns an error for the message
+     * when it contains an unknown variable reference.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_error_for_unknown_variable_in_message(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings([
+            'subject' => 'Valid subject',
+            'message' => '<p>Token: {{workflow.secret}}</p>',
+        ]);
+
+        $this->assertArrayNotHasKey('subject', $errors, 'No error must be reported for a valid subject.');
+        $this->assertArrayHasKey('message', $errors, 'An error must be reported for the message key.');
+        $this->assertStringContainsString(
+            '{{workflow.secret}}',
+            $errors['message'],
+            'The error message must name the unknown variable reference.'
+        );
+    }
+
+    /**
+     * Tests that validate_instance_settings() returns errors for both subject
+     * and message when both contain unknown variable references.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_errors_for_both_fields(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings([
+            'subject' => '{{bad.subject}}',
+            'message' => '{{bad.message}}',
+        ]);
+
+        $this->assertArrayHasKey('subject', $errors, 'An error for subject must be present.');
+        $this->assertArrayHasKey('message', $errors, 'An error for message must be present.');
     }
 }
