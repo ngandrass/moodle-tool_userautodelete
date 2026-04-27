@@ -26,6 +26,7 @@ namespace userdeleteaction_mail;
 
 use core\lang_string;
 use tool_userautodelete\local\type\instance_setting_descriptor;
+use tool_userautodelete\local\variable_resolver;
 use tool_userautodelete\process;
 
 // phpcs:ignore
@@ -71,6 +72,43 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     }
 
     /**
+     * Validates the given instance settings and returns per-key error messages.
+     *
+     * Checks subject and message for unknown variable references and returns a
+     * localized error message for each field that contains invalid variables.
+     *
+     * @param array $settings Associative array of setting key-value pairs to validate
+     * @return string[] Associative array of setting key => localized error message
+     * @throws \coding_exception
+     */
+    public function validate_instance_settings(array $settings): array {
+        $errors = [];
+        $ctx = static::get_variable_context();
+
+        foreach (['subject', 'message'] as $key) {
+            $value = $settings[$key] ?? null;
+
+            // Handle editor-type values that arrive as arrays with a 'text' key.
+            if (is_array($value)) {
+                $value = $value['text'] ?? '';
+            }
+
+            if (!empty($value)) {
+                $resolvedvalue = variable_resolver::resolve($value, $ctx);
+                if (variable_resolver::has_unresolved_variables($resolvedvalue)) {
+                    $errors[$key] = get_string(
+                        'error_unknown_variables',
+                        'userdeleteaction_mail',
+                        implode(', ', variable_resolver::get_unresolved_variables($resolvedvalue))
+                    );
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
      * Executes this action for a given user deletion process
      *
      * @param process $process The user deletion process to execute this action for
@@ -90,6 +128,11 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
         if (empty($subject) || empty($message)) {
             throw new \moodle_exception('subject_or_message_empty', 'userdeleteaction_mail');
         }
+
+        // Build the variable context and resolve references in subject and message.
+        $ctx = static::get_variable_context($user);
+        $subject = variable_resolver::resolve($subject, $ctx);
+        $message = variable_resolver::resolve($message, $ctx);
 
         // Send the email.
         return email_to_user(
@@ -123,6 +166,59 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
                 required: true,
                 mformtype: 'editor',
             ),
+        ];
+    }
+
+    /**
+     * Builds the variable context used for validation and runtime email rendering.
+     *
+     * Pass a user to build a runtime context with real values. Pass null to
+     * build a validation context with empty placeholders for all supported
+     * variables.
+     *
+     * @param \stdClass|null $user The target user record for runtime context, or null for validation context
+     * @return array Context that maps all supported variables to placeholder or runtime values
+     * @throws \coding_exception
+     */
+    protected static function get_variable_context(?\stdClass $user = null): array {
+        global $CFG, $SITE;
+
+        // Prepare creation and access times for user. Fallback to timecreated if user never accessed the site.
+        $timecreated = 0;
+        $lastaccess = 0;
+
+        if ($user !== null) {
+            $timecreated = $user->timecreated;
+            $lastaccess = $user->lastaccess ?: $timecreated;
+        }
+
+        return [
+            'user' => [
+                'id' => $user->id ?? '',
+                'idnumber' => $user->idnumber ?? '',
+                'username' => $user->username ?? '',
+                'firstname' => $user->firstname ?? '',
+                'lastname' => $user->lastname ?? '',
+                'email' => $user->email ?? '',
+                'institution' => $user->institution ?? '',
+                'timecreated' => userdate($timecreated, get_string('strftimedatetime', 'langconfig')),
+                'lastaccess' => userdate($lastaccess, get_string('strftimedatetime', 'langconfig')),
+                'lastaccessrelative' => format_time(time() - $lastaccess),
+                'lastip' => $user->lastip ?? '',
+                'city' => $user->city ?? '',
+                'country' => $user->country ?? '',
+            ],
+            'site' => [
+                'name' => $SITE->fullname,
+                'shortname' => $SITE->shortname,
+                'supportemail' => $CFG->supportemail ?? '',
+            ],
+            'urls' => [
+                'home' => (new \moodle_url('/'))->out(false),
+                'login' => (new \moodle_url('/login/index.php'))->out(false),
+                'profile' => (new \moodle_url("/user/profile.php?id={$user?->id}"))->out(false),
+                'support' => (new \moodle_url('/user/contactsitesupport.php'))->out(false),
+            ],
         ];
     }
 }
