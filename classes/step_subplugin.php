@@ -132,7 +132,22 @@ abstract class step_subplugin {
      * @throws \dml_exception
      */
     public function is_valid(): bool {
+        // The validater_instance_settings() function is not called here because settings are validated during saving.
         return $this->is_all_required_instance_settings_set();
+    }
+
+    /**
+     * Validates the given instance settings and returns an array of per-key error messages.
+     *
+     * The default implementation returns an empty array (no errors). Sub-plugins may
+     * override this method to perform custom validation logic, e.g., checking for
+     * invalid variable references.
+     *
+     * @param array $settings Associative array of setting key-value pairs to validate
+     * @return string[] Associative array of setting key => localized error message for each invalid setting
+     */
+    public function validate_instance_settings(array $settings): array {
+        return [];
     }
 
     /**
