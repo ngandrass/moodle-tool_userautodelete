@@ -173,6 +173,60 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
     }
 
     /**
+     * Tests that all users from one selected cohort are matched while users
+     * from another non-selected cohort are excluded.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_filter_matches_multiple_users_from_selected_cohort_only(): void {
+        $this->resetAfterTest();
+
+        $selectedcohort = $this->create_cohort('Selected cohort');
+        $othercohort = $this->create_cohort('Other cohort');
+
+        $matchingusers = [
+            $this->getDataGenerator()->create_user(),
+            $this->getDataGenerator()->create_user(),
+            $this->getDataGenerator()->create_user(),
+        ];
+        $nonmatchingusers = [
+            $this->getDataGenerator()->create_user(),
+            $this->getDataGenerator()->create_user(),
+            $this->getDataGenerator()->create_user(),
+        ];
+        $nocohortusers = [
+            $this->getDataGenerator()->create_user(),
+            $this->getDataGenerator()->create_user(),
+        ];
+
+        foreach ($matchingusers as $user) {
+            $this->add_cohort_member((int) $selectedcohort->id, (int) $user->id);
+        }
+        foreach ($nonmatchingusers as $user) {
+            $this->add_cohort_member((int) $othercohort->id, (int) $user->id);
+        }
+
+        $step = $this->create_step();
+        $filter = $this->create_filter($step, ['cohortids' => [$selectedcohort->id], 'inverted' => false]);
+        $clause = $filter->user_records_filter_clause();
+        $matched = $this->query_users_matching_clause($clause);
+
+        foreach ($matchingusers as $user) {
+            $this->assertContains((int) $user->id, $matched, 'Filter must include every user from the selected cohort');
+        }
+        foreach ($nonmatchingusers as $user) {
+            $this->assertNotContains((int) $user->id, $matched, 'Filter must exclude every user from non-selected cohorts');
+        }
+        foreach ($nocohortusers as $user) {
+            $this->assertNotContains((int) $user->id, $matched, 'Filter must exclude users without any cohort membership');
+        }
+    }
+
+    /**
      * Tests that is_valid() returns false when the required 'cohortids' setting
      * is empty and true once a valid cohort ID has been configured.
      *
