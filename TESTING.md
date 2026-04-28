@@ -1,4 +1,4 @@
-# Testing instructions
+# Testing Instructions
 
 This page is intended for developers and testers.
 
