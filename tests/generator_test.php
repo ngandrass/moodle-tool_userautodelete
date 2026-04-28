@@ -296,6 +296,108 @@ final class generator_test extends \advanced_testcase {
     }
 
     /**
+     * Tests creation of the lastaccess lifecycle workflow fixture.
+     *
+     * @covers \tool_userautodelete_generator
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_create_lastaccess_lifecycle_workflow(): void {
+        $this->resetAfterTest();
+
+        // Create lifecycle workflow fixture with custom timing values.
+        $generator = $this->get_userautodelete_generator();
+        $thresholdsec = DAYSECS * 180;
+        $delaysec = DAYSECS * 14;
+        $workflow = $generator->create_lastaccess_lifecycle_workflow('Lifecycle workflow', $thresholdsec, $delaysec, true);
+
+        // Validate workflow metadata and state.
+        $this->assertSame('Lifecycle workflow', $workflow->title, 'Lifecycle workflow title is incorrect');
+        $this->assertSame(
+            'Suspends stale users and deletes them after a delay.',
+            $workflow->description,
+            'Lifecycle workflow description is incorrect'
+        );
+        $this->assertTrue($workflow->active, 'Lifecycle workflow fixture should be active');
+        $this->assertTrue($workflow->is_valid(), 'Lifecycle workflow fixture should be valid');
+
+        // Validate generated step composition and relevant settings.
+        $reloaded = workflow::get_by_id($workflow->id);
+        $steps = $reloaded->steps;
+        $this->assertCount(2, $steps, 'Lifecycle workflow should contain two steps');
+        $this->assertSame(
+            ['Step 1: Suspend stale users', 'Step 2: Delete after delay'],
+            array_map(static fn(step $step): ?string => $step->title, $steps)
+        );
+        $this->assert_step_subplugins($steps[0], ['lastaccess'], ['suspend']);
+        $this->assert_step_subplugins($steps[1], ['delay'], ['delete']);
+        $this->assertSame($thresholdsec, (int) $steps[0]->filters[0]->get_instance_setting('thresholdsec'));
+        $this->assertSame($delaysec, (int) $steps[1]->filters[0]->get_instance_setting('delaysec'));
+        $this->assertSame($delaysec, $steps[0]->timeoutsec, 'First step timeout should match step-2 delay');
+        $this->assertNull($steps[1]->timeoutsec, 'Final lifecycle step should not have a timeout');
+    }
+
+    /**
+     * Tests creation of the lastaccess scenario fixture.
+     *
+     * @covers \tool_userautodelete_generator
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_create_lastaccess_scenario(): void {
+        $this->resetAfterTest();
+
+        // Create the end-to-end scenario fixture.
+        $generator = $this->get_userautodelete_generator();
+        $scenario = $generator->create_lastaccess_scenario();
+
+        // Validate top-level fixture structure.
+        $this->assertArrayHasKey('workflow', $scenario, 'Scenario should contain a workflow entry');
+        $this->assertArrayHasKey('users', $scenario, 'Scenario should contain a users entry');
+        $this->assertInstanceOf(workflow::class, $scenario['workflow'], 'Scenario did not return a workflow instance');
+        $this->assertIsArray($scenario['users'], 'Scenario users entry should be an array');
+
+        // Validate generated workflow structure with default lifecycle settings.
+        $reloaded = workflow::get_by_id($scenario['workflow']->id);
+        $steps = $reloaded->steps;
+        $this->assertCount(2, $steps, 'Scenario workflow should contain two steps');
+        $this->assert_step_subplugins($steps[0], ['lastaccess'], ['suspend']);
+        $this->assert_step_subplugins($steps[1], ['delay'], ['delete']);
+        $this->assertSame(YEARSECS, (int) $steps[0]->filters[0]->get_instance_setting('thresholdsec'));
+        $this->assertSame(DAYSECS * 30, (int) $steps[1]->filters[0]->get_instance_setting('delaysec'));
+
+        // Validate user fixture keys and key timestamp relationships.
+        $users = $scenario['users'];
+        $this->assertSame(
+            ['recent', 'borderline', 'stale', 'very_stale', 'never_accessed', 'fresh', 'returned'],
+            array_keys($users),
+            'Scenario users are missing expected entries or order'
+        );
+        $this->assertCount(7, $users, 'Scenario should contain seven fixture users');
+        $this->assertSame(0, (int) $users['never_accessed']->lastaccess, 'Never-accessed user should have no lastaccess');
+        $this->assertSame(0, (int) $users['fresh']->lastaccess, 'Fresh user should have no lastaccess');
+        $this->assertGreaterThan(
+            $users['borderline']->lastaccess,
+            $users['recent']->lastaccess,
+            'Recent user should be more recent than borderline user'
+        );
+        $this->assertGreaterThan(
+            $users['stale']->lastaccess,
+            $users['borderline']->lastaccess,
+            'Borderline user should be more recent than stale user'
+        );
+        $this->assertGreaterThan(
+            $users['very_stale']->lastaccess,
+            $users['stale']->lastaccess,
+            'Stale user should be more recent than very stale user'
+        );
+    }
+
+    /**
      * Tests prepare_form_environment().
      *
      * @covers \tool_userautodelete_generator::prepare_form_environment
