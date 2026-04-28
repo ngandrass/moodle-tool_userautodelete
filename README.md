@@ -1,4 +1,4 @@
-# Automatic User Deletion
+# Automatic User Lifecycle Management
 
 [![Latest Version](https://img.shields.io/github/v/release/ngandrass/moodle-tool_userautodelete)](https://github.com/ngandrass/moodle-tool_userautodelete/releases)
 [![PHP Support](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fngandrass%2Fmoodle-tool_userautodelete%2Frefs%2Fheads%2Fmaster%2Fversion.php&search=meta-supported-php%7B(%3F%3Cdata%3E%5B%5E%7D%5D%2B)%7D&replace=%24%3Cdata%3E&label=PHP&color=blue)](https://github.com/ngandrass/moodle-tool_userautodelete/blob/master/version.php)
@@ -24,7 +24,7 @@ warn inactive users, suspend them after a grace period, and finally delete their
 built-in dry-run mode and action log let administrators safely preview and audit all automated activity. The default
 filters and actions can easily be extended by further subplugins.
 
-The automatic user deletion plugin plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
+The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
 
 [![Moodle plugin directory](docs/assets/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
 
@@ -55,7 +55,7 @@ The automatic user deletion plugin plugin is available via the [Moodle plugin di
 ## Configuration and Usage
 
 The plugin can be configured via the Moodle site administration under _Site administration > Plugins > Admin tools >
-Automatic user deletion_.
+User Lifecycle Management_.
 
 After installation, the plugin will be disabled by default until you configure and enable it by checking the _Enable
 plugin_ checkbox (1) and saving the settings.
