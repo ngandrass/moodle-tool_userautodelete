@@ -1,0 +1,137 @@
+site_name: Automatic User Lifecycle Management
+site_url: "https://moodleuserlifecycle.gandrass.de/"
+use_directory_urls: !ENV [OFFLINE, true]
+repo_url: https://github.com/ngandrass/moodle-tool_userautodelete
+repo_name: ngandrass/moodle-tool_userautodelete
+edit_uri: edit/master/docs/
+
+copyright: "Copyright &copy; 2026 Niels Gandraß<br>License: GNU General Public License v3.0"
+
+extra:
+  social:
+    - icon: material/bug
+      link: https://github.com/ngandrass/moodle-tool_userautodelete/issues
+      name: "Issue Tracker"
+    - icon: fontawesome/brands/github
+      link: https://github.com/ngandrass/moodle-tool_userautodelete
+      name: "GitHub Repository"
+    - icon: simple/moodle
+      link: https://moodle.org/plugins/tool_userautodelete
+      name: "Moodle Plugin Directory: tool_userautodelete"
+    - icon: fontawesome/brands/github
+      link: https://github.com/ngandrass/moodle-tool_userautodelete
+      name: "GitHub: tool_userautodelete"
+  todo: "{== **TODO** ==}"
+
+#   version:
+#     provider: mike
+
+plugins:
+  # - mike
+  - drawio
+  - glightbox:
+      shadow: true
+  - macros:
+      module_name: mkdocs-macros
+      on_error_fail: true
+  - offline:
+      enabled: !ENV [OFFLINE, false]
+  - panzoom:
+      key: "shift"
+  - privacy
+  - search
+  - social
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - tables
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue grey
+      accent: blue grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue grey
+      accent: blue grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - css/extra.css
+
+nav:
+  - "Introduction": index.md
+  - "Screenshots": screenshots.md
+  - "Changelog": changelog.md
+
+  - "Getting Started":
+    - getstarted/index.md
+    - getstarted/install.md
+    - getstarted/workflow.md
+    - getstarted/verification.md
+
+  - "Workflows":
+    - workflow/index.md
+    - workflow/crud.md
+    - workflow/steps.md
+    - workflow/order.md
+
+  - "Verification and Logging":
+    - audit/index.md
+    - "Dry-run": audit/dryrun.md
+    - "Inspecting User Processes": audit/userprocesses.md
+    - "Action Log": audit/actionlog.md
+
+  - "User Filters":
+    - filters/index.md
+    - "Authentication Method": filters/auth.md
+    - "Cohort Membership": filters/cohort.md
+    - "Last Access": filters/lastaccess.md
+    - "Role Assignment": filters/role.md
+    - "Suspension State": filters/suspension.md
+    - "Time Delay": filters/delay.md
+
+  - "User Actions":
+    - actions/index.md
+    - "Anonymize User": actions/anonymize.md
+    - "Delete User": actions/delete.md
+    - "Send Mail": actions/sendmail.md
+    - "Suspend User": actions/suspend.md
+    - "Unsuspend User": actions/unsuspend.md
+
+  - "Developer Documentation":
+    - dev/index.md
+    - dev/testing.md
+    - dev/builddocs.md
