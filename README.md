@@ -34,6 +34,7 @@ The automatic user deletion plugin plugin is available via the [Moodle plugin di
 - Workflow-based user lifecycle management with freely configurable, multi-step workflows
 - User filter subplugins for effectively targeting users. Core filters available:
   - Authentication method
+  - Cohort membership
   - Last access to site
   - Role assignment
   - Suspension state
