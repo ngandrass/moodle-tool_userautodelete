@@ -26,7 +26,7 @@ filters and actions can easily be extended by further subplugins.
 
 The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
 
-[![Moodle plugin directory](docs/assets/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
+[![Moodle plugin directory](docs/assets/buttons/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
 
 
 ## Features

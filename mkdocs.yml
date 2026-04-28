@@ -108,13 +108,7 @@ nav:
     - workflow/steps.md
     - workflow/order.md
 
-  - "Verification and Logging":
-    - audit/index.md
-    - "Dry-run": audit/dryrun.md
-    - "Inspecting User Processes": audit/userprocesses.md
-    - "Action Log": audit/actionlog.md
-
-  - "User Filters":
+  - "Filters":
     - filters/index.md
     - "Authentication Method": filters/auth.md
     - "Cohort Membership": filters/cohort.md
@@ -123,13 +117,19 @@ nav:
     - "Suspension State": filters/suspension.md
     - "Time Delay": filters/delay.md
 
-  - "User Actions":
+  - "Actions":
     - actions/index.md
     - "Anonymize User": actions/anonymize.md
     - "Delete User": actions/delete.md
-    - "Send Mail": actions/sendmail.md
+    - "Send Mail": actions/mail.md
     - "Suspend User": actions/suspend.md
     - "Unsuspend User": actions/unsuspend.md
+
+  - "Verification and Logging":
+      - audit/index.md
+      - "Dry-run": audit/dryrun.md
+      - "Inspecting User Processes": audit/userprocesses.md
+      - "Action Log": audit/actionlog.md
 
   - "Developer Documentation":
     - dev/index.md

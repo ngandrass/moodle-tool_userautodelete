@@ -1,0 +1,3 @@
+# Action: Anonymize User
+
+TODO
