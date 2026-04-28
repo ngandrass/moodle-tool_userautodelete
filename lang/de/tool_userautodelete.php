@@ -50,14 +50,14 @@ $string['create_empty_workflow_desc'] = 'Ein neuer Workflow ohne Schritte, Aktio
 $string['create_new_workflow'] = 'Neuen Workflow erstellen';
 $string['defaultworkflow_delete_step_desc'] = 'Löscht Nutzer, die seit langer Zeit inaktiv sind.';
 $string['defaultworkflow_delete_step_title'] = 'Inaktive Nutzer löschen';
-$string['defaultworkflow_deletemail_message'] = '<p>Hallo,</p><p>Ihr Konto auf unserer Seite wurde aufgrund von Inaktivität gelöscht. Wenn Sie unseren Dienst weiterhin nutzen möchten, erstellen Sie sich bitte ein neues Konto.</p><p>Mit freundlichen Grüßen</p>';
-$string['defaultworkflow_deletemail_subject'] = 'Ihr Konto wurde gelöscht';
+$string['defaultworkflow_deletemail_message'] = '<p>Hallo {{user.firstname}} {{user.lastname}},</p><p>Ihr Konto auf <a href="{{urls.home}}">{{site.name}}</a> wurde aufgrund von Inaktivität gelöscht. Diese Löschung erfolgte gemäß unserer Datenschutzrichtlinien.</p><p>Wenn Sie {{site.shortname}} wieder nutzen möchten, erstellen Sie bitte ein neues Konto unter <a href="{{urls.home}}">{{urls.home}}</a>.</p><p>Mit freundlichen Grüßen,<br>Ihr {{site.name}} Team</p>';
+$string['defaultworkflow_deletemail_subject'] = '{{site.shortname}}: Ihr Konto wurde gelöscht';
 $string['defaultworkflow_desc'] = 'Sendet inaktiven Nutzenden eine Warnungs-Mail und löscht die Konten wenn kein Login erfolgt.';
 $string['defaultworkflow_title'] = 'Standard-Workflow';
 $string['defaultworkflow_warning_step_desc'] = 'Sendet inaktiven Nutzern eine Warn-E-Mail. Nutzer werden anhand der angegebenen Filterkriterien ausgewählt.';
 $string['defaultworkflow_warning_step_title'] = 'Inaktive Nutzer warnen';
-$string['defaultworkflow_warningmail_message'] = '<p>Hallo,</p><p>Ihr Konto auf unserer Seite war für einen langen Zeitraum inaktiv. Um Ihr Konto zu behalten, <strong>loggen Sie sich jetzt ein, um zu verhindern, dass Ihr Konto gemäß unserer Datenschutzrichtlinie in den nächsten Tagen gelöscht wird</strong>.</p><p>Wenn Sie möchten, dass Ihr Konto gelöscht wird, können Sie diese Nachricht ignorieren.</p><p>Mit freundlichen Grüßen</p>';
-$string['defaultworkflow_warningmail_subject'] = 'Ihr Konto wird bald gelöscht - Handlung erforderlich!';
+$string['defaultworkflow_warningmail_message'] = '<p>Hallo {{user.firstname}} {{user.lastname}},</p><p>Ihr Konto auf <a href="{{urls.home}}">{{site.name}}</a> war in den letzten drei Jahren inaktiv. Um Ihr Konto zu behalten, <strong><a href="{{urls.login}}">loggen Sie sich jetzt ein</a></strong>. Ohne Login wird Ihr Konto in den nächsten 30 Tagen gemäß unserer Datenschutzrichtlinien gelöscht.</p><p>Wenn Sie Ihr Konto nicht mehr benötigen, können Sie diese Nachricht ignorieren.</p><p>Mit freundlichen Grüßen,<br>Ihr {{site.name}} Team</p><p>Wenn Sie Hilfe benötigen, besuchen Sie bitte <a href="{{urls.support}}">{{urls.support}}</a>.</p>';
+$string['defaultworkflow_warningmail_subject'] = '{{site.shortname}}: Bitte einloggen, um Ihr Konto zu behalten!';
 $string['delete_action'] = 'Aktion löschen';
 $string['delete_filter'] = 'Filter löschen';
 $string['delete_step'] = 'Schritt löschen';

@@ -50,14 +50,14 @@ $string['create_empty_workflow_desc'] = 'A new workflow without any steps, actio
 $string['create_new_workflow'] = 'Create new workflow';
 $string['defaultworkflow_delete_step_desc'] = 'Deletes users that have been inactive for a long time.';
 $string['defaultworkflow_delete_step_title'] = 'Delete inactive users';
-$string['defaultworkflow_deletemail_message'] = '<p>Hello,</p><p>your account on our site was deleted due to inactivity. If you wish to continue using our service, please create a new account.</p><p>Kind regards</p>';
-$string['defaultworkflow_deletemail_subject'] = 'Your account was deleted';
+$string['defaultworkflow_deletemail_message'] = '<p>Hello {{user.firstname}} {{user.lastname}},</p><p>your account on <a href="{{urls.home}}">{{site.name}}</a> has been deleted due to inactivity. This deletion happened in accordance with our data protection policy.</p><p>If you would like to use {{site.shortname}} again, please create a new account at <a href="{{urls.home}}">{{urls.home}}</a>.</p><p>Kind regards,<br>Your {{site.name}} team</p>';
+$string['defaultworkflow_deletemail_subject'] = '{{site.shortname}}: Your account has been deleted';
 $string['defaultworkflow_desc'] = 'Sends inactive users a warning email and deletes them after a grace period, if users did not return.';
 $string['defaultworkflow_title'] = 'Default workflow';
 $string['defaultworkflow_warning_step_desc'] = 'Sends a warning mail to inactive users. Users are selected by the given filter criteria.';
 $string['defaultworkflow_warning_step_title'] = 'Warn inactive users';
-$string['defaultworkflow_warningmail_message'] = '<p>Hello,</p><p>your account on our site has been inactive for a long period of time. To keep your account, please <strong>log back in now to prevent your account from being deleted</strong> according to our data protection policy within the next days.</p><p>If you wish your account to be deleted, you can ignore this message.</p><p>Kind regards</p>';
-$string['defaultworkflow_warningmail_subject'] = 'Your account will be deleted soon - Action required!';
+$string['defaultworkflow_warningmail_message'] = '<p>Hello {{user.firstname}} {{user.lastname}},</p><p>your account on <a href="{{urls.home}}">{{site.name}}</a> has been inactive for the last three years. To keep your account, please <strong><a href="{{urls.login}}">log in now</a></strong>. Without a login, your account will be deleted in the next 30 days according to our data protection policy.</p><p>If you no longer need your account, you can ignore this message.</p><p>Kind regards,<br>>our {{site.name}} team</p><p>If you need help, please visit <a href="{{urls.support}}">{{urls.support}}</a>.</p>';
+$string['defaultworkflow_warningmail_subject'] = '{{site.shortname}}: Please log in to keep your account!';
 $string['delete_action'] = 'Delete action';
 $string['delete_filter'] = 'Delete filter';
 $string['delete_step'] = 'Delete step';
