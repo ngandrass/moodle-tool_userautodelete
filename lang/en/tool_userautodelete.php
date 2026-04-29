@@ -56,7 +56,7 @@ $string['defaultworkflow_desc'] = 'Sends inactive users a warning email and dele
 $string['defaultworkflow_title'] = 'Default workflow';
 $string['defaultworkflow_warning_step_desc'] = 'Sends a warning mail to inactive users. Users are selected by the given filter criteria.';
 $string['defaultworkflow_warning_step_title'] = 'Warn inactive users';
-$string['defaultworkflow_warningmail_message'] = '<p>Hello {{user.firstname}} {{user.lastname}},</p><p>your account on <a href="{{urls.home}}">{{site.name}}</a> has been inactive for the last three years. To keep your account, please <strong><a href="{{urls.login}}">log in now</a></strong>. Without a login, your account will be deleted in the next 30 days according to our data protection policy.</p><p>If you no longer need your account, you can ignore this message.</p><p>Kind regards,<br>>our {{site.name}} team</p><p>If you need help, please visit <a href="{{urls.support}}">{{urls.support}}</a>.</p>';
+$string['defaultworkflow_warningmail_message'] = '<p>Hello {{user.firstname}} {{user.lastname}},</p><p>your account on <a href="{{urls.home}}">{{site.name}}</a> has been inactive for the last three years. To keep your account, please <strong><a href="{{urls.login}}">log in now</a></strong>. Without a login, your account will be deleted in the next 30 days according to our data protection policy.</p><p>If you no longer need your account, you can ignore this message.</p><p>Kind regards,<br>Your {{site.name}} team</p><p>If you need help, please visit <a href="{{urls.support}}">{{urls.support}}</a>.</p>';
 $string['defaultworkflow_warningmail_subject'] = '{{site.shortname}}: Please log in to keep your account!';
 $string['delete_action'] = 'Delete action';
 $string['delete_filter'] = 'Delete filter';
