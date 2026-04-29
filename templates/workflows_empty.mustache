@@ -32,6 +32,22 @@
 {{> tool_userautodelete/workflows_header }}
 
 <div class="row mb-4">
+    <div class="col-sm-12">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fa-solid fa-info-circle fa-lg flex-shrink-0 me-3"></i>
+            <div>
+                <p>
+                    {{#str}} no_workflows_exist_yet_create_one, tool_userautodelete {{/str}}
+                </p>
+                <p class="mb-0">
+                    {{#str}} no_workflows_exist_yet_details, tool_userautodelete {{/str}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
     <div class="col-sm-12 text-center">
         <a
             href="{{{urls.adddefault}}}"
