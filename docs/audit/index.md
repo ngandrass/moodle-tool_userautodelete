@@ -2,8 +2,8 @@
 
 TODO
 
-[:material-download: Dry-Run](dryrun.md){.md-button}
+[:fontawesome-solid-flask: Dry-Run](dryrun.md){.md-button}
 &nbsp;&nbsp;&nbsp;
-[:material-download: Inspecting User Processes](userprocesses.md){.md-button}
+[:fontawesome-solid-magnifying-glass: Inspecting User Processes](userprocesses.md){.md-button}
 &nbsp;&nbsp;&nbsp;
-[:material-download: Action Logs](actionlog.md){.md-button}
+[:fontawesome-solid-clipboard-list: Action Logs](actionlog.md){.md-button}

@@ -4,6 +4,6 @@ TODO: This section should cover the minimal actions to take in order to get the 
 
 [:material-download: Installation](install.md){.md-button}
 
-[:material-download: Create Your First Workflow](workflow.md){.md-button}
+[:fontawesome-solid-diagram-project: Create Your First Workflow](workflow.md){.md-button}
 
-[:material-download: Verifying Actions](verification.md){.md-button}
+[:fontawesome-solid-circle-check: Verifying Actions](verification.md){.md-button}

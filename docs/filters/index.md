@@ -2,14 +2,14 @@
 
 TODO
 
-[:material-download: Authentication Method](auth.md){.md-button}
+[:fontawesome-solid-key: Authentication Method](auth.md){.md-button}
 
-[:material-download: Cohort Membership](cohort.md){.md-button}
+[:fontawesome-solid-users: Cohort Membership](cohort.md){.md-button}
 
-[:material-download: Last Access](lastaccess.md){.md-button}
+[:fontawesome-solid-clock-rotate-left: Last Access](lastaccess.md){.md-button}
 
-[:material-download: Role Assignment](role.md){.md-button}
+[:fontawesome-solid-user-tag: Role Assignment](role.md){.md-button}
 
-[:material-download: Suspension State](suspension.md){.md-button}
+[:fontawesome-solid-user-slash: Suspension State](suspension.md){.md-button}
 
-[:material-download: Time Delay](delay.md){.md-button}
+[:fontawesome-solid-hourglass: Time Delay](delay.md){.md-button}
