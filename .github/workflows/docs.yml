@@ -1,0 +1,55 @@
+name: Build and publish docs
+
+on:
+  push:
+    branches:
+      - master
+      - next  # FIXME: This needs to be removed before public release!
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          lfs: true
+      - name: Install dependencies
+        run: sudo apt install -y libjpeg-dev zlib1g-dev libtiff-dev libfreetype-dev libwebp-dev libopenjp2-7-dev libxml2-dev libxslt1-dev
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - uses: actions/cache@v5
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+      - run: |
+          pip install poetry
+          poetry install
+      - run: poetry run mkdocs build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
