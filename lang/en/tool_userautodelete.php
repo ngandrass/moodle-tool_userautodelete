@@ -95,6 +95,7 @@ $string['manage_workflow'] = 'Manage workflow';
 $string['manage_workflow_desc'] = 'This page displays a single user lifecycle workflow and allows you to edit it. Each workflow is composed of steps that each have filters and actions. The filters define a set of criteria for user selection and timing. The actions define what should happen to the user accounts that enter the given step.';
 $string['manage_workflows'] = 'Manage workflows';
 $string['manage_workflows_desc'] = 'All currently existing workflows are listed here.';
+$string['need_help_check_docs'] = 'Need help? Check out the comprehensive <a href="https://moodleuserlifecycle.gandrass.de/" target="_blank">online documentation</a> for this plugin.';
 $string['newworkflow_desc'] = 'This is a freshly created workflow';
 $string['newworkflow_title'] = 'New workflow';
 $string['next_check'] = 'Next check';

@@ -95,6 +95,7 @@ $string['manage_workflow'] = 'Workflow verwalten';
 $string['manage_workflow_desc'] = 'Diese Seite zeigt einen einzelnen Workflow an und erlaubt dessen Bearbeitung. Jeder Workflow besteht aus einem oder mehr Schritten mit jeweils Filtern und Aktionen. Die Filter definieren Kriterien zur Nutzerauswahl und den Zeitpunkt der Verarbeitung. Die Aktionen entscheiden, was mit den Nutzerkonten geschieht, die den jeweiligen Schritt erreichen.';
 $string['manage_workflows'] = 'Workflows verwalten';
 $string['manage_workflows_desc'] = 'Alle derzeit vorhandenen Workflows sind hier aufgelistet.';
+$string['need_help_check_docs'] = 'Benötigen Sie Hilfe? Schauen Sie gerne in die umfassende <a href="https://moodleuserlifecycle.gandrass.de/" target="_blank">Online-Dokumentation</a> zu diesem Plugin.';
 $string['newworkflow_desc'] = 'Dies ist ein neu erstellter Workflow';
 $string['newworkflow_title'] = 'Neuer Workflow';
 $string['next_check'] = 'Nächste Prüfung';

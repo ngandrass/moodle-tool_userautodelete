@@ -40,6 +40,11 @@ if ($hassiteconfig) {
             "",
             get_string('setting_plugin_desc', 'tool_userautodelete')
         ));
+        $settings->add(new admin_setting_heading(
+            'tool_userautodelete/header_docs',
+            "",
+            get_string('need_help_check_docs', 'tool_userautodelete')
+        ));
 
         // Enable plugin globally.
         $settings->add(new admin_setting_configcheckbox(
