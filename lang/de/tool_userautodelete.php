@@ -145,5 +145,6 @@ $string['view_user_processes'] = 'Nutzerprozesse anzeigen';
 $string['warned'] = 'Gewarnt';
 $string['workflow'] = 'Workflow';
 $string['workflow_stat_processes_in_steps'] = '{$a->active} aktive ({$a->finished} abgeschlossene) Prozesse in {$a->steps} Schritt(en)';
+$string['workflow_stat_processes_multiline'] = '{$a->active} aktiv<br>{$a->finished} abgeschlossen';
 $string['workflows'] = 'Workflows';
 $string['workflows_plugin_disabled_warning'] = 'Mindestens ein Workflow ist aktiv, aber das Plugin ist <b>global deaktiviert</b>. Aktivieren Sie es in den <a href="{$a}">Plugin-Einstellungen</a>, damit die Ausführung aufgenommen werden kann.';

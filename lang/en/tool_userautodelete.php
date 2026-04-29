@@ -145,5 +145,6 @@ $string['view_user_processes'] = 'View user processes';
 $string['warned'] = 'Warned';
 $string['workflow'] = 'Workflow';
 $string['workflow_stat_processes_in_steps'] = '{$a->active} active ({$a->finished} finished) process(es) in {$a->steps} step(s)';
+$string['workflow_stat_processes_multiline'] = '{$a->active} active<br>{$a->finished} finished';
 $string['workflows'] = 'Workflows';
 $string['workflows_plugin_disabled_warning'] = 'At least one workflow is active, but the plugin is <b>globally disabled</b>. Enable it in the <a href="{$a}">plugin settings</a> to allow workflow execution.';
