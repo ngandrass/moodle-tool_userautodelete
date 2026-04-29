@@ -19,7 +19,54 @@
 
 </div>
 
-TODO
+This plugin manages the full lifecycle of Moodle user accounts using freely configurable, multi-step workflows.
+
+Each workflow can consist of multiple steps with one or more filters that determine which users are selected, and
+actions that are executed when a user enters a step. This allows building simple as well as sophisticated user lifecycle
+workflows, i.e., warn inactive users, suspend them after a grace period, and finally delete their accounts in a
+GDPR-compliant way. A built-in dry-run mode and action log let administrators safely preview and audit all automated
+activity. The default filters and actions can easily be extended by further subplugins.
+
+--- 
+<div style="text-align: center;" markdown>
+[:material-rocket-launch: Getting Started](getstarted/index.md){.md-button}
+&nbsp;&nbsp;&nbsp;
+[:material-image: Screenshots](screenshots.md){.md-button}
+&nbsp;&nbsp;&nbsp;
+[:material-file-document-edit-outline: Changelog](changelog.md){.md-button}
+</div>
+---
+
+The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
+
+<div style="text-align: center;" markdown>
+[![Moodle plugin directory](/assets/buttons/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
+</div>
+
+
+## Features
+
+- Workflow-based user lifecycle management with freely configurable, multi-step workflows
+- User filter subplugins for effectively targeting users. See [Filters](filters/index.md) for details.
+- Action subplugins to perform various operations. See [Actions](actions/index.md) for details.
+- GDPR-compliant user account anonymization and deletion
+- Dry-run mode to safely preview which users would be affected without taking any action
+- Action log to audit all sent mails, issued suspensions, and performed deletions
+- Highly configurable (time thresholds, email templates, ...)
+- Automated testing and support for all active Moodle releases
+
+
+## Contributing and Issues
+
+You have found a bug or want to request a new feature? Please head over to the
+[issue tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues).
+
+Want to contribute? Awesome! Please check out the [developer documentation](dev/index.md) and feel free to submit a pull
+request.
+
+[:material-bug: Issue Tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues){.md-button}
+&nbsp;&nbsp;&nbsp;
+[:material-code-tags: Developer Docs](dev/index.md){.md-button}
 
 
 ## License
