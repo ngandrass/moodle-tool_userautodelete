@@ -104,9 +104,9 @@ nav:
 
   - "Getting Started":
     - getstarted/index.md
-    - getstarted/install.md
-    - getstarted/workflow.md
-    - getstarted/verification.md
+    - "Installation": getstarted/install.md
+    - "Creating a Workflow": getstarted/workflow.md
+    - "Verifying and Enabling": getstarted/verification.md
 
   - "Workflows":
     - workflow/index.md

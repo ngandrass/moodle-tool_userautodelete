@@ -1,9 +1,21 @@
 # Getting Started
 
-TODO: This section should cover the minimal actions to take in order to get the default user lifecycle workflow up and running. This page should inform the reader about the contents of this section and provide links to the sub-pages.
+This guide will walk you through the plugin installation, the creation of your first workflow, and verifying everything
+that works correctly.
 
-[:material-download: Installation](install.md){.md-button}
+If you encounter any issues during the installation or use of this plugin, please open a bug report or ask a question in
+the [issue tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues) over on GitHub.
 
-[:fontawesome-solid-diagram-project: Create Your First Workflow](workflow.md){.md-button}
+[:material-bug: Issue Tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues){.md-button}
 
-[:fontawesome-solid-circle-check: Verifying Actions](verification.md){.md-button}
+## Let's get started!
+
+Ready to get started? Follow these guides in order:
+
+<div style="text-align: center;" markdown>
+[:material-download: (1) Installation](install.md){.md-button}
+&nbsp;&nbsp;&nbsp;
+[:fontawesome-solid-sitemap: (2) Create Workflow](workflow.md){.md-button}
+&nbsp;&nbsp;&nbsp;
+[:material-check-circle: (3) Verify Actions](verification.md){.md-button}
+</div>
