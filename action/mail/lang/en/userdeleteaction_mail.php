@@ -61,7 +61,7 @@ $string['setting_message_help'] = 'The body of the email that will be sent to th
 <li><code>{{urls.home}}</code> – Site base URL</li>
 <li><code>{{urls.login}}</code> – Login page URL</li>
 <li><code>{{urls.profile}}</code> – Target user profile URL</li>
-<li><code>{{urls.support}}</code> – Contact site support URL</jli>
+<li><code>{{urls.support}}</code> – Contact site support URL</li>
 </ul>';
 $string['setting_subject'] = 'Subject';
 $string['setting_subject_help'] = 'Subject of the email that will be sent to the user. You can use all available formatting options as well as the variables listed below.
@@ -94,5 +94,5 @@ $string['setting_subject_help'] = 'Subject of the email that will be sent to the
 <li><code>{{urls.home}}</code> – Site base URL</li>
 <li><code>{{urls.login}}</code> – Login page URL</li>
 <li><code>{{urls.profile}}</code> – Target user profile URL</li>
-<li><code>{{urls.support}}</code> – Contact site support URL</jli>
+<li><code>{{urls.support}}</code> – Contact site support URL</li>
 </ul>';
