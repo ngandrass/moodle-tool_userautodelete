@@ -1,13 +1,25 @@
 # Actions
 
-TODO
+Actions are used to perform certain operations on users that enter a [workflow step](../workflow/steps.md). Actions are
+always executed at the moment a user enters the workflow step the action is part of. 
 
-[:fontawesome-solid-user-secret: Anonymize User](anonymize.md){.md-button}
+Like [filters](../filters/index.md), actions are implemented as subplugins and can therefore be easily extended by
+installing further action subplugins or creating your own institution-specific actions. The following actions are part
+of the core plugin and therefore available within every installation:
 
-[:fontawesome-solid-trash: Delete User](delete.md){.md-button}
 
-[:fontawesome-solid-envelope: Send Mail](mail.md){.md-button}
+---
 
-[:fontawesome-regular-circle-pause: Suspend User](suspend.md){.md-button}
+<div class="subplugin-grid" markdown>
+[:fontawesome-solid-user-secret:<br>Anonymize User](anonymize.md){.md-button .md-button-subplugin .md-button-subplugin-action}
 
-[:fontawesome-regular-circle-play: Unsuspend User](unsuspend.md){.md-button}
+[:fontawesome-solid-trash:<br>Delete User](delete.md){.md-button .md-button-subplugin .md-button-subplugin-action}
+
+[:fontawesome-solid-envelope:<br>Send Mail](mail.md){.md-button .md-button-subplugin .md-button-subplugin-action}
+
+[:fontawesome-regular-circle-pause:<br>Suspend User](suspend.md){.md-button .md-button-subplugin .md-button-subplugin-action}
+
+[:fontawesome-regular-circle-play:<br>Unsuspend User](unsuspend.md){.md-button .md-button-subplugin .md-button-subplugin-action}
+</div>
+
+---

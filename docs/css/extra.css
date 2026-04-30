@@ -45,9 +45,71 @@
     font-size: 0.74em;
 }
 
+/* Custom buttons */
+.md-button-subplugin {
+    height: 160px;
+    width: 160px;
+
+    margin: 0 !important;
+    padding: 1em !important;
+
+    text-align: center;
+    display: flex;
+    align-content: center;
+
+    border-radius: 12px !important;
+}
+
+.md-button-subplugin .twemoji {
+    font-size: 2em;
+    margin-bottom: 12px;
+}
+
+.md-button-disabled {
+    pointer-events: none !important;
+}
+
+.md-button-subplugin-filter {
+    color: #0f6cbf !important;
+    border-color: #0f6cbf !important;
+}
+
+.md-button-subplugin-filter:active,
+.md-button-subplugin-filter:hover,
+.md-button-subplugin-filter:focus-visible {
+    color: #ffffff !important;
+    background-color: #0f6cbf !important;
+}
+
+.md-button-subplugin-action {
+    color: #ca3120 !important;
+    border-color: #ca3120 !important;
+}
+
+.md-button-subplugin-action:active,
+.md-button-subplugin-action:hover,
+.md-button-subplugin-action:focus-visible {
+    color: #ffffff !important;
+    background-color: #ca3120 !important;
+}
+
+.subplugin-grid {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.subplugin-grid > p {
+    margin: 0;
+}
+
 /* Custom admonition types */
 :root {
-    --md-admonition-icon--github: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg>')
+    --md-admonition-icon--github: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg>');
+    --md-admonition-icon--setting: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.94 17.94a3.3 3.3 0 0 0 0-.89l.97-.73a.22.22 0 0 0 .06-.29l-.92-1.56c-.05-.1-.19-.14-.29-.1l-1.15.45c-.24-.17-.49-.32-.78-.44l-.17-1.19a.235.235 0 0 0-.23-.19h-1.85c-.12 0-.22.08-.24.19l-.17 1.19c-.29.12-.54.27-.78.44l-1.15-.45c-.1-.04-.24 0-.28.1l-.93 1.56c-.06.1-.03.22.06.29l.97.73c-.01.15-.03.3-.03.45s.02.29.03.44l-.97.74a.22.22 0 0 0-.06.29l.93 1.56c.04.1.18.13.28.1l1.15-.46c.24.18.49.33.78.45l.17 1.19c.02.11.12.19.24.19h1.85c.11 0 .21-.08.23-.19l.17-1.19c.29-.12.54-.27.78-.45l1.15.46c.1.03.24 0 .29-.1l.92-1.56a.22.22 0 0 0-.06-.29zM16.5 19c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5M9 2c1.8.6 3 2.3 3 4.2 0 2-1.2 3.7-3 4.3v11c0 .3-.2.5-.5.5h-2c-.3 0-.5-.2-.5-.6v-11c-1.8-.6-3-2.3-3-4.2S4.2 2.6 6 2v3.7h3z"/></svg>');
 }
 
 .md-typeset .admonition.github,
@@ -63,4 +125,19 @@
     background-color: rgb(42, 42, 42);
     -webkit-mask-image: var(--md-admonition-icon--github);
     mask-image: var(--md-admonition-icon--github);
+}
+
+.md-typeset .admonition.setting,
+.md-typeset details.setting {
+    border-color: rgb(158, 158, 158);
+}
+.md-typeset .setting > .admonition-title,
+.md-typeset .setting > summary {
+    background-color: rgb(158, 158, 158, 0.1);
+}
+.md-typeset .setting > .admonition-title::before,
+.md-typeset .setting > summary::before {
+    background-color: rgb(42, 42, 42);
+    -webkit-mask-image: var(--md-admonition-icon--setting);
+    mask-image: var(--md-admonition-icon--setting);
 }
