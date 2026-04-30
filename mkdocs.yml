@@ -28,6 +28,8 @@ extra:
   n7: "<span class='img-numeration-pill'>7</span>"
   n8: "<span class='img-numeration-pill'>8</span>"
   n9: "<span class='img-numeration-pill'>9</span>"
+  dcbl: "{{"
+  dcbr: "}}"
 
 #   version:
 #     provider: mike
