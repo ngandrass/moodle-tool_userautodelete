@@ -112,9 +112,10 @@ nav:
 
   - "Workflows":
     - workflow/index.md
-    - workflow/crud.md
-    - workflow/steps.md
-    - workflow/order.md
+    - "Management": workflow/crud.md
+    - "Steps": workflow/steps.md
+    - "User Processes": workflow/processes.md
+    - "Execution Model": workflow/order.md
 
   - "Filters":
     - filters/index.md
