@@ -8,7 +8,7 @@ You can access and manage all workflows via the plugins admin interface. For wor
 You can access the workflow overview via {{ moodle_nav_path('Site administration', 'Plugins', 'Admin tools', 'User Lifecycle Management', 'Workflows') }}.
 
 
-## Create, Sort, Delete
+## Create, sort, delete
 
 The workflow table shows all existing workflows. You can create and delete all workflows via the
 {{ moodle_nav_path('...', 'User Lifecycle Management', 'Workflows') }} page.
