@@ -28,6 +28,8 @@ a, so called, [user process](processes.md) and executes the defined actions at t
 - [**Actions**](../actions/index.md) are executed upon entry into a step, for example sending a mail, suspending an account, or deleting a user.
 - [**User processes**](processes.md) represent the state of a single user inside a specific workflow. They are created when a user enters
   the first step and are progressed automatically through the workflow.
+- [**Ingestion**](execution.md) is the process of a user entering into the first step of a workflow and thereby starting
+  a new user process.
 
 In practice, a typical workflow starts with a broad selection step, for example “inactive for 3 years”, and then adds
 more steps for grace periods, reminders, suspension, or deletion.
