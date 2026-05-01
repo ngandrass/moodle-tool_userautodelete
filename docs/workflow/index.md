@@ -22,11 +22,11 @@ a, so called, [user process](processes.md) and executes the defined actions at t
 
 ## Components and terminology
 
-- **Workflows** are the top-level containers that represent a single user lifecycle.
-- **Steps** define the sequential stages inside a single workflow.
-- **Filters** select users for ingestion into the workflow and decide about transitions to subsequent steps.
-- **Actions** are executed upon entry into a step, for example sending a mail, suspending an account, or deleting a user.
-- **User processes** represent the state of a single user inside a specific workflow. They are created when a user enters
+- [**Workflows**](crud.md) are the top-level containers that represent a single user lifecycle.
+- [**Steps**](steps.md) define the sequential stages inside a single workflow.
+- [**Filters**](../filters/index.md) select users for ingestion into the workflow and decide about transitions to subsequent steps.
+- [**Actions**](../actions/index.md) are executed upon entry into a step, for example sending a mail, suspending an account, or deleting a user.
+- [**User processes**](processes.md) represent the state of a single user inside a specific workflow. They are created when a user enters
   the first step and are progressed automatically through the workflow.
 
 In practice, a typical workflow starts with a broad selection step, for example “inactive for 3 years”, and then adds
