@@ -7,7 +7,7 @@ processes.
 For the sake of simplicity, we keep this quickstart guide short. You can find an in-depth description of all workflow
 components and how they interact in the [Workflows section](../workflow/index.md) of this documentation.
 
-!!! example "TL;DR or "What we'll build""
+!!! example "What we will build"
     A simple workflow that first sends a [warning mail](../actions/mail.md) to users who haven't accessed the site for a
     long time. If users haven't returned to the site after a grace period, they will receive a final 
     [deletion notice](../actions/mail.md) via mail, and their accounts will be [deleted](../actions/delete.md) and
