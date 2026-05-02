@@ -61,6 +61,12 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      extend_pygments_lang:
+        - name: php
+          lang: php
+          options:
+            startinline: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
