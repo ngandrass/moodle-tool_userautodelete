@@ -142,5 +142,9 @@ nav:
 
   - "Developer Documentation":
     - dev/index.md
-    - dev/testing.md
-    - dev/builddocs.md
+    - "Action Subplugins": dev/createaction.md
+    - "Filter Subplugins": dev/createfilter.md
+    - "Instance Settings": dev/instancesettings.md
+    - "Testing": dev/testing.md
+    - "Contributing": dev/contributing.md
+    - "Build the Docs": dev/builddocs.md
