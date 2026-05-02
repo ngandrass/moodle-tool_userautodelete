@@ -300,7 +300,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
-     * Tests that validate_instance_settings() returns an empty array when both
+     * Tests that validate_instance_settings_data(() returns an empty array when both
      * subject and message contain only valid variable references.
      *
      * @covers \userdeleteaction_mail\userdeleteaction
@@ -315,7 +315,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $errors = $action->validate_instance_settings([
+        $errors = $action->validate_instance_settings_data([
             'subject' => 'Hello {{user.firstname}} on {{site.name}}',
             'message' => '<p>Dear {{user.firstname}} {{user.lastname}}, visit {{urls.home}}.</p>',
         ]);
@@ -324,7 +324,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
-     * Tests that validate_instance_settings() returns an empty array when
+     * Tests that validate_instance_settings_data() returns an empty array when
      * settings contain plain text with no variable references at all.
      *
      * @covers \userdeleteaction_mail\userdeleteaction
@@ -339,7 +339,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $errors = $action->validate_instance_settings([
+        $errors = $action->validate_instance_settings_data([
             'subject' => 'Your account will be deleted',
             'message' => '<p>Please log in to keep your account.</p>',
         ]);
@@ -348,7 +348,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
-     * Tests that validate_instance_settings() returns an error for the subject
+     * Tests that validate_instance_settings_data() returns an error for the subject
      * when it contains an unknown variable reference.
      *
      * @covers \userdeleteaction_mail\userdeleteaction
@@ -363,7 +363,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $errors = $action->validate_instance_settings([
+        $errors = $action->validate_instance_settings_data([
             'subject' => 'Hello {{user.nonexistentfield}}',
             'message' => '<p>Valid message.</p>',
         ]);
@@ -378,7 +378,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
-     * Tests that validate_instance_settings() returns an error for the message
+     * Tests that validate_instance_settings_data() returns an error for the message
      * when it contains an unknown variable reference.
      *
      * @covers \userdeleteaction_mail\userdeleteaction
@@ -393,7 +393,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $errors = $action->validate_instance_settings([
+        $errors = $action->validate_instance_settings_data([
             'subject' => 'Valid subject',
             'message' => '<p>Token: {{workflow.secret}}</p>',
         ]);
@@ -408,7 +408,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
-     * Tests that validate_instance_settings() returns errors for both subject
+     * Tests that validate_instance_settings_data() returns errors for both subject
      * and message when both contain unknown variable references.
      *
      * @covers \userdeleteaction_mail\userdeleteaction
@@ -423,7 +423,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $errors = $action->validate_instance_settings([
+        $errors = $action->validate_instance_settings_data([
             'subject' => '{{bad.subject}}',
             'message' => '{{bad.message}}',
         ]);

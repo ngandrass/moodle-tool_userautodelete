@@ -81,7 +81,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * @return string[] Associative array of setting key => localized error message
      * @throws \coding_exception
      */
-    public function validate_instance_settings(array $settings): array {
+    public function validate_instance_settings_data(array $settings): array {
         $errors = [];
         $ctx = static::get_variable_context();
 

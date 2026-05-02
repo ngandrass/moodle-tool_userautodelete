@@ -184,8 +184,8 @@ class subplugin_instance_settings_form extends dynamic_form {
      * Validates the submitted form data, including sub-plugin instance settings.
      *
      * Delegates per-setting validation to the sub-plugin's own
-     * validate_instance_settings() method and maps any returned errors back to
-     * their corresponding form element names.
+     * validate_instance_settings_data() method and maps any returned errors back
+     * to their corresponding form element names.
      *
      * @param array $data Submitted and cleaned form data
      * @param array $files Submitted files
@@ -209,7 +209,7 @@ class subplugin_instance_settings_form extends dynamic_form {
             $data['instanceid'],
             $data['instancetype']
         );
-        foreach ($instance->validate_instance_settings($settings) as $key => $error) {
+        foreach ($instance->validate_instance_settings_data($settings) as $key => $error) {
             $errors['s_' . $key] = $error;
         }
 

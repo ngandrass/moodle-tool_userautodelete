@@ -280,4 +280,23 @@ trait subplugin_instance_settings {
 
         return true;
     }
+
+    /**
+     * Takes a given array of potential instance settings key-value pairs, validates it,
+     * and returns an array of per-key error messages.
+     *
+     * This method is called prior to any instance setting save operation that is triggered
+     * via the UI. If the validation fails, changes are not saved and the returned error
+     * messages are displayed instead.
+     *
+     * The default implementation returns an empty array (no errors). Sub-plugins may
+     * override this method to perform custom validation logic, e.g., checking for
+     * invalid variable references.
+     *
+     * @param array $settings Associative array of setting key-value pairs to validate
+     * @return string[] Associative array of setting key => localized error message for each invalid setting
+     */
+    public function validate_instance_settings_data(array $settings): array {
+        return [];
+    }
 }
