@@ -76,6 +76,7 @@ class subplugin_instance_settings_form extends dynamic_form {
             $this->optional_param('instancetype', null, PARAM_TEXT)
         );
         $settingdescriptors = $instance::instance_setting_descriptors();
+        $isreadonly = (bool) $this->optional_param('readonly', 0, PARAM_INT);
 
         // Add internal information.
         $mform->addElement('hidden', 'instanceid', $instance->get_instance_id());
@@ -84,6 +85,8 @@ class subplugin_instance_settings_form extends dynamic_form {
         $mform->setType('instancetype', PARAM_TEXT);
         $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
         $mform->setType('returnurl', PARAM_RAW);
+        $mform->addElement('hidden', 'readonly', $this->optional_param('readonly', 0, PARAM_INT));
+        $mform->setType('readonly', PARAM_INT);
 
         // Display message if no settings are available.
         if (empty($settingdescriptors)) {
@@ -140,6 +143,17 @@ class subplugin_instance_settings_form extends dynamic_form {
 
             if ($descriptor->readonly) {
                 $mform->disabledIf($element, 'nonexistingelementtodisablethiselement');
+            }
+
+            // Disable all settings in read-only mode while preserving element rendering.
+            $mform->disabledIf($element, 'readonly', 'eq', 1);
+
+            // Some multi-value controls in dynamic forms do not fully respect disabledIf.
+            if ($isreadonly) {
+                $formelement = $mform->getElement($element);
+                if ($formelement && method_exists($formelement, 'updateAttributes')) {
+                    $formelement->updateAttributes(['disabled' => 'disabled']);
+                }
             }
         }
     }
@@ -235,6 +249,17 @@ class subplugin_instance_settings_form extends dynamic_form {
     public function process_dynamic_submission() {
         $data = $this->get_data();
         $instance = $this->get_subplugin_instance($data->instanceid, $data->instancetype);
+
+        // Do not allow any edits in read-only mode or to active workflows.
+        if ($data->readonly) {
+            throw new \moodle_exception('cant_modify_readonly_instance_settings', 'tool_userautodelete');
+        }
+
+        if ($instance->get_step()->workflow->active) {
+            throw new \moodle_exception('cant_modify_instance_settings_of_active_workflow', 'tool_userautodelete');
+        }
+
+        // We are allowed to perform changes. Do it!
         $descriptors = [];
         foreach ($instance::instance_setting_descriptors() as $descriptor) {
             $descriptors[$descriptor->key] = $descriptor;

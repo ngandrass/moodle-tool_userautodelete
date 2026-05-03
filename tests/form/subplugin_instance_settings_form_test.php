@@ -79,7 +79,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
      * The 'auth' filter exposes both an 'autocomplete-multi' and a 'selectyesno'
      * element, covering two branches of the switch in definition().
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::definition
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
@@ -108,7 +108,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
      * Tests that the form definition path can be executed without errors for a
      * filter using the 'duration' mformtype (default switch case).
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::definition
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
@@ -140,7 +140,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
      * The 'mail' action exposes both a 'text' element (dedicated switch case) and
      * an 'editor' element (default switch case).
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::definition
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
@@ -169,7 +169,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
      * Tests that set_data_for_dynamic_submission() loads the current instance
      * settings into the form without throwing any exceptions.
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::set_data_for_dynamic_submission
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
@@ -205,7 +205,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
      * Tests that process_dynamic_submission() persists the submitted form values
      * to the underlying sub-plugin instance settings.
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::process_dynamic_submission
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
@@ -255,7 +255,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
     /**
      * Tests that process_dynamic_submission() stores editor settings as text.
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::process_dynamic_submission
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
@@ -303,9 +303,94 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that process_dynamic_submission() rejects updates from readonly forms.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_dynamic_submission_throws_for_readonly_form(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $filter = userdeletefilter::create_instance($step, 'suspension', ['suspended' => false]);
+
+        $postdata = [
+            'instanceid' => $filter->id,
+            'instancetype' => 'filter',
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+            'readonly' => 1,
+            's_suspended' => 1,
+            'sesskey' => sesskey(),
+            '_qf__tool_userautodelete_form_subplugin_instance_settings_form' => 1,
+        ];
+        $this->get_generator()->prepare_form_environment('/admin/tool/userautodelete/managefilter.php', $postdata);
+        $_POST = $postdata;
+        $_REQUEST = $postdata;
+
+        $form = new subplugin_instance_settings_form();
+        try {
+            $form->process_dynamic_submission();
+            $this->fail('Expected moodle_exception for readonly form submission.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('cant_modify_readonly_instance_settings', $e->errorcode);
+        }
+
+        $updatedfilter = userdeletefilter::get_instance_by_id($filter->id);
+        $this->assertSame(0, (int) $updatedfilter->get_instance_setting('suspended'));
+    }
+
+    /**
+     * Tests that process_dynamic_submission() rejects updates for active workflows.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_dynamic_submission_throws_for_active_workflow(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $filter = userdeletefilter::create_instance($step, 'suspension', ['suspended' => true]);
+        userdeleteaction::create_instance($step, 'unsuspend');
+        $workflow->activate();
+
+        $postdata = [
+            'instanceid' => $filter->id,
+            'instancetype' => 'filter',
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+            's_suspended' => 0,
+            'sesskey' => sesskey(),
+            '_qf__tool_userautodelete_form_subplugin_instance_settings_form' => 1,
+        ];
+        $this->get_generator()->prepare_form_environment('/admin/tool/userautodelete/managefilter.php', $postdata);
+        $_POST = $postdata;
+        $_REQUEST = $postdata;
+
+        $form = new subplugin_instance_settings_form();
+        try {
+            $form->process_dynamic_submission();
+            $this->fail('Expected moodle_exception for active workflow submission.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('cant_modify_instance_settings_of_active_workflow', $e->errorcode);
+        }
+
+        $updatedfilter = userdeletefilter::get_instance_by_id($filter->id);
+        $this->assertSame(1, (int) $updatedfilter->get_instance_setting('suspended'));
+    }
+
+    /**
      * Tests that set_data_for_dynamic_submission() rehydrates editor defaults.
      *
-     * @covers \tool_userautodelete\form\subplugin_instance_settings_form::set_data_for_dynamic_submission
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
      *
      * @return void
      * @throws \dml_exception
