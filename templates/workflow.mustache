@@ -53,7 +53,9 @@
                         "name:": "auth",
                         "title": "Authentication method",
                         "details": "manual, email",
-                        "iconclass": "fa-solid fa-filter"
+                        "iconclass": "fa-solid fa-filter",
+                        "isvalid": true,
+                        "invalidityreason": null
                     }
                 ],
                 "actions": [
@@ -62,7 +64,9 @@
                         "name:": "delete",
                         "title": "Delete user",
                         "details": "",
-                        "iconclass": "fa-solid fa-gear"
+                        "iconclass": "fa-solid fa-gear",
+                        "isvalid": false,
+                        "invalidityreason": "Lorem ipsum"
                     }
                 ],
                 "processes": {
@@ -347,11 +351,11 @@
                                                 {{^isvalid}}
                                                     <i
                                                         class="fa-solid fa-triangle-exclamation text-warning ms-1"
-                                                        title="{{#str}} filter_is_invalid, tool_userautodelete {{/str}}"
+                                                        title="{{invalidityreason}}"
                                                         data-toggle="tooltip"
-                                                        data-title="{{#str}} filter_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-title="{{invalidityreason}}"
                                                         data-bs-toggle="tooltip"
-                                                        data-bs-title="{{#str}} filter_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-bs-title="{{invalidityreason}}"
                                                     ></i>
                                                 {{/isvalid}}
                                             </div>
@@ -425,11 +429,11 @@
                                                 {{^isvalid}}
                                                     <i
                                                         class="fa-solid fa-triangle-exclamation text-warning ms-1"
-                                                        title="{{#str}} action_is_invalid, tool_userautodelete {{/str}}"
+                                                        title="{{invalidityreason}}"
                                                         data-toggle="tooltip"
-                                                        data-title="{{#str}} action_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-title="{{invalidityreason}}"
                                                         data-bs-toggle="tooltip"
-                                                        data-bs-title="{{#str}} action_is_invalid, tool_userautodelete {{/str}}"
+                                                        data-bs-title="{{invalidityreason}}"
                                                     ></i>
                                                 {{/isvalid}}
                                             </div>

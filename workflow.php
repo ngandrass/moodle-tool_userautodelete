@@ -103,6 +103,7 @@ foreach ($workflow->steps as $step) {
             'title' => $filter->get_instance_title(),
             'details' => $filter->get_instance_details(),
             'isvalid' => $filter->is_valid(),
+            'invalidityreason' => $filter->validate(),
             'iconclass' => $filter::get_icon_class(),
             'urls' => [
                 'edit' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
@@ -122,6 +123,7 @@ foreach ($workflow->steps as $step) {
             'title' => $action->get_instance_title(),
             'details' => $action->get_instance_details(),
             'isvalid' => $action->is_valid(),
+            'invalidityreason' => $action->validate(),
             'iconclass' => $action::get_icon_class(),
             'urls' => [
                 'edit' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
