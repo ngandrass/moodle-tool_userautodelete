@@ -125,15 +125,37 @@ abstract class step_subplugin {
     }
 
     /**
-     * Validates the settings of this sub-plugin instance and returns whether they
-     * are considered valid and ready for execution or not.
+     * Determines if this subplugin instance is valid and ready for use.
+     *
+     * This is just a convenience wrapper for step_subplugin::validate(). If you
+     * need to customize validation behavior please override validate() instead.
      *
      * @return bool True if this instance is valid and ready, false otherwise
      * @throws \dml_exception
+     * @throws \coding_exception
      */
-    public function is_valid(): bool {
-        // The validater_instance_settings() function is not called here because settings are validated during saving.
-        return $this->is_all_required_instance_settings_set();
+    final public function is_valid(): bool {
+        return $this->validate() === null;
+    }
+
+    /**
+     * Validates the settings of this sub-plugin instance and returns whether they
+     * are considered valid and ready for execution or not.
+     *
+     * This function can be extended by individual subplugins to perform custom
+     * validity checks.
+     *
+     * @return string|null Null if this instance is valid, otherwise a localized
+     * human-readable string describing why this instance is not valid
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function validate(): string|null {
+        if (!$this->is_all_required_instance_settings_set()) {
+            return get_string('required_setting_is_unset', 'tool_userautodelete');
+        }
+
+        return null;
     }
 
     /**

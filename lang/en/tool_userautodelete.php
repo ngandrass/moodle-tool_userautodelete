@@ -120,6 +120,7 @@ $string['reltime_prefix_ago'] = '';
 $string['reltime_prefix_in'] = 'in';
 $string['reltime_suffix_ago'] = 'ago';
 $string['reltime_suffix_in'] = '';
+$string['required_setting_is_unset'] = 'At least one required setting is not set. Please make sure to fill in all required fields and try again.';
 $string['selection_filters'] = 'Selection filters';
 $string['setting_enable'] = 'Enable plugin';
 $string['setting_enable_desc'] = 'Enables or disables the plugin globally. If this is disabled, no action will be performed, even if some workflows are activated.';
