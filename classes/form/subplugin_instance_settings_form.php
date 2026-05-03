@@ -95,6 +95,15 @@ class subplugin_instance_settings_form extends dynamic_form {
             '</div>');
         }
 
+        // Display message if instance is currently invalid.
+        $instanceerror = $instance->validate();
+        if ($instanceerror) {
+            $instanceerrorhtml =
+                get_string("{$instance::get_plugin_type()->value}_is_invalid", 'tool_userautodelete') .
+                '<br><b>' . get_string('error') . ":</b> {$instanceerror}";
+            $mform->addElement('html', '<div class="alert alert-warning">' . $instanceerrorhtml . '</div>');
+        }
+
         // Add all instance settings form based on instance descriptors.
         foreach ($settingdescriptors as $descriptor) {
             $element = 's_' . $descriptor->key;

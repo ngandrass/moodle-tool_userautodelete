@@ -89,6 +89,7 @@ final class userdeleteaction_test extends \advanced_testcase {
         );
         $this->assertSame('', $action->get_instance_details(), 'get_instance_details() should be empty by default');
         $this->assertTrue($action->is_valid(), 'Action without required settings should be valid');
+        $this->assertNull($action->validate(), 'Valid action should return null from validate()');
 
         $loaded = userdeleteaction::get_instance_by_id($action->id);
         $this->assertInstanceOf(
@@ -103,6 +104,37 @@ final class userdeleteaction_test extends \advanced_testcase {
             $DB->record_exists(db_table::WORKFLOW_ACTION->value, ['id' => $action->id]),
             'Action record still exists after delete()'
         );
+    }
+
+    /**
+     * Tests validity reporting for actions with required settings.
+     *
+     * @covers \tool_userautodelete\userdeleteaction
+     * @covers \tool_userautodelete\step_subplugin
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_action_validation_reports_missing_required_settings(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step', description: '');
+        $action = userdeleteaction::create_instance($step, 'mail');
+
+        $this->assertFalse($action->is_valid(), 'Mail action without required settings should be invalid');
+        $this->assertSame(
+            get_string('required_setting_is_unset', 'tool_userautodelete'),
+            $action->validate(),
+            'Missing required settings should return the localized invalidity reason'
+        );
+
+        $action->set_instance_setting('subject', 'Subject');
+        $action->set_instance_setting('message', 'Body');
+
+        $this->assertTrue($action->is_valid(), 'Mail action should be valid after required settings are set');
+        $this->assertNull($action->validate(), 'Valid mail action should return null from validate()');
     }
 
     /**

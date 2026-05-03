@@ -166,6 +166,35 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that invalid instances render a warning with the validation reason.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_definition_displays_invalid_instance_warning(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $action = userdeleteaction::create_instance($step, 'mail');
+        $this->get_generator()->prepare_form_environment('/admin/tool/userautodelete/manageaction.php', [
+            'instanceid' => $action->id,
+            'instancetype' => 'action',
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+        ]);
+
+        $form = new subplugin_instance_settings_form();
+        $output = $form->render();
+
+        $this->assertStringContainsString(get_string('action_is_invalid', 'tool_userautodelete'), $output);
+        $this->assertStringContainsString(get_string('required_setting_is_unset', 'tool_userautodelete'), $output);
+    }
+
+    /**
      * Tests that set_data_for_dynamic_submission() loads the current instance
      * settings into the form without throwing any exceptions.
      *

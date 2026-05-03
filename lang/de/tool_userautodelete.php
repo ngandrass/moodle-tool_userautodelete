@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['aborted'] = 'Abgebrochen';
 $string['action'] = 'Aktion';
-$string['action_is_invalid'] = 'Diese Aktion ist aktuell ungültig und muss korrigiert werden, bevor der Workflow aktiviert werden kann. Bitte stellen Sie sicher, dass alle erforderlichen Konfigurationsfelder dieser Aktion korrekt ausgefüllt sind.';
+$string['action_is_invalid'] = 'Diese Aktion ist aktuell ungültig und muss korrigiert werden, bevor der Workflow aktiviert werden kann.';
 $string['actions'] = 'Aktionen';
 $string['active_processes'] = '{$a} aktive Prozesse';
 $string['add_action'] = 'Aktion hinzufügen';
@@ -79,7 +79,7 @@ $string['edit_workflow'] = 'Workflow bearbeiten';
 $string['enable_workflow'] = 'Workflow aktivieren';
 $string['enable_workflow_warning'] = '<p>Sie sind dabei, den unten aufgeführten Workflow zu aktivieren. Dadurch werden weitere Änderungen an Schritten, Aktionen und Filtern verhindert, bis der Workflow wieder deaktiviert wird. Der Workflow kann später jederzeit deaktiviert werden. Beim Deaktivieren werden jedoch alle aktiven Nutzerprozesse in ihrem aktuellen Zustand beendet.</p><p>Sobald ein Workflow aktiv ist, werden passende Nutzer gemäß der Workflow-Definition automatisch verarbeitet. Möchten Sie den Workflow jetzt aktivieren?</p>';
 $string['filter'] = 'Filter';
-$string['filter_is_invalid'] = 'Dieser Filter ist aktuell ungültig und muss korrigiert werden, bevor der Workflow aktiviert werden kann. Bitte stellen Sie sicher, dass alle erforderlichen Konfigurationsfelder dieses Filters korrekt ausgefüllt sind.';
+$string['filter_is_invalid'] = 'Dieser Filter ist aktuell ungültig und muss korrigiert werden, bevor der Workflow aktiviert werden kann.';
 $string['filter_log_entries'] = 'Logeinträge filtern';
 $string['filters'] = 'Filter';
 $string['finished'] = 'Abgeschlossen';

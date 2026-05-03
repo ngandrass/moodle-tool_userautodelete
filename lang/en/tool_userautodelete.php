@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['aborted'] = 'Aborted';
 $string['action'] = 'Action';
-$string['action_is_invalid'] = 'This action is currently invalid and must be fixed before the workflow can be enabled. Please make sure that all required configuration fields of this action are properly filled.';
+$string['action_is_invalid'] = 'This action is currently invalid and must be fixed before the workflow can be enabled.';
 $string['actions'] = 'Actions';
 $string['active_processes'] = '{$a} active process(es)';
 $string['add_action'] = 'Add action';
@@ -79,7 +79,7 @@ $string['edit_workflow'] = 'Edit workflow';
 $string['enable_workflow'] = 'Enable workflow';
 $string['enable_workflow_warning'] = '<p>You are about to enable the workflow listed below. This will prevent any further changes to the workflow steps, actions, and filters until it is disabled again. The workflow can be disabled at any point in the future, however, all active user processes will be terminated at their current state when disabling a workflow.</p><p>Once a workflow is active, applicable users will be processed according to the workflow definition. Are you sure you want to enable this workflow now?</p>';
 $string['filter'] = 'Filter';
-$string['filter_is_invalid'] = 'This filter is invalid and must be fixed before the workflow can be enabled. Please make sure that all required configuration fields of this filter are properly filled.';
+$string['filter_is_invalid'] = 'This filter is invalid and must be fixed before the workflow can be enabled.';
 $string['filter_log_entries'] = 'Filter log entries';
 $string['filters'] = 'Filters';
 $string['finished'] = 'Finished';
