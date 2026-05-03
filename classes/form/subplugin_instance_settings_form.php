@@ -98,9 +98,19 @@ class subplugin_instance_settings_form extends dynamic_form {
         // Add all instance settings form based on instance descriptors.
         foreach ($settingdescriptors as $descriptor) {
             $element = 's_' . $descriptor->key;
+            $disable = $isreadonly;  // Use extra flag for disabling to allow element-specific handling.
 
             switch ($descriptor->mformtype) {
                 case 'autocomplete':
+                    // Disabling does not work properly. Display static version in readonly mode.
+                    // The contents are populated by set_data_for_dynamic_submission().
+                    if ($isreadonly) {
+                        $mform->addElement('static', $element, $descriptor->title->out(), '');
+                        $disable = false;
+                        break;
+                    }
+
+                    // Default case (edit mode).
                     $mform->addElement(
                         'autocomplete',
                         $element,
@@ -110,6 +120,15 @@ class subplugin_instance_settings_form extends dynamic_form {
                     );
                     break;
                 case 'autocomplete-multi':
+                    // Disabling does not work properly. Display static version in readonly mode.
+                    // The contents are populated by set_data_for_dynamic_submission().
+                    if ($isreadonly) {
+                        $mform->addElement('static', $element, $descriptor->title->out(), '');
+                        $disable = false;
+                        break;
+                    }
+
+                    // Default case (edit mode).
                     $mform->addElement(
                         'autocomplete',
                         $element,
@@ -146,14 +165,8 @@ class subplugin_instance_settings_form extends dynamic_form {
             }
 
             // Disable all settings in read-only mode while preserving element rendering.
-            $mform->disabledIf($element, 'readonly', 'eq', 1);
-
-            // Some multi-value controls in dynamic forms do not fully respect disabledIf.
-            if ($isreadonly) {
-                $formelement = $mform->getElement($element);
-                if ($formelement && method_exists($formelement, 'updateAttributes')) {
-                    $formelement->updateAttributes(['disabled' => 'disabled']);
-                }
+            if ($disable) {
+                $mform->disabledIf($element, 'readonly', 'eq', 1);
             }
         }
     }
@@ -299,6 +312,8 @@ class subplugin_instance_settings_form extends dynamic_form {
             $this->optional_param('instanceid', null, PARAM_INT),
             $this->optional_param('instancetype', null, PARAM_TEXT)
         );
+        $isreadonly = (bool) $this->optional_param('readonly', 0, PARAM_INT);
+
         $descriptors = [];
         foreach ($instance::instance_setting_descriptors() as $descriptor) {
             $descriptors[$descriptor->key] = $descriptor;
@@ -317,6 +332,16 @@ class subplugin_instance_settings_form extends dynamic_form {
                     'format' => FORMAT_HTML,
                     'itemid' => 0,
                 ];
+            }
+
+            // Handle read-only autocompletes.
+            if (
+                $this->optional_param('readonly', 0, PARAM_INT) &&
+                str_starts_with($descriptors[$key]->mformtype, 'autocomplete')
+            ) {
+                $value = empty($value)
+                    ? get_string('noselection', 'form')
+                    : implode(', ', array_intersect_key($descriptors[$key]->choices, array_flip($value)));
             }
 
             // Set instance setting data key.
