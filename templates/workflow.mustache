@@ -312,11 +312,13 @@
                                 </div>
                                 {{#filters}}
                                     <a
-                                        id="edit-filter-modal-{{id}}"
-                                        class="btn btn-outline-primary px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
+                                        class="btn btn-outline-primary px-3 py-2 m-1 js-subplugin-modal"
                                         style="font-style: normal;"
                                         role="button"
+                                        data-instanceid="{{id}}"
+                                        data-instancetype="filter"
                                         {{#isediting}}
+                                            data-deleteurl="{{{urls.delete}}}"
                                             data-bs-toggle="tooltip"
                                             data-bs-placement="top"
                                             data-bs-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
@@ -324,6 +326,16 @@
                                             data-placement="top"
                                             data-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
                                             title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                        {{^isediting}}
+                                            data-readonly="1"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} view_filter, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} view_filter, tool_userautodelete {{/str}}"
+                                            title="{{#str}} view_filter, tool_userautodelete {{/str}}"
                                         {{/isediting}}
                                     >
                                         <div>
@@ -378,11 +390,13 @@
                                 </div>
                                 {{#actions}}
                                     <a
-                                        id="edit-action-modal-{{id}}"
-                                        class="btn btn-outline-danger px-3 py-2 m-1 {{^isediting}} disabled {{/isediting}}"
+                                        class="btn btn-outline-danger px-3 py-2 m-1 js-subplugin-modal"
                                         style="font-style: normal;"
                                         role="button"
+                                        data-instanceid="{{id}}"
+                                        data-instancetype="action"
                                         {{#isediting}}
+                                            data-deleteurl="{{{urls.delete}}}"
                                             data-bs-toggle="tooltip"
                                             data-bs-placement="top"
                                             data-bs-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
@@ -390,6 +404,16 @@
                                             data-placement="top"
                                             data-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
                                             title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                        {{^isediting}}
+                                            data-readonly="1"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} view_action, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} view_action, tool_userautodelete {{/str}}"
+                                            title="{{#str}} view_action, tool_userautodelete {{/str}}"
                                         {{/isediting}}
                                     >
                                         <div>
@@ -584,35 +608,95 @@
 
 {{#js}}
     require(
-        ['jquery', 'core/ajax', 'core/modal', 'core/templates', 'core/str', 'core/notification'],
-        function($, Ajax, Modal, Templates, Str, Notification
-    ) {
-        $('[data-action="view-step-processes"]').click(async(e) => {
-            const stepid = parseInt(e.currentTarget.dataset.stepid);
-            const title = await Str.get_string('user_processes', 'tool_userautodelete');
+        [
+            'jquery',
+            'core/ajax',
+            'core/modal',
+            'core/modal_events',
+            'core/templates',
+            'core/str',
+            'core/notification',
+            'core_form/modalform'
+        ],
+        function (
+            $,
+            Ajax,
+            Modal,
+            ModalEvents,
+            Templates,
+            Str,
+            Notification,
+            ModalForm
+        ) {
+            // Create step process inspection modals.
+            $('[data-action="view-step-processes"]').click(async function(e) {
+                const stepid = parseInt(e.currentTarget.dataset.stepid);
+                const title = await Str.get_string('user_processes', 'tool_userautodelete');
 
-            try {
-                const processes = await Ajax.call([{
-                    methodname: 'tool_userautodelete_get_step_user_processes',
-                    args: {stepid: stepid, activeonly: true},
-                }])[0];
+                try {
+                    const processes = await Ajax.call([{
+                        methodname: 'tool_userautodelete_get_step_user_processes',
+                        args: {stepid: stepid, activeonly: true},
+                    }])[0];
 
-                const modal = await Modal.create({
-                    title: title,
-                    body: Templates.render('tool_userautodelete/modal/step_processes', {
-                        processes: processes,
-                        hasprocesses: processes.length > 0,
-                    }),
-                    isVerticallyCentered: true,
-                    large: true,
+                    const modal = await Modal.create({
+                        title: title,
+                        body: Templates.render('tool_userautodelete/modal/step_processes', {
+                            processes: processes,
+                            hasprocesses: processes.length > 0,
+                        }),
+                        isVerticallyCentered: true,
+                        large: true,
+                    });
+
+                    modal.show();
+                } catch (err) {
+                    Notification.exception(err);
+                }
+            });
+
+            // Create subplugin instance settings modals.
+            $('.js-subplugin-modal').on('click', async function(e) {
+                const instanceid = parseInt(this.dataset.instanceid);
+                const instancetype = this.dataset.instancetype;
+                const readonly = this.dataset.readonly === '1';
+                const deleteurl = this.dataset.deleteurl || null;
+
+                const titlestrkey = readonly
+                    ? (instancetype === 'filter' ? 'view_filter' : 'view_action')
+                    : (instancetype === 'filter' ? 'edit_filter' : 'edit_action');
+
+                const modal = new ModalForm({
+                    formClass: 'tool_userautodelete\\form\\subplugin_instance_settings_form',
+                    moduleName: readonly
+                        ? 'core/modal_cancel'
+                        : 'tool_userautodelete/modal_delete_save_cancel',
+                    args: Object.assign(
+                        {instanceid: instanceid, instancetype: instancetype},
+                        readonly ? {readonly: '1'} : {}
+                    ),
+                    modalConfig: {
+                        title: Str.get_string(titlestrkey, 'tool_userautodelete'),
+                        isVerticallyCentered: true,
+                        large: true,
+                    },
                 });
 
-                modal.show();
-            } catch (err) {
-                Notification.exception(err);
-            }
-        });
-    });
+                await modal.show();
+
+                if (!readonly) {
+                    modal.addEventListener(modal.events.FORM_SUBMITTED, () => {
+                        location.reload();
+                    });
+                    if (deleteurl) {
+                        modal.modal.getRoot().on(ModalEvents.delete, () => {
+                            window.location.href = deleteurl;
+                        });
+                    }
+                }
+            });
+        }
+    )
 
     {{#isediting}}
         require(
@@ -623,7 +707,6 @@
                 'core/modal_events',
                 'core/templates',
                 'core/str',
-                'core_form/modalform',
             ],
             function(
                 $,
@@ -632,7 +715,6 @@
                 ModalEvents,
                 Templates,
                 Str,
-                ModalForm,
             ) {
                 // Deserialize available filters and actions
                 var availableFilters = JSON.parse(atob('{{{availablefilters}}}'));
@@ -697,50 +779,6 @@
                         });
                         modal.show();
                     });
-
-                    {{#filters}}
-                        $('#edit-filter-modal-{{id}}').click(async() => {
-                            var modalForm = new ModalForm({
-                                formClass: "tool_userautodelete\\form\\subplugin_instance_settings_form",
-                                moduleName: "tool_userautodelete/modal_delete_save_cancel",
-                                args: {instanceid: {{id}}, instancetype: "filter"},
-                                modalConfig: {
-                                    title: Str.get_string('edit_filter', 'tool_userautodelete'),
-                                    isVerticallyCentered: true,
-                                    large: true,
-                                },
-                            });
-                            await modalForm.show();
-                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
-                                location.reload();
-                            });
-                            modalForm.modal.getRoot().on(ModalEvents.delete, () => {
-                                window.location.href = '{{{urls.delete}}}';
-                            });
-                        });
-                    {{/filters}}
-
-                    {{#actions}}
-                        $('#edit-action-modal-{{id}}').click(async() => {
-                            var modalForm = new ModalForm({
-                                formClass: "tool_userautodelete\\form\\subplugin_instance_settings_form",
-                                moduleName: "tool_userautodelete/modal_delete_save_cancel",
-                                args: {instanceid: {{id}}, instancetype: "action"},
-                                modalConfig: {
-                                    title: Str.get_string('edit_action', 'tool_userautodelete'),
-                                    isVerticallyCentered: true,
-                                    large: true,
-                                },
-                            });
-                            await modalForm.show();
-                            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
-                                location.reload();
-                            });
-                            modalForm.modal.getRoot().on(ModalEvents.delete, () => {
-                                window.location.href = '{{{urls.delete}}}';
-                            });
-                        });
-                    {{/actions}}
                 {{/steps}}
             }
         );
