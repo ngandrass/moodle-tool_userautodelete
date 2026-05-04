@@ -27,6 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+$string['a'] = '${a}';
 $string['aborted'] = 'Abgebrochen';
 $string['action'] = 'Aktion';
 $string['action_is_invalid'] = 'Diese Aktion ist aktuell ungültig und muss korrigiert werden, bevor der Workflow aktiviert werden kann.';
