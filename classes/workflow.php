@@ -518,6 +518,7 @@ class workflow {
             $processes = process::get_active_processes_for_step($step, transitionableonly: true);
             $targetstep = $step->next();
             if (empty($processes) || !$targetstep) {
+                logger::info("  -> No transitionalbe processes found");
                 continue;
             }
 
@@ -533,7 +534,7 @@ class workflow {
             foreach ($processes as $process) {
                 $process->transition();
 
-                logger::info("  -> Transitioned user {$process->userid} from {$prevstepstr} to {$targetstepstr}.");
+                logger::info("  -> Transitioned user {$process->userid} from {$prevstepstr} to {$targetstepstr}");
                 foreach ($targetstepactionstrings as $actionstring) {
                     logger::info("    -> Executed action: {$actionstring}");
                 }
@@ -571,6 +572,8 @@ class workflow {
                 );
                 logger::info('-> Executed action for the above users: ' . $action::get_plugin_name() . " (ID: {$action->id})");
             }
+        } else {
+            logger::info('  -> No users ingested');
         }
     }
 
