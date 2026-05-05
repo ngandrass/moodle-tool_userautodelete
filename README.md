@@ -77,31 +77,30 @@ If you find a bug or have a feature request, please open an issue via the [GitHu
 Please do not use the comments section within the Moodle plugin directory. Thanks :)
 
 
+## Screenshots
 
-### Installing manually
+This section contains some example screenshots of the plugin. You can find 
+more screenshots in our [online documentation](https://moodleuserlifecycle.gandrass.de/screenshots/).
 
-The plugin can be also installed by putting the contents of this directory into
+### Workflow overview
 
-```
-{your/moodle/dirroot}/admin/tool/userautodelete
-```
+![Workflow overview](docs/assets/screenshots/manage_workflows.png)
 
-Afterwards, log in to your Moodle site as an admin and go to _Site administration > Notifications_ to complete the
-installation.
+### Two-step workflow with filters and actions
 
-Alternatively, you can run `php admin/cli/upgrade.php` from the command line to complete the installation.
+![Two-step workflow with filters and actions](docs/assets/screenshots/default_workflow.png)
 
+### Configuration of an "Send Mail" action
 
-## Reporting a bug or requesting a feature
+![Configuration of an "Send Mail" action](docs/assets/screenshots/userdeleteaction_mail_example.png)
 
-If you find a bug or have a feature request, please open an issue via the [GitHub issue tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues).
+### Listing users currently inside a workflow step
 
-Please do not use the comments section within the Moodle plugin directory. Thanks :)
+![Listing users currently inside a workflow step](docs/assets/screenshots/step_with_processes_list.png)
 
+### Inspection of logged actions
 
-## Testing
-
-You can find testing instructions for developers in the [TESTING.md](TESTING.md) file.
+![Inspection of logged actions](docs/assets/screenshots/actionlog.png)
 
 
 ## License
