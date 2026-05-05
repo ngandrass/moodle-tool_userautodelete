@@ -72,6 +72,7 @@ class manager {
         foreach ($workflowstoprocess as $workflow) {
             logger::info("Start processing workfow: {$workflow->title} (ID: {$workflow->id})");
             $workflow->process();
+            logger::info("Finished processing workflow.");
         }
 
         return true;

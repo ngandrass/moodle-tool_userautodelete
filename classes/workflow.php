@@ -502,6 +502,7 @@ class workflow {
     public function process(): void {
         // Only process active workflows.
         if (!$this->active) {
+            logger::error("-> Inactive workflow should now be processed!");
             return;
         }
 
@@ -512,15 +513,30 @@ class workflow {
         // progress to the next step within this run are not processed again
         // within the same run.
         foreach (array_reverse($this->get_steps()) as $step) {
+            logger::info("-> Processing step #{$step->sort} \"{$step->title}\" (ID: {$step->id})");
+
             $processes = process::get_active_processes_for_step($step, transitionableonly: true);
             $targetstep = $step->next();
             if (empty($processes) || !$targetstep) {
                 continue;
             }
 
+            // Prepare strings for logging.
+            $prevstepstr = "#{$step->sort} \"{$step->title}\" (ID: {$step->id})";
+            $targetstepstr = "#{$targetstep->sort} \"{$targetstep->title}\" (ID: {$targetstep->id})";
+            $targetstepactionstrings = array_map(
+                fn ($action) => $action::get_plugin_name() . " (ID: {$action->id})",
+                $targetstep->actions
+            );
+
             // Perform transition.
             foreach ($processes as $process) {
                 $process->transition();
+
+                logger::info("  -> Transitioned user {$process->userid} from {$prevstepstr} to {$targetstepstr}.");
+                foreach ($targetstepactionstrings as $actionstring) {
+                    logger::info("    -> Executed action: {$actionstring}");
+                }
             }
 
             // Log executed actions.
@@ -536,9 +552,11 @@ class workflow {
         }
 
         // Ingest new applicable users.
+        logger::info("-> Performing ingestion");
         $newusers = $this->get_applicable_users();
         foreach ($newusers as $userid) {
             process::create($userid, $this);
+            logger::info("  -> Ingested user {$userid}");
         }
 
         if (count($newusers) > 0) {
@@ -551,6 +569,7 @@ class workflow {
                     stepid: $initialstep->id,
                     timestamp: $now,
                 );
+                logger::info('-> Executed action for the above users: ' . $action::get_plugin_name() . " (ID: {$action->id})");
             }
         }
     }
