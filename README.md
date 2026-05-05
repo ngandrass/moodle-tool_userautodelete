@@ -15,7 +15,7 @@
 [![GitHub Forks](https://img.shields.io/github/forks/ngandrass/moodle-tool_userautodelete?style=social)](https://github.com/ngandrass/moodle-tool_userautodelete/network/members)
 [![GitHub Contributors](https://img.shields.io/github/contributors/ngandrass/moodle-tool_userautodelete?style=social)](https://github.com/ngandrass/moodle-tool_userautodelete/graphs/contributors)
 
-This plugin manages the full lifecycle of Moodle user accounts using freely configurable, multi-step workflows.
+This plugin manages the full lifecycle of Moodle user accounts using freely configurable, multistep workflows.
 
 Each workflow can consist of multiple steps with one or more filters (e.g. last access, authentication method, role
 assignment, ...) that determine which users are selected, and actions (e.g. send email, suspend, delete, ...) that are
@@ -28,6 +28,12 @@ The automatic user lifecycle management plugin is available via the [Moodle plug
 
 [![Moodle plugin directory](docs/assets/buttons/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
 
+More information about the plugin and a comprehensive
+[quickstart guide](https://moodleuserlifecycle.gandrass.de/getstarted/) can be found in our
+[online documentation](https://moodleuserlifecycle.gandrass.de/).
+
+[![Automatic User Lifecycle Management: Official Documentation](docs/assets/buttons/docs-button.png)](https://moodleuserlifecycle.gandrass.de/)
+
 
 ## Features
 
@@ -35,6 +41,7 @@ The automatic user lifecycle management plugin is available via the [Moodle plug
 - User filter subplugins for effectively targeting users. Core filters available:
   - Authentication method
   - Cohort membership
+  - Current Date
   - Last access to site
   - Role assignment
   - Suspension state
@@ -46,40 +53,29 @@ The automatic user lifecycle management plugin is available via the [Moodle plug
   - Suspend user
   - Unsuspend user
 - GDPR-compliant user account anonymization and deletion
+- Use of dynamic variables (e.g., user first and last names) in email templates
 - Dry-run mode to safely preview which users would be affected without taking any action
 - Action log to audit all sent mails, issued suspensions, and performed deletions
 - Highly configurable (time thresholds, email templates, ...)
 - Automated testing and support for all active Moodle releases
 
 
-## Configuration and Usage
+## Installation and configuration
 
-The plugin can be configured via the Moodle site administration under _Site administration > Plugins > Admin tools >
-User Lifecycle Management_.
+You can find detailed installation, configuration, and usage instructions more in our comprehensive
+[online documentation](https://moodleuserlifecycle.gandrass.de/). A
+[quickstart guide](https://moodleuserlifecycle.gandrass.de/getstarted/) walks you through the installation and creation
+of your first workflow in just a few minutes.
 
-After installation, the plugin will be disabled by default until you configure and enable it by checking the _Enable
-plugin_ checkbox (1) and saving the settings.
-
-![Plugin settings: Enable plugin](docs/assets/screenshots/settings_enable.png)
-
-## Usage
-
-TODO. This section must still be written.
+[![Automatic User Lifecycle Management: Official Documentation](docs/assets/buttons/docs-button.png)](https://moodleuserlifecycle.gandrass.de/)
 
 
-## Installation
+## Reporting a bug or requesting a feature
 
-This plugin can be installed like any other Moodle plugin by placing its source code inside your Moodle installation and
-executing the upgrade routine afterward.
+If you find a bug or have a feature request, please open an issue via the [GitHub issue tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues).
 
+Please do not use the comments section within the Moodle plugin directory. Thanks :)
 
-### Installing via the site administration (uploaded ZIP file)
-
-1. Download the latest release of this plugin from the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete).
-
-2. Log in to your Moodle site as an admin and go to _Site administration > Plugins > Install plugins_.
-3. Upload the ZIP file with the plugin code.
-4. Check the plugin validation report and finish the installation.
 
 
 ### Installing manually
