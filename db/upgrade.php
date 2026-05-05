@@ -23,6 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\step;
 use tool_userautodelete\userdeleteaction;
 use tool_userautodelete\userdeletefilter;
@@ -294,14 +295,20 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
 
         if ($oldconfig->ignore_auths) {
             userdeletefilter::create_instance($ingeststep, 'auth', [
-                'auths' => $oldconfig->ignore_auths,
+                'auths' => array_map(
+                    fn ($auth) => trim($auth),
+                    explode(',', $oldconfig->ignore_auths)
+                ),
                 'inverted' => true,
             ]);
         }
 
         if ($oldconfig->ignore_roles) {
             userdeletefilter::create_instance($ingeststep, 'role', [
-                'roleids' => $oldconfig->ignore_roles,
+                'roleids' => array_map(
+                    fn ($role) => (int) trim($role),
+                    explode(',', $oldconfig->ignore_roles)
+                ),
                 'inverted' => true,
             ]);
         }
