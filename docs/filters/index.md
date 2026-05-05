@@ -14,6 +14,8 @@ part of the core plugin and therefore available within every installation:
 
 [:fontawesome-solid-users:<br>Cohort Membership](cohort.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
 
+[:fontawesome-regular-calendar:<br>Date](date.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
+
 [:fontawesome-solid-clock-rotate-left:<br>Last Access](lastaccess.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
 
 [:fontawesome-solid-user-tag:<br>Role Assignment](role.md){.md-button .md-button-subplugin .md-button-subplugin-filter}

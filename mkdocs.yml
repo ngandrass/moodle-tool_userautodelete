@@ -72,6 +72,8 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 theme:
   name: material
@@ -127,6 +129,7 @@ nav:
     - filters/index.md
     - "Authentication Method": filters/auth.md
     - "Cohort Membership": filters/cohort.md
+    - "Date": filters/date.md
     - "Last Access": filters/lastaccess.md
     - "Role Assignment": filters/role.md
     - "Suspension State": filters/suspension.md
