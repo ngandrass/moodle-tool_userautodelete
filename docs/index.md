@@ -19,7 +19,7 @@
 
 </div>
 
-This plugin manages the full lifecycle of Moodle user accounts using freely configurable, multi-step workflows.
+This plugin manages the full lifecycle of Moodle user accounts using freely configurable, multistep workflows.
 
 Each workflow can consist of multiple steps with one or more filters that determine which users are selected, and
 actions that are executed when a user enters a step. This allows building simple as well as sophisticated user lifecycle
@@ -50,6 +50,7 @@ The automatic user lifecycle management plugin is available via the [Moodle plug
 - User filter subplugins for effectively targeting users. See [Filters](filters/index.md) for details.
 - Action subplugins to perform various operations. See [Actions](actions/index.md) for details.
 - GDPR-compliant user account anonymization and deletion
+- Use of dynamic variables (e.g., user first and last names) in email templates
 - Dry-run mode to safely preview which users would be affected without taking any action
 - Action log to audit all sent mails, issued suspensions, and performed deletions
 - Highly configurable (time thresholds, email templates, ...)
