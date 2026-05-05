@@ -215,14 +215,6 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Define table tool_userautodelete_mail to be dropped.
-        $table = new xmldb_table('tool_userautodelete_mail');
-
-        // Conditionally launch drop table for tool_userautodelete_mail.
-        if ($dbman->table_exists($table)) {
-            $dbman->drop_table($table);
-        }
-
         // VVV | Take existing old v1 settings and migrate them to a new corresponding workflow | VVV.
         $oldconfig = get_config('tool_userautodelete');
         $workflow = workflow::create(
@@ -318,6 +310,43 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
             $workflow->activate();
         }
 
+        // Migrate user warning state if applicable.
+        if ($oldconfig->enable && $oldconfig->warning_email_enable) {
+            $oldwarnedusers = $DB->get_recordset('tool_userautodelete_mail');
+            $processes = [];
+
+            foreach ($oldwarnedusers as $entry) {
+                // Build process chunks.
+                $processes[] = (object) [
+                    'userid' => $entry->userid,
+                    'stepid' => $warningstep->id,
+                    'state' => process_state::ACTIVE->value,
+                    'timecreated' => $entry->timesent,
+                    'timemodified' => $entry->timesent,
+                ];
+
+                // Persist.
+                if (count($processes) >= 128) {
+                    $DB->insert_records('tool_userautodelete_process', $processes);
+                    $processes = [];
+                }
+            }
+
+            if (count($processes) > 0) {
+                $DB->insert_records('tool_userautodelete_process', $processes);
+            }
+
+            $oldwarnedusers->close();
+        }
+
+        // Define table tool_userautodelete_mail to be dropped.
+        $table = new xmldb_table('tool_userautodelete_mail');
+
+        // Conditionally launch drop table for tool_userautodelete_mail.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
         // Migrate logs.
         $oldlogs = $DB->get_recordset('tool_userautodelete_log');
         $chunk = [];
@@ -354,6 +383,7 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         if (count($chunk) > 0) {
             $DB->insert_records('tool_userautodelete_actionlog', $chunk);
         }
+
         $oldlogs->close();
 
         // Define table tool_userautodelete_log to be dropped.
