@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" COMMENT="XMLDB file for Moodle admin/tool/userautodelete" PATH="admin/tool/userautodelete/db" VERSION="2026012400" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
+<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" COMMENT="XMLDB file for Moodle admin/tool/userautodelete" PATH="admin/tool/userautodelete/db" VERSION="2026050500" xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
   <TABLES>
     <TABLE NAME="tool_userautodelete_actionlog" COMMENT="Logs actions performed by the plugin">
       <FIELDS>

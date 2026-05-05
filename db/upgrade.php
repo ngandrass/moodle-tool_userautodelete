@@ -75,7 +75,7 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
     }
 
     // The big v1 to v2 migration.
-    if ($oldversion < 2026012400) {
+    if ($oldversion < 2026050500) {
         // Define table tool_userautodelete_workflow to be created.
         $table = new xmldb_table('tool_userautodelete_workflow');
 
@@ -358,7 +358,7 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         }
 
         // Userautodelete savepoint reached.
-        upgrade_plugin_savepoint(true, 2026012400, 'tool', 'userautodelete');
+        upgrade_plugin_savepoint(true, 2026050500, 'tool', 'userautodelete');
     }
 
     return true;
