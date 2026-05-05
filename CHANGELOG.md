@@ -7,24 +7,24 @@ This is a full rewrite of the existing plugin, transforming it from a flexible b
 Check out our new [online documentation](https://moodleuserlifecycle.gandrass.de/) for more information about the new plugin features as well as screenshots and examples.
 
 - Introduce a new workflow-based user lifecycle engine that replaces the pre-defined steps.
-  - Workflows consist of one or more steps that are executed sequentially.
-  - Each step can have one or more filters that determine which users are selected for the step and one or more actions that are executed for each selected user.
-  - Multiple workflows can coexist, targeting different user groups and performing different actions.
+    - Workflows consist of one or more steps that are executed sequentially.
+    - Each step can have one or more filters that determine which users are selected for the step and one or more actions that are executed for each selected user.
+    - Multiple workflows can coexist, targeting different user groups and performing different actions.
 - Create fully-featured UI for editing workflows, steps, filters, and actions directly via the Moodle admin page. 
 - Add user filter subplugins for effectively targeting users. Available core filters:
-  - Authentication method
-  - Cohort membership
-  - Date
-  - Last access to site
-  - Role assignment
-  - Suspension state
-  - Time delay
+    - Authentication method
+    - Cohort membership
+    - Date
+    - Last access to site
+    - Role assignment
+    - Suspension state
+    - Time delay
 - Add action subplugins to perform various operations. Available core actions:
-  - Anonymize user account (GDPR compliance)
-  - Delete user
-  - Send mail to user
-  - Suspend user
-  - Unsuspend user
+    - Anonymize user account (GDPR compliance)
+    - Delete user
+    - Send mail to user
+    - Suspend user
+    - Unsuspend user
 - Allow use of dynamic variables (e.g., user first and last names) in email templates.
 - Enable insight into which users are currently being processed by which workflow and step.
 - Create a complete and filterable action log to audit workflow operations.
