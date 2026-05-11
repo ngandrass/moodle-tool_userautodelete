@@ -115,6 +115,9 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         $table->add_key('workflowid', XMLDB_KEY_FOREIGN, ['workflowid'], 'tool_userautodelete_workflow', ['id']);
 
+        // Adding indexes to table tool_userautodelete_step.
+        $table->add_index('workflowid-sort', XMLDB_INDEX_NOTUNIQUE, ['workflowid', 'sort']);
+
         // Conditionally launch create table for tool_userautodelete_step.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -188,6 +191,11 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
         $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
 
+        // Adding indexes to table tool_userautodelete_process.
+        $table->add_index('userid-state', XMLDB_INDEX_NOTUNIQUE, ['userid', 'state']);
+        $table->add_index('stepid-state', XMLDB_INDEX_NOTUNIQUE, ['stepid', 'state']);
+        $table->add_index('stepid-state-timemodified', XMLDB_INDEX_NOTUNIQUE, ['stepid', 'state', 'timemodified']);
+
         // Conditionally launch create table for tool_userautodelete_process.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -209,6 +217,11 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         $table->add_key('workflowid', XMLDB_KEY_FOREIGN, ['workflowid'], 'tool_userautodelete_workflow', ['id']);
         $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
+
+        // Adding indexes to table tool_userautodelete_actionlog.
+        $table->add_index('timestamp', XMLDB_INDEX_NOTUNIQUE, ['timestamp']);
+        $table->add_index('workflowid-timestamp', XMLDB_INDEX_NOTUNIQUE, ['workflowid', 'timestamp']);
+        $table->add_index('stepid-timestamp', XMLDB_INDEX_NOTUNIQUE, ['stepid', 'timestamp']);
 
         // Conditionally launch create table for tool_userautodelete_actionlog.
         if (!$dbman->table_exists($table)) {

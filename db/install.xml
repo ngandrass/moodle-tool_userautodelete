@@ -16,6 +16,11 @@
         <KEY NAME="workflowid" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_userautodelete_workflow" REFFIELDS="id"/>
         <KEY NAME="stepid" TYPE="foreign" FIELDS="stepid" REFTABLE="tool_userautodelete_step" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="timestamp" UNIQUE="false" FIELDS="timestamp"/>
+        <INDEX NAME="workflowid-timestamp" UNIQUE="false" FIELDS="workflowid, timestamp"/>
+        <INDEX NAME="stepid-timestamp" UNIQUE="false" FIELDS="stepid, timestamp"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_userautodelete_process" COMMENT="Data about users that are currently part of a workflow">
       <FIELDS>
@@ -31,6 +36,11 @@
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="stepid" TYPE="foreign" FIELDS="stepid" REFTABLE="tool_userautodelete_step" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid-state" UNIQUE="false" FIELDS="userid, state"/>
+        <INDEX NAME="stepid-state" UNIQUE="false" FIELDS="stepid, state"/>
+        <INDEX NAME="stepid-state-timemodified" UNIQUE="false" FIELDS="stepid, state, timemodified"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_userautodelete_workflow" COMMENT="Existing workflow definitions">
       <FIELDS>
@@ -62,6 +72,9 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="workflowid" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_userautodelete_workflow" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="workflowid-sort" UNIQUE="false" FIELDS="workflowid, sort"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_userautodelete_filter" COMMENT="User filter instances">
       <FIELDS>
