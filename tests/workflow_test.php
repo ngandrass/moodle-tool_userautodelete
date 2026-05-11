@@ -33,6 +33,16 @@ use tool_userautodelete\local\type\sort_move_direction;
  */
 final class workflow_test extends \advanced_testcase {
     /**
+     * This method is called before each test.
+     *
+     * @return void
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        logger::disable();
+    }
+
+    /**
      * Returns the plugin-specific test data generator.
      *
      * @return \tool_userautodelete_generator
