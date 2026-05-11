@@ -51,8 +51,8 @@ class workflow_enable_form extends \moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'action', $this->optional_param('action', null, PARAM_TEXT));
         $mform->setType('action', PARAM_TEXT);
-        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
-        $mform->setType('returnurl', PARAM_RAW);
+        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', '', PARAM_LOCALURL));
+        $mform->setType('returnurl', PARAM_LOCALURL);
 
         // Generic warning message.
         $warnhead = get_string('areyousure');

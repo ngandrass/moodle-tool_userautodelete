@@ -40,7 +40,7 @@ require_admin();
 // Request parameters.
 $workflowid = optional_param('id', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);
-$returnurl = optional_param('returnurl', null, PARAM_RAW);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 // Setup page as sub-admin page of workflows overview.
 // This does not use admin_externalpage_setup as we do not want these detail
@@ -125,8 +125,8 @@ if ($action == 'enable') {
 
 // Handle redirects.
 if (!$output) {
-    if ($returnurl) {
-        redirect($returnurl);
+    if (!empty($returnurl)) {
+        redirect(new moodle_url($returnurl));
     } else {
         redirect(new moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflowid]));
     }

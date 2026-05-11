@@ -83,8 +83,8 @@ class subplugin_instance_settings_form extends dynamic_form {
         $mform->setType('instanceid', PARAM_INT);
         $mform->addElement('hidden', 'instancetype', $instance::get_plugin_type()->value);
         $mform->setType('instancetype', PARAM_TEXT);
-        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
-        $mform->setType('returnurl', PARAM_RAW);
+        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', '', PARAM_LOCALURL));
+        $mform->setType('returnurl', PARAM_LOCALURL);
         $mform->addElement('hidden', 'readonly', $this->optional_param('readonly', 0, PARAM_INT));
         $mform->setType('readonly', PARAM_INT);
 

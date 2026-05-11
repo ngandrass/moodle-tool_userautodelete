@@ -64,8 +64,8 @@ class step_delete_form extends \moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'action', $this->optional_param('action', null, PARAM_TEXT));
         $mform->setType('action', PARAM_TEXT);
-        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', null, PARAM_RAW));
-        $mform->setType('returnurl', PARAM_RAW);
+        $mform->addElement('hidden', 'returnurl', $this->optional_param('returnurl', '', PARAM_LOCALURL));
+        $mform->setType('returnurl', PARAM_LOCALURL);
 
         // Action buttons.
         $this->add_action_buttons(true, get_string('delete_step', 'tool_userautodelete'));

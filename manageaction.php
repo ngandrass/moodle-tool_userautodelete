@@ -35,7 +35,7 @@ require_admin();
 
 // Request parameters.
 $action = required_param('action', PARAM_ALPHA);
-$returnurl = required_param('returnurl', PARAM_RAW);
+$returnurl = required_param('returnurl', PARAM_LOCALURL);
 $actionid = optional_param('id', null, PARAM_INT);
 $stepid = optional_param('stepid', null, PARAM_INT);
 
@@ -71,7 +71,7 @@ if ($action == 'add') {
 
 // Handle redirects.
 if (!$output) {
-    redirect($returnurl);
+    redirect(new moodle_url($returnurl));
 }
 
 // Output page if not redirected.

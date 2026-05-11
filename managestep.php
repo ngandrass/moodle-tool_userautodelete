@@ -35,7 +35,7 @@ require_admin();
 
 // Request parameters.
 $stepid = required_param('id', PARAM_INT);
-$returnurl = required_param('returnurl', PARAM_RAW);
+$returnurl = required_param('returnurl', PARAM_LOCALURL);
 $action = required_param('action', PARAM_ALPHA);
 
 // Setup page as sub-admin page of workflows overview.
@@ -76,7 +76,7 @@ if ($action == 'edit') {
 
 // Handle redirects.
 if (!$output) {
-    redirect($returnurl);
+    redirect(new moodle_url($returnurl));
 }
 
 // Output page if not redirected.

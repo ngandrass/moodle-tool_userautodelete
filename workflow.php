@@ -39,7 +39,7 @@ require_admin();
 // Request parameters.
 $workflowid = required_param('id', PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);
-$returnurl = optional_param('returnurl', null, PARAM_RAW);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 $isediting = false;
 
 // Setup page as sub-admin page of workflows overview.
@@ -69,8 +69,8 @@ if ($action) {
             throw new moodle_exception('invalid_action', 'tool_userautodelete');
     }
 
-    if ($returnurl) {
-        redirect($returnurl);
+    if (!empty($returnurl)) {
+        redirect(new moodle_url($returnurl));
     }
 }
 
