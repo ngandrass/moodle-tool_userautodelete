@@ -28,8 +28,8 @@ namespace userdeletefilter_delay;
 use core\lang_string;
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\instance_setting_descriptor;
+use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\userfilter_clause;
-use tool_userautodelete\step;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -93,12 +93,17 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
             throw new \moodle_exception('negative_delaysec', 'userdeletefilter_delay');
         }
 
+        // Currently, only a single active process per user is supported. Therefore, we
+        // can simply check the active process and do not need further selection criteria.
         return new userfilter_clause(
-            'u.id IN (' .
-                'SELECT userid FROM {' . db_table::USER_PROCESS->value . '} ' .
-                'WHERE timemodified <= :procmodtime' .
-            ')',
+            'EXISTS (
+                SELECT 1 FROM {' . db_table::USER_PROCESS->value . '} p
+                WHERE p.userid = u.id
+                    AND p.state = :activestate
+                    AND p.timemodified <= :procmodtime
+            )',
             [
+                'activestate' => process_state::ACTIVE->value,
                 'procmodtime' => time() - $delaysec,
             ]
         );

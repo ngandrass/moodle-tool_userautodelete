@@ -75,20 +75,26 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
      * This allows testing the delay filter's sub-query against controlled
      * process timestamps without running the full process::create() workflow.
      *
-     * @param int  $userid       User ID the process belongs to
-     * @param step $step         Step the process is placed in
-     * @param int  $timemodified Unix timestamp for the timemodified field
+     * @param int $userid User ID the process belongs to
+     * @param step $step Step the process is placed in
+     * @param int $timemodified Unix timestamp for the timemodified field
+     * @param process_state $state Process state to persist in the raw record
      * @return int The ID of the inserted process record
      * @throws \dml_exception
      */
-    private function insert_process_record(int $userid, step $step, int $timemodified): int {
+    private function insert_process_record(
+        int $userid,
+        step $step,
+        int $timemodified,
+        process_state $state = process_state::ACTIVE
+    ): int {
         global $DB;
 
         $now = time();
         return $DB->insert_record(db_table::USER_PROCESS->value, [
             'userid'       => $userid,
             'stepid'       => $step->id,
-            'state'        => process_state::ACTIVE->value,
+            'state'        => $state->value,
             'timecreated'  => $now,
             'timemodified' => $timemodified,
         ]);
@@ -143,6 +149,71 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
             (int) $freshuser->id,
             $matched,
             'Filter must exclude a user whose process was just placed in the step'
+        );
+    }
+
+    /**
+     * Tests that old non-active processes do not make a user pass the delay
+     * check when the current active process is still fresh.
+     *
+     * @covers \userdeletefilter_delay\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_previous_non_active_process_does_not_affect_delay_check(): void {
+        $this->resetAfterTest();
+
+        $delaysec = DAYSECS * 7;
+        $finisheduser = $this->getDataGenerator()->create_user();
+        $aborteduser = $this->getDataGenerator()->create_user();
+
+        $step = $this->create_step();
+        $filter = $this->create_filter($step, ['delaysec' => $delaysec]);
+
+        // Historical non-active process far in the past.
+        $this->insert_process_record(
+            (int) $finisheduser->id,
+            $step,
+            time() - $delaysec - 60,
+            process_state::FINISHED
+        );
+
+        // Historical aborted process far in the past.
+        $this->insert_process_record(
+            (int) $aborteduser->id,
+            $step,
+            time() - $delaysec - 60,
+            process_state::ABORTED
+        );
+
+        // Current active process is still fresh and must control delay matching.
+        $this->insert_process_record(
+            (int) $finisheduser->id,
+            $step,
+            time(),
+            process_state::ACTIVE
+        );
+        $this->insert_process_record(
+            (int) $aborteduser->id,
+            $step,
+            time(),
+            process_state::ACTIVE
+        );
+
+        $clause = $filter->user_records_filter_clause();
+        $matched = $this->query_users_matching_clause($clause);
+
+        $this->assertNotContains(
+            (int) $finisheduser->id,
+            $matched,
+            'Filter must ignore previous finished processes when evaluating delay for the active process'
+        );
+        $this->assertNotContains(
+            (int) $aborteduser->id,
+            $matched,
+            'Filter must ignore previous aborted processes when evaluating delay for the active process'
         );
     }
 
