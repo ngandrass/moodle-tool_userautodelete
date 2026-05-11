@@ -634,12 +634,15 @@ class workflow {
         // Get all users this workflow is sensitive to and that are not yet part
         // of any other workflow.
         return $DB->get_fieldset_sql(
-            'SELECT u.id ' .
-            'FROM {user} u ' .
-            'LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON p.userid = u.id ' .
-            'WHERE u.deleted = 0 ' .
-            '    AND (p.id IS NULL OR p.state != :activestate) ' .
-            '    AND ' . $userfilterclause->sql,
+            'SELECT u.id
+            FROM {user} u
+            WHERE u.deleted = 0
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM {' . db_table::USER_PROCESS->value . '} p
+                    WHERE p.userid = u.id AND p.state = :activestate
+                )
+                AND ' . $userfilterclause->sql,
             array_merge(
                 ['activestate' => process_state::ACTIVE->value],
                 $userfilterclause->params

@@ -482,6 +482,67 @@ final class workflow_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that a user with an active process is not re-ingested even with mixed history.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_prevent_selection_of_users_with_active_processes_and_aborted_history(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active workflow and one user that initially matches ingestion filters.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $user = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Seed process history with one aborted and one active process for the same user.
+        $abortedprocess = process::create((int) $user->id, $workflow);
+        $abortedprocess->abort();
+        $DB->set_field('user', 'suspended', 1, ['id' => $user->id]);
+        process::create((int) $user->id, $workflow);
+
+        // Keep the user in a state where they match ingestion but cannot transition.
+        $DB->set_field('user', 'suspended', 1, ['id' => $user->id]);
+
+        $this->assertSame(
+            2,
+            $DB->count_records(db_table::USER_PROCESS->value, ['userid' => (int) $user->id]),
+            'Fixture should contain exactly one aborted and one active process before processing'
+        );
+
+        // Processing must not try to re-ingest the user and must not throw.
+        try {
+            $workflow->process();
+        } catch (\Throwable $e) {
+            $this->fail('Processing should not fail when user has active and aborted process history: ' . $e->getMessage());
+        }
+
+        $this->assertSame(
+            2,
+            $DB->count_records(db_table::USER_PROCESS->value, ['userid' => (int) $user->id]),
+            'User with active process should not be re-ingested into the workflow'
+        );
+
+        $allprocesses = process::get_user_processes((int) $user->id, includefinished: true, includeaborted: true);
+        $activecount = count(array_filter(
+            $allprocesses,
+            fn(process $process): bool => $process->state === process_state::ACTIVE
+        ));
+        $abortedcount = count(array_filter(
+            $allprocesses,
+            fn(process $process): bool => $process->state === process_state::ABORTED
+        ));
+
+        $this->assertSame(1, $activecount, 'Exactly one active process should remain after processing');
+        $this->assertSame(1, $abortedcount, 'Exactly one aborted process should remain after processing');
+    }
+
+    /**
      * Tests that inactive workflows are ignored by workflow::process().
      *
      * @covers \tool_userautodelete\workflow
