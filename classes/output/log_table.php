@@ -144,6 +144,13 @@ class log_table extends \table_sql {
         }
 
         $workflow = $this->get_workflow($values->workflowid);
+
+        // Catch non-existing workflows gracefully.
+        if ($workflow === null) {
+            return '<i class="text-muted">' . get_string('deleted') . " (ID: {$values->workflowid})</i>";
+        }
+
+        // Render existing workflow.
         $workflowurl = new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflow->id]);
         $title = "{$workflow->title} (ID: {$workflow->id})";
 
@@ -163,6 +170,13 @@ class log_table extends \table_sql {
         }
 
         $step = $this->get_step($values->stepid);
+
+        // Catch non-existing steps gracefully.
+        if ($step === null) {
+            return '<i class="text-muted">' . get_string('deleted') . " (ID: {$values->stepid})</i>";
+        }
+
+        // Render existing step.
         $workflowurl = new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $step->workflow->id]);
         $title = get_string('step', 'tool_userautodelete') . " {$step->sort}: " .
             ($step->title ? s($step->title) : '<i>' . get_string('unnamed', 'tool_userautodelete') . '</i>');
@@ -179,7 +193,12 @@ class log_table extends \table_sql {
      */
     protected function get_workflow(int $workflowid) {
         if (!array_key_exists($workflowid, $this->workflows)) {
-            $this->workflows[$workflowid] = workflow::get_by_id($workflowid);
+            try {
+                $this->workflows[$workflowid] = workflow::get_by_id($workflowid);
+            } catch (\dml_exception $e) {
+                // Workflow was deleted, mark as unavailable.
+                $this->workflows[$workflowid] = null;
+            }
         }
 
         return $this->workflows[$workflowid];
@@ -195,7 +214,12 @@ class log_table extends \table_sql {
      */
     protected function get_step(int $stepid) {
         if (!array_key_exists($stepid, $this->steps)) {
-            $this->steps[$stepid] = step::get_by_id($stepid);
+            try {
+                $this->steps[$stepid] = step::get_by_id($stepid);
+            } catch (\dml_exception $e) {
+                // Step was deleted, mark as unavailable.
+                $this->steps[$stepid] = null;
+            }
         }
 
         return $this->steps[$stepid];
