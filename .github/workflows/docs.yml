@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - next  # FIXME: This needs to be removed before public release!
 
 permissions:
   contents: read

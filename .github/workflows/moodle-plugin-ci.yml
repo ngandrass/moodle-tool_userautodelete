@@ -2,9 +2,9 @@ name: Moodle Plugin CI
 
 on:
   push:
-    branches: [ "master", "develop", "next" ]
+    branches: [ "master", "develop" ]
   pull_request:
-    branches: [ "master", "develop", "next" ]
+    branches: [ "master", "develop" ]
 
 jobs:
   test:
