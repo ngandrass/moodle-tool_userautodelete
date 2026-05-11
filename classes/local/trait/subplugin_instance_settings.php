@@ -183,7 +183,11 @@ trait subplugin_instance_settings {
 
             $transaction->allow_commit();
         } catch (\Exception $e) {
-            $transaction->rollback($e);
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
         }
     }
 
@@ -232,7 +236,11 @@ trait subplugin_instance_settings {
 
             $transaction->allow_commit();
         } catch (\Exception $e) {
-            $transaction->rollback($e);
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
         }
     }
 

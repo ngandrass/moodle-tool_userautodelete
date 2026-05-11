@@ -98,7 +98,11 @@ abstract class userdeleteaction extends step_subplugin {
 
             $transaction->allow_commit();
         } catch (\Exception $e) {
-            $transaction->rollback($e);
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
         }
 
         return $action;
@@ -123,7 +127,11 @@ abstract class userdeleteaction extends step_subplugin {
 
             $transaction->allow_commit();
         } catch (\Exception $e) {
-            $transaction->rollback($e);
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
         }
     }
 

@@ -412,13 +412,16 @@ class process {
                 }
             }
 
-            // Commit everything if all the above went well.
+            // Commit everything if all the above went well and return the created process object.
             $transaction->allow_commit();
+            return $process;
         } catch (\Exception $e) {
-            $transaction->rollback($e);
-        }
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
 
-        return $process;
+            throw $e;
+        }
     }
 
     /**
@@ -439,6 +442,8 @@ class process {
      *
      * @param int[] $processids List of process IDs to abort
      * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
      * @throws \dml_transaction_exception
      */
     public static function abort_multiple(array $processids): void {
@@ -466,7 +471,11 @@ class process {
 
             $transaction->allow_commit();
         } catch (\Exception $e) {
-            $transaction->rollback($e);
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
         }
     }
 
@@ -549,7 +558,11 @@ class process {
             // Commit everything if all the above went well.
             $transaction->allow_commit();
         } catch (\Exception $e) {
-            $transaction->rollback($e);
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
         }
     }
 }
