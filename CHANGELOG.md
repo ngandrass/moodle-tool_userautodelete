@@ -1,10 +1,12 @@
 # Changelog
 
-## Version 2.0.0 (YYYYMMDDXX)
+## Version 2.0.0 (2026051100)
 
 This is a full rewrite of the existing plugin, transforming it from a flexible but limited automatic user deletion tool into a fully-fledged user lifecycle workflow engine. All original features are still available but now embedded into a powerful framework that allows you to define your own multistep workflows and can easily be extended.
 
 Check out our new [online documentation](https://moodleuserlifecycle.gandrass.de/) for more information about the new plugin features as well as screenshots and examples.
+
+Short summary of the changes:
 
 - Introduce a new workflow-based user lifecycle engine that replaces the pre-defined steps.
     - Workflows consist of one or more steps that are executed sequentially.
