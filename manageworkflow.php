@@ -99,6 +99,10 @@ if ($action == 'enable') {
     $workflow->set_title(required_param('title', PARAM_TEXT));
     $workflow->set_description(required_param('description', PARAM_TEXT));
 } else if ($action == 'addstep') {
+    if ($workflow->active) {
+        throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
+    }
+
     step::create($workflow);
 } else if ($action == 'add') {
     // Create new workflow with an empty step.

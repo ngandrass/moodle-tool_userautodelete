@@ -58,12 +58,20 @@ adminpage_util::admin_hidden_externalpage_setup(
 $output = '';
 if ($action == 'add') {
     $step = step::get_by_id($stepid);
+    if ($step->workflow->active) {
+        throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
+    }
+
     userdeletefilter::create_instance(
         step: $step,
         pluginname: required_param('pluginname', PARAM_TEXT),
     );
 } else if ($action == 'delete') {
     $filter = userdeletefilter::get_instance_by_id($filterid);
+    if ($filter->get_step()->workflow->active) {
+        throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
+    }
+
     $filter->delete();
 } else {
     throw new moodle_exception('invalid_action', 'tool_userautodelete');

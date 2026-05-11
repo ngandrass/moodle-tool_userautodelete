@@ -52,6 +52,10 @@ adminpage_util::admin_hidden_externalpage_setup(
 // Get requested step.
 $step = step::get_by_id($stepid);
 
+if ($step->workflow->active) {
+    throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
+}
+
 // Handle actions.
 $output = '';
 if ($action == 'edit') {
