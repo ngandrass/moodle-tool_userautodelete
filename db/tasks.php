@@ -27,10 +27,19 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $tasks = [
     [
-        'classname' => 'tool_userautodelete\task\check_and_delete_users',
+        'classname' => 'tool_userautodelete\task\executeworkflows',
+        'blocking' => 0,
+        'minute' => '5',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
+        'classname' => 'tool_userautodelete\task\cleanup',
         'blocking' => 0,
         'minute' => '0',
-        'hour' => '1',
+        'hour' => '3',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',

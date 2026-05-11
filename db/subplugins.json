@@ -1,0 +1,10 @@
+{
+    "plugintypes": {
+        "userdeleteaction": "admin/tool/userautodelete/action",
+        "userdeletefilter": "admin/tool/userautodelete/filter"
+    },
+    "subplugintypes": {
+        "userdeleteaction": "action",
+        "userdeletefilter": "filter"
+    }
+}

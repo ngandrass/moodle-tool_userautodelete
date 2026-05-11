@@ -30,15 +30,13 @@ use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
+use tool_userautodelete\local\type\db_table;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-
 /**
  * Privacy provider for tool_userautodelete
- *
- * @codeCoverageIgnore This is handled by Moodle core tests
  */
 class provider implements // phpcs:ignore
     \core_privacy\local\metadata\provider,
@@ -50,14 +48,18 @@ class provider implements // phpcs:ignore
      * @param collection $collection The initialised collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
+    #[\Override]
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
-            'tool_userautodelete_mail',
+            db_table::USER_PROCESS->value,
             [
-                'userid' => 'privacy:metadata:tool_userautodelete_mail:userid',
-                'timesent' => 'privacy:metadata:tool_userautodelete_mail:timesent',
+                'userid' => 'privacy:metadata:tool_userautodelete_process:userid',
+                'stepid' => 'privacy:metadata:tool_userautodelete_process:stepid',
+                'state' => 'privacy:metadata:tool_userautodelete_process:state',
+                'timecreated' => 'privacy:metadata:tool_userautodelete_process:timecreated',
+                'timemodified' => 'privacy:metadata:tool_userautodelete_process:timemodified',
             ],
-            'privacy:metadata:tool_userautodelete_mail'
+            'privacy:metadata:tool_userautodelete_process'
         );
 
         return $collection;
@@ -68,11 +70,17 @@ class provider implements // phpcs:ignore
      *
      * @param int $userid The user to search.
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
+     * @throws \dml_exception
      */
+    #[\Override]
     public static function get_contexts_for_userid(int $userid): contextlist {
+        global $DB;
+
         // Everything happens on global system level.
         $contextlist = new contextlist();
-        $contextlist->add_system_context();
+        if ($DB->record_exists(db_table::USER_PROCESS->value, ['userid' => $userid])) {
+            $contextlist->add_system_context();
+        }
 
         return $contextlist;
     }
@@ -84,28 +92,42 @@ class provider implements // phpcs:ignore
      * @throws \coding_exception
      * @throws \dml_exception
      */
+    #[\Override]
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
+        $userid = $contextlist->get_user()->id;
+
         // Process each given context. Only system context is relevant here.
         foreach ($contextlist->get_contexts() as $context) {
-            if ($context->contextlevel == CONTEXT_SYSTEM) {
-                // Get all user data from the database.
-                $userdatarow = $DB->get_records('tool_userautodelete_mail', ['userid' => $contextlist->get_user()->id]);
+            if ($context->contextlevel !== CONTEXT_SYSTEM) {
+                continue;
+            }
 
-                // Add all rows for the user to the export. Should only be one but loop anyway just to be sure ...
-                foreach ($userdatarow as $row) {
-                    writer::with_context($context)->export_data(
-                        [
-                            get_string('pluginname', 'tool_userautodelete'),
-                            get_string('inactivity_warning', 'tool_userautodelete') . " #{$row->id}",
-                        ],
-                        (object) [
-                            'userid' => $row->userid,
-                            'timesent' => $row->timesent,
-                        ]
-                    );
-                }
+            $processes = $DB->get_records_sql(
+                'SELECT p.id, p.userid, s.workflowid, p.stepid, p.state, p.timecreated, p.timemodified ' .
+                'FROM {' . db_table::USER_PROCESS->value . '} p ' .
+                'JOIN {' . db_table::WORKFLOW_STEP->value . '} s ON s.id = p.stepid ' .
+                'WHERE p.userid = :userid ' .
+                'ORDER BY p.id ASC',
+                ['userid' => $userid]
+            );
+
+            foreach ($processes as $process) {
+                writer::with_context($context)->export_data(
+                    [
+                        get_string('pluginname', 'tool_userautodelete'),
+                        get_string('user_processes', 'tool_userautodelete') . " #{$process->id}",
+                    ],
+                    (object) [
+                        'userid' => $process->userid,
+                        'workflowid' => $process->workflowid,
+                        'stepid' => $process->stepid,
+                        'state' => $process->state,
+                        'timecreated' => $process->timecreated,
+                        'timemodified' => $process->timemodified,
+                    ]
+                );
             }
         }
     }
@@ -116,12 +138,13 @@ class provider implements // phpcs:ignore
      * @param \context $context $context The specific context to delete data for.
      * @throws \dml_exception
      */
+    #[\Override]
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        if ($context->contextlevel == CONTEXT_SYSTEM) {
-            // Delete all data for all users in the system context.
-            $DB->delete_records('tool_userautodelete_mail');
+        if ($context->contextlevel === CONTEXT_SYSTEM) {
+            // Delete all user process data in the system context.
+            $DB->delete_records(db_table::USER_PROCESS->value);
         }
     }
 
@@ -131,14 +154,17 @@ class provider implements // phpcs:ignore
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      * @throws \dml_exception
      */
+    #[\Override]
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
 
+        $userid = $contextlist->get_user()->id;
+
         // Process each given context. Only system context is relevant here.
         foreach ($contextlist->get_contexts() as $context) {
-            if ($context->contextlevel == CONTEXT_SYSTEM) {
+            if ($context->contextlevel === CONTEXT_SYSTEM) {
                 // Delete all data for the user in the system context.
-                $DB->delete_records('tool_userautodelete_mail', ['userid' => $contextlist->get_user()->id]);
+                $DB->delete_records(db_table::USER_PROCESS->value, ['userid' => $userid]);
             }
         }
     }
@@ -149,6 +175,7 @@ class provider implements // phpcs:ignore
      * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      * @throws \dml_exception
      */
+    #[\Override]
     public static function get_users_in_context(userlist $userlist) {
         global $DB;
 
@@ -159,8 +186,13 @@ class provider implements // phpcs:ignore
         }
 
         // Get user ids from the database and add to userlist.
-        $userids = $DB->get_records('tool_userautodelete_mail', [], '', 'DISTINCT userid');
-        $userlist->add_users(array_map(fn ($row) => $row->userid, $userids));
+        $userids = $DB->get_fieldset_sql(
+            'SELECT DISTINCT userid FROM {' . db_table::USER_PROCESS->value . '}'
+        );
+
+        if (!empty($userids)) {
+            $userlist->add_users($userids);
+        }
     }
 
     /**
@@ -170,6 +202,7 @@ class provider implements // phpcs:ignore
      * @throws \dml_exception
      * @throws \coding_exception
      */
+    #[\Override]
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
 
@@ -179,8 +212,12 @@ class provider implements // phpcs:ignore
             return;
         }
 
+        if (count($userlist->get_userids()) === 0) {
+            return;
+        }
+
         // Delete all data for the user in the system context.
         [$insql, $inparams] = $DB->get_in_or_equal($userlist->get_userids());
-        $DB->delete_records_select('tool_userautodelete_mail', "userid {$insql}", $inparams);
+        $DB->delete_records_select(db_table::USER_PROCESS->value, "userid {$insql}", $inparams);
     }
 }

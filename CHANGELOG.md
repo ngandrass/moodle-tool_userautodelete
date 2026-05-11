@@ -1,5 +1,54 @@
 # Changelog
 
+## Version 2.0.0 (YYYYMMDDXX)
+
+This is a full rewrite of the existing plugin, transforming it from a flexible but limited automatic user deletion tool into a fully-fledged user lifecycle workflow engine. All original features are still available but now embedded into a powerful framework that allows you to define your own multistep workflows and can easily be extended.
+
+Check out our new [online documentation](https://moodleuserlifecycle.gandrass.de/) for more information about the new plugin features as well as screenshots and examples.
+
+- Introduce a new workflow-based user lifecycle engine that replaces the pre-defined steps.
+    - Workflows consist of one or more steps that are executed sequentially.
+    - Each step can have one or more filters that determine which users are selected for the step and one or more actions that are executed for each selected user.
+    - Multiple workflows can coexist, targeting different user groups and performing different actions.
+- Create fully-featured UI for editing workflows, steps, filters, and actions directly via the Moodle admin page. 
+- Add user filter subplugins for effectively targeting users. Available core filters:
+    - Authentication method
+    - Cohort membership
+    - Date
+    - Last access to site
+    - Role assignment
+    - Suspension state
+    - Time delay
+- Add action subplugins to perform various operations. Available core actions:
+    - Anonymize user account (GDPR compliance)
+    - Delete user
+    - Send mail to user
+    - Suspend user
+    - Unsuspend user
+- Allow use of dynamic variables (e.g., user first and last names) in email templates.
+- Enable insight into which users are currently being processed by which workflow and step.
+- Create a complete and filterable action log to audit workflow operations.
+- Write a comprehensive [online documentation](https://moodleuserlifecycle.gandrass.de/) for users, administrators, and developers.
+
+**ATTENTION**: This release drops support for Moodle <= 4.4 and PHP <= 8.0. Since this version, **Moodle >= 4.5 (LTS) and PHP >= 8.1 are required**.
+
+### Migrating from v1 to v2
+
+If you are migrating from an existing v1 installation to v2, everything will be migrated automatically for you ❤️ If you instead wish to start from scratch simply disable and delete the migrated workflow and create a new one.
+
+This means:
+
+- A new workflow that matches your existing configuration will be created.
+- All configured filter rules (e.g., inactivity threshold, authentication method) will be translated to the new filters including all their settings.
+- All configured actions (e.g., sending warning emails, anonymizing users) will be translated to the new actions including all their settings.
+- All existing action log entries will be migrated.
+- If warning mails were enabled, all users that did already receive a warning mail but are still within their grace period will, be migrated to the new workflow and keep their grace period.
+- If the plugin was previously enabled, the new workflow will likewise be enabled.
+- If the plugin was previously disabled, the new workflow will be created but remain disabled. You can enable it whenever you like.
+
+Even though the migration process was tested with utmost care, we still recommend to if the migrated workflow is as expected.
+
+
 ## Version 1.6.0 (2026040100)
 
 - Ensure Moodle 5.2 compatibility

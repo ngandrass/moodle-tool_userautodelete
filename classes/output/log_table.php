@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines the log table renderer
+ * This file defines the action log table renderer
  *
  * @package   tool_userautodelete
  * @copyright 2026 Niels Gandraß <niels@gandrass.de>
@@ -24,7 +24,11 @@
 
 namespace tool_userautodelete\output;
 
-use html_writer;
+use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\util\plugin_util;
+use tool_userautodelete\step;
+use tool_userautodelete\userdeleteaction;
+use tool_userautodelete\workflow;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -36,83 +40,164 @@ require_once($CFG->libdir . '/tablelib.php');
 
 
 /**
- * Table renderer for the log table
+ * Table renderer for the action log
  */
 class log_table extends \table_sql {
+    /** @var workflow[] Cached workflow objects */
+    protected array $workflows = [];
+
+    /** @var step[] Cached step objects */
+    protected array $steps = [];
+
     /**
      * Constructor
      *
      * @param string $uniqueid all tables have to have a unique id, this is used
      *      as a key when storing table properties like sort order in the session.
      *
+     * @param int|null $workflowid If given, only log entries matching the given workflow id are displayed
+     * @param int|null $stepid If given, only log entries matching the given step id are displayed
      * @throws \coding_exception
      */
-    public function __construct(string $uniqueid) {
+    public function __construct(string $uniqueid, ?int $workflowid = null, ?int $stepid = null) {
         parent::__construct($uniqueid);
         $this->define_columns([
-            'runtime',
-            'recovered',
-            'warned',
-            'deleted',
+            'timestamp',
+            'affectedusers',
+            'action',
+            'workflow',
+            'step',
         ]);
 
         $this->define_headers([
-            get_string('time'),
-            get_string('recovered', 'tool_userautodelete'),
-            get_string('warned', 'tool_userautodelete'),
-            get_string('deleted', 'tool_userautodelete'),
+            get_string('date'),
+            get_string('users'),
+            get_string('action', 'tool_userautodelete'),
+            get_string('workflow', 'tool_userautodelete'),
+            get_string('step', 'tool_userautodelete'),
         ]);
 
-        $this->set_sql('*', '{tool_userautodelete_log}', '1=1', []);
+        // Build query.
+        $wheresql = [];
+        $params = [];
+        if ($workflowid) {
+            $wheresql[] = 'workflowid = :workflowid';
+            $params['workflowid'] = $workflowid;
+        }
+        if ($stepid) {
+            $wheresql[] = 'stepid = :stepid';
+            $params['stepid'] = $stepid;
+        }
 
-        $this->sortable(true, 'runtime', SORT_DESC);
+        $this->set_sql(
+            fields: '*',
+            from: '{' . db_table::ACTIONLOG->value . '}',
+            where: implode(' AND ', $wheresql) ?: '1=1',
+            params: $params
+        );
+
+        $this->sortable(true, 'timestamp', SORT_DESC);
         $this->collapsible(false);
     }
 
     /**
-     * Column renderer for the runtime column
+     * Column renderer for the timestamp column
      *
-     * @param \stdClass $values Values of the current row
-     * @return string HTML code to be displayed
+     * @param mixed $values Current data row
+     * @return string Rendered field content
      * @throws \coding_exception
      */
-    public function col_runtime($values) {
-        return userdate($values->runtime, get_string('strftimedatetimeaccurate', 'langconfig'));
+    public function col_timestamp($values) {
+        return userdate($values->timestamp, get_string('strftimedatetimeaccurate', 'langconfig'));
     }
 
     /**
-     * Column renderer for the recovered column
+     * Column renderer for the actions column
      *
-     * @param \stdClass $values Values of the current row
-     * @return string HTML code to be displayed
-     * @throws \coding_exception
+     * @param mixed $values Current data row
+     * @return string Rendered field content
      */
-    public function col_recovered($values) {
-        $color = $values->recovered > 0 ? 'success' : 'secondary';
-        return html_writer::span($values->recovered, "badge badge-{$color} text-bg-{$color} p-2");
+    public function col_action($values) {
+        try {
+            /** @var userdeleteaction $action */
+            $action = plugin_util::get_subplugin_class('userdeleteaction', $values->action);
+            $title = '<i class="me-2 ' . $action::get_icon_class() . '"></i>&nbsp;';
+            $title .= get_string('pluginname', 'userdeleteaction_' . $values->action);
+        } catch (\moodle_exception $e) {
+            $title = '<i class="me-2 ' . userdeleteaction::get_icon_class() . '"></i>';
+            $title .= $values->action;
+        }
+
+        return $title;
     }
 
     /**
-     * Column renderer for the recovered column
+     * Column renderer for the workflow column
      *
-     * @param \stdClass $values Values of the current row
-     * @return string HTML code to be displayed
+     * @param mixed $values Current data row
+     * @return string Rendered field content
      * @throws \coding_exception
      */
-    public function col_warned($values) {
-        $color = $values->warned > 0 ? 'warning' : 'secondary';
-        return html_writer::span($values->warned, "badge badge-{$color} text-bg-{$color} p-2");
+    public function col_workflow($values) {
+        if (!$values->workflowid) {
+            return '<i class="text-muted">' . get_string('none') . '</i>';
+        }
+
+        $workflow = $this->get_workflow($values->workflowid);
+        $workflowurl = new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $workflow->id]);
+        $title = "{$workflow->title} (ID: {$workflow->id})";
+
+        return '<a href="' . $workflowurl . '">' . s($title) . '</a>';
     }
 
     /**
-     * Column renderer for the deleted column
+     * Column renderer for the step column
      *
-     * @param \stdClass $values Values of the current row
-     * @return string HTML code to be displayed
+     * @param mixed $values Current data row
+     * @return string Rendered field content
      * @throws \coding_exception
      */
-    public function col_deleted($values) {
-        $color = $values->deleted > 0 ? 'danger' : 'secondary';
-        return html_writer::span($values->deleted, "badge badge-{$color} text-bg-{$color} p-2");
+    public function col_step($values) {
+        if (!$values->stepid) {
+            return '<i class="text-muted">' . get_string('none') . '</i>';
+        }
+
+        $step = $this->get_step($values->stepid);
+        $workflowurl = new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $step->workflow->id]);
+        $title = get_string('step', 'tool_userautodelete') . " {$step->sort}: " .
+            ($step->title ? s($step->title) : '<i>' . get_string('unnamed', 'tool_userautodelete') . '</i>');
+
+        return '<a href="' . $workflowurl . '#step-' . $step->id . '">' . $title . '</a>';
+    }
+
+    /**
+     * Retrieves a workflow instance by its ID. Uses an internal cache.
+     *
+     * @param int $workflowid ID of the workflow to retrieve
+     * @return workflow Requested workflow object
+     * @throws \dml_exception
+     */
+    protected function get_workflow(int $workflowid) {
+        if (!array_key_exists($workflowid, $this->workflows)) {
+            $this->workflows[$workflowid] = workflow::get_by_id($workflowid);
+        }
+
+        return $this->workflows[$workflowid];
+    }
+
+    /**
+     * Retrieves a step instance by its ID. Uses an internal cache.
+     *
+     * @param int $stepid ID of the step to retrieve
+     * @return step Requested step object
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function get_step(int $stepid) {
+        if (!array_key_exists($stepid, $this->steps)) {
+            $this->steps[$stepid] = step::get_by_id($stepid);
+        }
+
+        return $this->steps[$stepid];
     }
 }

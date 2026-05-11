@@ -24,6 +24,9 @@
 
 namespace tool_userautodelete;
 
+use core\exception\coding_exception;
+use tool_userautodelete\local\type\db_table;
+
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
@@ -31,8 +34,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 /**
  * Handles logging
  *
- * This is currently just an mtrace() wrapper but allows for future extension
- * of the logging system.
+ * This class provides an mtrace() wrapper with formatting for various logging
+ * levels. It furthermore helps with creating entries in the action log store.
  */
 class logger {
     /** @var bool If true, all logging operations are suppressed */
@@ -102,5 +105,67 @@ class logger {
         if (!self::$suppresslogs) {
             mtrace("[ERROR] $message");
         }
+    }
+
+    /**
+     * Creates a new entry in the action log table.
+     *
+     * This method works independent of the current logging suppression state.
+     *
+     * @param string $name Name of the action that happened
+     * @param int $affectedusers Number of users affacted by the action
+     * @param int|null $workflowid Optional ID of a corresponding workflow
+     * @param int|null $stepid Optional ID of a corresponding workflow step
+     * @param int|null $timestamp Optional custom timestamp of the log event. Defaults to current unix time if null
+     * @param mixed|null $details Optional serializable object to store additional details
+     * @return void
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public static function action(
+        string $name,
+        int $affectedusers,
+        ?int $workflowid = null,
+        ?int $stepid = null,
+        ?int $timestamp = null,
+        mixed $details = null
+    ) {
+        global $DB;
+
+        // Validate arguments.
+        if (empty($name)) {
+            throw new coding_exception('Action name cannot be empty');
+        }
+        if ($affectedusers < 0) {
+            throw new coding_exception('Affected users count cannot be negative');
+        }
+        if ($workflowid !== null && $workflowid <= 0) {
+            throw new coding_exception('Workflow ID must be a positive integer');
+        }
+        if ($stepid !== null && $stepid <= 0) {
+            throw new coding_exception('Step ID must be a positive integer');
+        }
+        if ($timestamp !== null && $timestamp <= 0) {
+            throw new coding_exception('Timestamp must be a positive integer');
+        }
+        if ($details !== null) {
+            $details = json_encode($details);
+            if ($details === false) {
+                throw new coding_exception('Failed to encode action details as JSON');
+            }
+        }
+
+        // Insert log entry into DB.
+        $DB->insert_record(
+            db_table::ACTIONLOG->value,
+            (object) [
+                'workflowid' => $workflowid,
+                'stepid' => $stepid,
+                'timestamp' => $timestamp ?? time(),
+                'affectedusers' => $affectedusers,
+                'action' => $name,
+                'details' => $details,
+            ]
+        );
     }
 }

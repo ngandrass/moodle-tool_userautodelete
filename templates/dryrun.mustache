@@ -17,253 +17,81 @@
 {{!
     @template tool_userautodelete/dryrun
 
-    Dry-run and information page for too_userautodelete.
+    Workflow dry-run page for too_userautodelete.
 
     Example context (json):
     {
-        "userstowarn": {
-            "count": 2,
-            "users": [
-                {
-                    "id": 1,
-                    "firstname": "John",
-                    "lastname": "Doe",
-                    "lastaccess": 1690000000,
-                    "timecreated": 1690000000
-                },
-                {
-                    "id": 2,
-                    "firstname": "Jane",
-                    "lastname": "Smith",
-                    "lastaccess": 1690000000,
-                    "timecreated": 1690000000
-                }
-            ]
-        },
-        "userstodelete": {
-            "count": 1,
-            "users": [
-                {
-                    "id": 3,
-                    "firstname": "Alice",
-                    "lastname": "Johnson",
-                    "lastaccess": 1680000000,
-                    "timecreated": 1680000000
-                }
-            ]
-        },
-        "pluginenabled": true,
-        "deletethreshold": {
-            "cutoff": 1690000000,
-            "days": 30
-        },
-        "warningthreshold": {
-            "cutoff": 1690000000,
-            "days": 15
-        },
-        "nextcheck": {
-            "absolute": 1690000000,
-            "relative": "in 2 days"
-        },
-        "ignoredroles": [
-            "Site administrators",
-            "Guest user"
+        "id": 123,
+        "title": "Workflow title",
+        "description": "Workflow description",
+        "affecteduserscount": 42,
+        "ingressfilters": [
+            "Filter 1",
+            "Filter 2",
+            "Filter 3"
         ],
-        "ignoredauths": [
-            "Manual accounts"
-        ],
-        "suspendedonly": false,
+        "ingressfilterscount": 3,
+        "timemodified": 1690000000,
+        "modifiedby": {
+            "id": 2,
+            "fullname": "Admin User",
+            "profileurl": "https://example.com/user/profile.php?id=2"
+        },
+        "dryruntablehtml": "<table></table>",
         "url": {
-            "back": "https://example.com/back",
-            "userprofilebase": "https://example.com/userprofilebase"
+            "back": "https://example.com/back"
         }
     }
 }}
 
-<h2>{{#str}} dry_run, tool_userautodelete {{/str}}</h2>
 
 <div class="row">
     <div class="col-sm-12">
-        <p>
-            {{#str}} dry_run_explanation, tool_userautodelete {{/str}}
-        </p>
+        <h2>{{#str}} dry_run, tool_userautodelete {{/str}}</h2>
+        <p>{{#str}} dry_run_explanation, tool_userautodelete {{/str}}</p>
     </div>
-</div>
-
-<div>
-    <h5>{{#str}} current_configuration, tool_userautodelete {{/str}}</h5>
-    <p>{{#str}} current_configuration_table_desc, tool_userautodelete {{/str}}</p>
-    <table class="table" style="max-width: 700px;">
-        <tr>
-            <td>{{#str}} next_check, tool_userautodelete {{/str}}</td>
-            <td>
-                {{#nextcheck}}
-                    {{^pluginenabled}}
-                        {{#str}} next_check_never, tool_userautodelete{{/str}}<br>
-                        <i>{{#str}} next_check_would, tool_userautodelete {{/str}}
-                    {{/pluginenabled}}
-
-                    {{#str}} reltime_prefix_in, tool_userautodelete {{/str}} {{nextcheck.relative}} {{#str}} reltime_suffix_in, tool_userautodelete {{/str}}
-                    ({{#userdate}} {{nextcheck.absolute}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
-
-                    {{^pluginenabled}}
-                        </i>
-                    {{/pluginenabled}}
-                {{/nextcheck}}
-                {{^nextcheck}}
-                    {{#str}} disabled, admin {{/str}}
-                {{/nextcheck}}
-            </td>
-        </tr>
-        <tr>
-            <td>{{#str}} setting_warning_threshold_days, tool_userautodelete {{/str}}</td>
-            <td>
-                {{#warningthreshold}}
-                    {{#userdate}} {{warningthreshold.cutoff}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
-                    ({{warningthreshold.days}}&nbsp;{{#str}} days {{/str}})
-                {{/warningthreshold}}
-                {{^warningthreshold}}
-                    {{#str}} disabled, admin {{/str}}
-                {{/warningthreshold}}
-            </td>
-        </tr>
-        <tr>
-            <td>{{#str}} setting_delete_threshold_days, tool_userautodelete {{/str}}</td>
-            <td>
-                {{#userdate}} {{deletethreshold.cutoff}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
-                ({{deletethreshold.days}}&nbsp;{{#str}} days {{/str}})
-            </td>
-        </tr>
-        <tr>
-            <td>{{#str}} setting_ignore_roles, tool_userautodelete {{/str}}</td>
-            <td>
-                {{#ignoredroles}}
-                    <span class="badge bg-secondary text-bg-secondary">
-                        {{.}}
-                    </span>
-                {{/ignoredroles}}
-                {{^ignoredroles}}
-                    {{#str}} none {{/str}}
-                {{/ignoredroles}}
-            </td>
-        </tr>
-        <tr>
-            <td>{{#str}} setting_ignore_auths, tool_userautodelete {{/str}}</td>
-            <td>
-                {{#ignoredauths}}
-                    <span class="badge bg-secondary text-bg-secondary">
-                        {{.}}
-                    </span>
-                {{/ignoredauths}}
-                {{^ignoredauths}}
-                    {{#str}} none {{/str}}
-                {{/ignoredauths}}
-            </td>
-        </tr>
-        <tr>
-            <td>{{#str}} suspendedusers {{/str}}</td>
-            <td>
-                {{#suspendedonly}}
-                    {{#str}} setting_suspended_only, tool_userautodelete {{/str}}
-                {{/suspendedonly}}
-                {{^suspendedonly}}
-                    {{#str}} includeallusers {{/str}}
-                {{/suspendedonly}}
-            </td>
-        </tr>
-    </table>
 </div>
 
 <div class="row">
-    <div class="col-sm-12">
-        <a href="{{{url.back}}}" class="btn btn-primary" role="button">
-            {{#str}} back_to_settings, tool_userautodelete {{/str}}
-        </a>
+    <div class="col-sm-12 mt-2">
+        <div class="card m-auto" style="width: fit-content; min-width: 580px;">
+            <div class="card-header text-white bg-primary">
+                <b>{{title}}</b><br>
+                <span>{{description}}</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <b>{{#str}} affected_users, tool_userautodelete {{/str}}:</b>
+                    {{affecteduserscount}}
+                </li>
+                <li class="list-group-item">
+                    <b>{{#str}} selection_filters, tool_userautodelete {{/str}}:</b>
+                    {{#ingressfilters}}
+                        <span class="badge rounded-pill badge-primary text-bg-primary">
+                            {{.}}
+                        </span>
+                    {{/ingressfilters}}
+                </li>
+                <li class="list-group-item">
+                    <b>{{#str}} lastmodified {{/str}}:</b>
+                    <span>
+                        {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                    </span>
+                    (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
+                </li>
+            </ul>
+            <div class="card-footer text-center">
+                <a href="{{{urls.back}}}" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i>&nbsp;
+                    {{#str}} back_to_workflow, tool_userautodelete {{/str}}
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row mt-3">
-    <div class="col-12">
-        <h5>{{#str}} affected_users, tool_userautodelete {{/str}}</h5>
-        <p>{{#str}} dry_run_affected_users_desc, tool_userautodelete {{/str}}</p>
-    </div>
-    <div class="col-lg-6 my-3">
-        <div class="card">
-            <h5 class="card-header">
-                <i class="fa-solid fa-trash-can"></i>
-                &nbsp;
-                {{#str}} users_to_delete, tool_userautodelete {{/str}}
-            </h5>
-            <div class="card-body">
-                {{#userstodelete.count}}
-                    <p>
-                        {{#str}} a_users_would_be_deleted, tool_userautodelete, {{userstodelete.count}} {{/str}}:
-                    </p>
-                    <ul>
-                        {{#userstodelete.users}}
-                            <li>
-                                <a href="{{{url.userprofilebase}}}?id={{{id}}}" target="_blank">
-                                    {{firstname}} {{lastname}}
-                                </a>
-                                {{#lastaccess}}
-                                    ({{#str}} lastaccess {{/str}}: {{#userdate}} {{lastaccess}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
-                                {{/lastaccess}}
-                                {{^lastaccess}}
-                                    ({{#str}} timecreated {{/str}}: {{#userdate}} {{timecreated}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
-                                {{/lastaccess}}
-                            </li>
-                        {{/userstodelete.users}}
-                    </ul>
-                {{/userstodelete.count}}
-                {{^userstodelete.count}}
-                    <p class="text-muted text-center my-4">
-                        {{#str}} no_users_to_delete, tool_userautodelete {{/str}}
-                    </p>
-                {{/userstodelete.count}}
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 my-3">
-        <div class="card">
-            <h5 class="card-header">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                &nbsp;
-                {{#str}} users_to_warn, tool_userautodelete {{/str}}
-            </h5>
-            <div class="card-body">
-                {{#userstowarn}}
-                    {{#userstowarn.count}}
-                        <p>
-                            {{#str}} a_users_would_be_warned, tool_userautodelete, {{userstowarn.count}} {{/str}}:
-                        </p>
-                        <ul>
-                            {{#userstowarn.users}}
-                                <li>
-                                    <a href="{{{url.userprofilebase}}}?id={{{id}}}" target="_blank">
-                                        {{firstname}} {{lastname}}
-                                    </a>
-                                    {{#lastaccess}}
-                                        ({{#str}} lastaccess {{/str}}: {{#userdate}} {{lastaccess}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
-                                    {{/lastaccess}}
-                                    {{^lastaccess}}
-                                        ({{#str}} timecreated {{/str}}: {{#userdate}} {{timecreated}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}})
-                                    {{/lastaccess}}
-                                </li>
-                            {{/userstowarn.users}}
-                        </ul>
-                    {{/userstowarn.count}}
-                    {{^userstowarn.count}}
-                        <p class="text-muted text-center my-4">
-                            {{#str}} no_users_to_warn, tool_userautodelete {{/str}}
-                        </p>
-                    {{/userstowarn.count}}
-                {{/userstowarn}}
-                {{^userstowarn}}
-                    <p class="text-muted text-center my-4">
-                        {{#str}} warning_email_disabled, tool_userautodelete {{/str}}
-                    </p>
-                {{/userstowarn}}
-            </div>
-        </div>
+<div class="row">
+    <div class="col-sm-12 mt-5">
+        {{{dryruntablehtml}}}
     </div>
 </div>

@@ -15,77 +15,60 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Action log inspection page
+ * Log inspection page
  *
  * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_userautodelete\output\log_table;
-
 require_once(__DIR__ . '/../../../config.php');
+require_once("{$CFG->libdir}/adminlib.php");
 
-global $DB, $OUTPUT, $PAGE, $USER;
+global $OUTPUT, $PAGE;
 
-// Only allow site admins to access this page.
-require_login();
-$ctx = context_system::instance();
-require_capability('moodle/site:config', $ctx);
+// Login and capability checks as well as $PAGE setup are performed by admin_externalpage_setup.
+admin_externalpage_setup('tool_userautodelete_log');
 
-// Setup page.
-$url = new moodle_url('/admin/tool/userautodelete/log.php');
+// Allow to supply filters via $_GET without form submission.
+$workflowid = optional_param('workflowid', null, PARAM_INT);
+$stepid = optional_param('stepid', null, PARAM_INT);
 
-$PAGE->set_context($ctx);
-$PAGE->set_title(get_string('page_title_action_log', 'tool_userautodelete'));
-$PAGE->set_heading(get_string('pluginname', 'tool_userautodelete'));
-$PAGE->set_url($url);
+// Build the filter form and set current values.
+$filterform = new \tool_userautodelete\form\log_filter_form($PAGE->url);
 
-// Prepate log table.
-$logtable = new log_table('logtable');
-$logtable->define_baseurl($url);
-
-ob_start();
-$logtable->out(50, true);
-$logtablehtml = ob_get_contents();
-ob_end_clean();
-
-// Build template context.
-$manager = new \tool_userautodelete\manager();
-$tplctx = [
-    'logtablehtml' => $logtablehtml,
-    'pluginenabled' => $manager->get_config('enable'),
-    'url' => [
-        'back' => new \moodle_url('/admin/settings.php', [
-            'section' => 'tool_userautodelete_settings',
-        ]),
-        'tasklogs' => new moodle_url('/admin/tasklogs.php', [
-            'filter' => 'tool_userautodelete\task\check_and_delete_users',
-        ]),
-    ],
-];
-
-$checktask = \core\task\manager::get_scheduled_task('tool_userautodelete\task\check_and_delete_users');
-if ($checktask->is_enabled()) {
-    $tplctx['nextcheck'] = [
-        'absolute' => $checktask->get_next_run_time(),
-        'relative' => format_time($checktask->get_next_run_time() - time()),
-    ];
-} else {
-    $tplctx['nextcheck'] = null;
+if ($filterform->is_submitted()) {
+    $data = $filterform->get_data();
+    if ($data) {
+        // Reset button clears all filters and redirects to clean URL.
+        if (!empty($data->resetbutton)) {
+            redirect($PAGE->url);
+        }
+        $workflowid = !empty($data->workflowid) ? (int)$data->workflowid : null;
+        $stepid = !empty($data->stepid) ? (int)$data->stepid : null;
+    }
 }
 
-if ($lastcheck = $checktask->get_last_run_time()) {
-    $tplctx['lastcheck'] = [
-        'absolute' => $lastcheck,
-        'relative' => format_time(time() - $lastcheck),
-    ];
-} else {
-    $tplctx['lastcheck'] = null;
-}
+// Restore current filter selection into the form.
+$filterform->set_data([
+    'workflowid' => $workflowid ?? 0,
+    'stepid' => $stepid ?? 0,
+]);
 
+// Build table URL including active filter params so table paging/sorting preserves them.
+$tableurl = new \moodle_url($PAGE->url, [
+    'workflowid' => $workflowid ?? 0,
+    'stepid' => $stepid ?? 0,
+]);
+
+$logtbl = new \tool_userautodelete\output\log_table('logtable', $workflowid, $stepid);
+$logtbl->define_baseurl($tableurl);
 
 // Render main output.
 echo $OUTPUT->header();
-echo $OUTPUT->render_from_template('tool_userautodelete/log', $tplctx);
+echo $OUTPUT->heading(get_string('logs', 'tool_userautodelete'));
+
+$filterform->display();
+
+$logtbl->out(50, false);
 echo $OUTPUT->footer();

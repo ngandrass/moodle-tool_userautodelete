@@ -1,0 +1,787 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_userautodelete/workflow
+
+    Displays a single workflow.
+
+    Example context (json):
+    {
+        "id": 1,
+        "title": "Workflow 1",
+        "description": "Description of workflow 1",
+        "sort": 1,
+        "active": true,
+        "timecreated": 1700000000,
+        "timemodified": 1700000000,
+        "createdby": {
+            "id": 2,
+            "fullname": "Admin User",
+            "profileurl": "https://mymoodle/user/profile.php?id=2"
+        },
+        "modifiedby": {
+            "id": 2,
+            "fullname": "Admin User",
+            "profileurl": "https://mymoodle/user/profile.php?id=2"
+        },
+        "stepcount": 1,
+        "steps": [
+            {
+                "id": 1,
+                "title": "Step 1",
+                "description": "Description of step 1",
+                "sort": 1,
+                "isfirst": true,
+                "islast": false,
+                "filters": [
+                    {
+                        "id": 1,
+                        "name:": "auth",
+                        "title": "Authentication method",
+                        "details": "manual, email",
+                        "iconclass": "fa-solid fa-filter",
+                        "isvalid": true,
+                        "invalidityreason": null
+                    }
+                ],
+                "actions": [
+                    {
+                        "id": 1,
+                        "name:": "delete",
+                        "title": "Delete user",
+                        "details": "",
+                        "iconclass": "fa-solid fa-gear",
+                        "isvalid": false,
+                        "invalidityreason": "Lorem ipsum"
+                    }
+                ],
+                "processes": {
+                    "active": 2,
+                    "finished": 8,
+                    "total": 10
+                }
+            }
+        ],
+        "isediting": true,
+        "urls": {
+            "activate": "https://foo.bar/baz",
+            "delete": "https://foo.bar/baz",
+            "edit": "https://foo.bar/baz",
+            "back": "https://foo.bar/baz"
+        }
+    }
+}}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>{{#str}} manage_workflow, tool_userautodelete {{/str}}</h2>
+            <p>
+                {{#str}} manage_workflow_desc, tool_userautodelete {{/str}}
+            </p>
+            <p>
+                {{#str}} need_help_check_docs, tool_userautodelete {{/str}}
+            </p>
+            <a href="{{{urls.back}}}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i>&nbsp;
+                {{#str}} back_to_overview, tool_userautodelete {{/str}}
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-sm-12">
+            <div class="d-flex flex-row justify-content-center align-items-start">
+                <div
+                    class="card {{#isediting}} ms-5 {{/isediting}}"
+                    style="width: fit-content; min-width: 580px;"
+                >
+                    <div
+                        class="card-header text-white bg-primary"
+                        style="{{#isediting}} border-top-right-radius: 0; {{/isediting}}"
+                    >
+                        <b>{{title}}</b><br>
+                        <span>{{description}}</span>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <b>{{#str}} status {{/str}}:</b>
+                            {{#active}}
+                                <span class="badge badge-success">{{#str}} active {{/str}}</span>
+                            {{/active}}
+                            {{^active}}
+                                <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
+                            {{/active}}
+                        </li>
+                        <li class="list-group-item">
+                            <b>{{#str}} processes, tool_userautodelete {{/str}}:</b>
+                            <span>
+                                {{#str}}
+                                    workflow_stat_processes_in_steps,
+                                    tool_userautodelete,
+                                    {
+                                        "active": {{processes.active}},
+                                        "finished": {{processes.finished}},
+                                        "steps": {{stepcount}}
+                                    }
+                                {{/str}}
+                            </span>
+                        </li>
+
+                        <li class="list-group-item">
+                            <b>{{#str}} lastmodified {{/str}}:</b>
+                            <span>
+                                {{#userdate}} {{timemodified}}, {{#str}} strftimedatetime, core_langconfig {{/str}} {{/userdate}}
+                            </span>
+                            (<a href="{{{modifiedby.profileurl}}}">{{modifiedby.fullname}}</a>)
+                        </li>
+                    </ul>
+                    <div class="card-footer text-center">
+                        {{^isediting}}
+                            <a
+                                class="btn {{#active}} btn-danger {{/active}} {{^active}} btn-success {{^isvalid}} disabled {{/isvalid}} {{/active}} mx-1"
+                                style="font-style: normal; {{^active}}{{^isvalid}} opacity: 0.65 !important; {{/isvalid}}{{/active}}"
+                                role="button"
+                                href="{{{urls.activate}}}"
+                            >
+                                {{#active}}
+                                    <i class="fa-solid fa-stop"></i>&nbsp;
+                                    {{#str}} disable_workflow, tool_userautodelete {{/str}}
+                                {{/active}}
+                                {{^active}}
+                                    <i class="fa-solid fa-play"></i>&nbsp;
+                                    {{#str}} enable_workflow, tool_userautodelete {{/str}}
+                                {{/active}}
+                            </a>
+                        {{/isediting}}
+                        {{#isediting}}
+                            <a
+                                class="btn btn-warning mx-1"
+                                style="font-style: normal;"
+                                role="button"
+                                href="{{{urls.dryrun}}}"
+                            >
+                                <i class="fa-solid fa-flask"></i>&nbsp;
+                                {{#str}} dry_run, tool_userautodelete {{/str}}
+                            </a>
+                        {{/isediting}}
+                        <a
+                            class="btn btn-primary {{#active}} btn-outline-primary disabled {{/active}} mx-1"
+                            style="font-style: normal;"
+                            role="button"
+                            href="{{{urls.edit}}}"
+                        >
+                            <i class="fa-solid fa-pencil"></i>&nbsp;
+                            {{#isediting}}
+                                {{#str}} turneditingoff {{/str}}
+                            {{/isediting}}
+                            {{^isediting}}
+                                {{#str}} turneditingon {{/str}}
+                            {{/isediting}}
+                        </a>
+                        {{#active}}
+                            <div class="mt-1">
+                                <i>{{#str}} can_not_edit_active_workflow, tool_userautodelete {{/str}}</i>
+                            </div>
+                        {{/active}}
+                    </div>
+                </div>
+                {{#isediting}}
+                    <div style="margin-left: -1px; margin-top: 1px;">
+                        <div
+                            class="btn-group-vertical"
+                            role="group"
+                        >
+                            <a
+                                id="edit-workflow-modal-{{id}}"
+                                class="btn px-2 btn-outline-primary"
+                                style="border-top-left-radius: 0;"
+                                role="button"
+                                title="{{#str}} edit {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-title="{{#str}} edit {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="{{#str}} edit {{/str}}"
+                            >
+                                <i
+                                    class="icon fa-solid fa-pencil fa-fw mx-0"
+                                    title="{{#str}} edit {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} edit {{/str}}"
+                                ></i>
+                            </a>
+                            <a
+                                href="{{{urls.delete}}}"
+                                class="btn px-2 btn-outline-primary"
+                                style="border-bottom-left-radius: 0;"
+                                role="button"
+                                title="{{#str}} delete {{/str}}"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                data-title="{{#str}} delete {{/str}}"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="right"
+                                data-bs-title="{{#str}} delete {{/str}}"
+                            >
+                                <i
+                                    class="icon fa-solid fa-trash fa-fw mx-0"
+                                    title="{{#str}} delete {{/str}}"
+                                    role="img"
+                                    aria-label="{{#str}} delete {{/str}}"
+                                ></i>
+                            </a>
+                        </div>
+                    </div>
+                {{/isediting}}
+
+            </div>
+        </div>
+    </div>
+
+    {{#steps}}
+        {{^isfirst}}
+            <div class="row py-3 text-center">
+                <div class="col-sm-12">
+                    <i class="fa-solid fa-arrow-down-long fa-2x"></i>
+                </div>
+            </div>
+        {{/isfirst}}
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <div class="d-flex flex-row justify-content-center align-items-start">
+                    <div
+                        class="card {{#isediting}} ms-5 {{/isediting}} {{^isvalid}} border-warning {{/isvalid}}"
+                        style="width: fit-content; min-width: 420px; {{#isediting}} border-top-right-radius: 0; {{/isediting}}"
+                    >
+                        <div class="card-header d-flex flex-row align-items-center justify-content-between">
+                            <div class="border-end pe-2 me-2">
+                                <i class="fa-solid fa-hashtag"></i>&nbsp;<b>{{sort}}</b>
+                            </div>
+                            <div class="flex-grow-1 text-left">
+                                {{#title}}
+                                    <b>{{title}}</b>
+                                {{/title}}
+                                {{^title}}
+                                    <i class="text-muted">{{#str}} unnamed, tool_userautodelete {{/str}}</i>
+                                {{/title}}
+                            </div>
+                            <div class="ms-2 ps-2">
+                                {{#description}}
+                                    <i
+                                        class="icon fa-solid fa-circle-info fa-lg"
+                                        title="{{description}}"
+                                        data-toggle="tooltip"
+                                        data-title="{{description}}"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="{{description}}"
+                                    ></i>
+                                {{/description}}
+                                {{^isvalid}}
+                                    <i
+                                        class="fa-solid fa-triangle-exclamation fa-lg text-warning"
+                                        title="{{#str}} step_is_invalid, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-title="{{#str}} step_is_invalid, tool_userautodelete {{/str}}"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="{{#str}} step_is_invalid, tool_userautodelete {{/str}}"
+                                    ></i>
+                                {{/isvalid}}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <div class="mb-2">
+                                    <span class="border rounded-pill px-3 py-1 font-weight-bold">
+                                        <i class="fa-solid fa-filter"></i>&nbsp;
+                                        {{#str}} filters, tool_userautodelete {{/str}}
+                                    </span>
+                                </div>
+                                {{#filters}}
+                                    <a
+                                        class="btn btn-outline-primary px-3 py-2 m-1 js-subplugin-modal"
+                                        style="font-style: normal;"
+                                        role="button"
+                                        data-instanceid="{{id}}"
+                                        data-instancetype="filter"
+                                        {{#isediting}}
+                                            data-deleteurl="{{{urls.delete}}}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                            title="{{#str}} edit_filter, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                        {{^isediting}}
+                                            data-readonly="1"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} view_filter, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} view_filter, tool_userautodelete {{/str}}"
+                                            title="{{#str}} view_filter, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                    >
+                                        <div>
+                                            <div class="font-weight-bold">
+                                                {{#iconclass}}
+                                                    <i class="{{iconclass}} pe-1"></i>
+                                                {{/iconclass}}
+                                                {{title}}
+                                                {{^isvalid}}
+                                                    <i
+                                                        class="fa-solid fa-triangle-exclamation text-warning ms-1"
+                                                        title="{{invalidityreason}}"
+                                                        data-toggle="tooltip"
+                                                        data-title="{{invalidityreason}}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-title="{{invalidityreason}}"
+                                                    ></i>
+                                                {{/isvalid}}
+                                            </div>
+                                            {{#details}}
+                                                <div>
+                                                    {{#shortentext}} 32, {{details}} {{/shortentext}}
+                                                </div>
+                                            {{/details}}
+                                        </div>
+                                    </a>
+                                {{/filters}}
+                                {{#isediting}}
+                                    <button
+                                        id="add-filter-modal-{{id}}"
+                                        class="btn btn-outline-primary btn-sm m-1"
+                                        style="border-style: dashed;"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                        title="{{#str}} add_filter, tool_userautodelete {{/str}}"
+                                    >
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                {{/isediting}}
+                            </div>
+                            <hr>
+                            <div>
+                                <div class="mb-2">
+                                    <span class="border rounded-pill px-3 py-1 font-weight-bold">
+                                        <i class="fa-solid fa-gears"></i>&nbsp;
+                                        {{#str}} actions, tool_userautodelete {{/str}}
+                                    </span>
+                                </div>
+                                {{#actions}}
+                                    <a
+                                        class="btn btn-outline-danger px-3 py-2 m-1 js-subplugin-modal"
+                                        style="font-style: normal;"
+                                        role="button"
+                                        data-instanceid="{{id}}"
+                                        data-instancetype="action"
+                                        {{#isediting}}
+                                            data-deleteurl="{{{urls.delete}}}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                            title="{{#str}} edit_action, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                        {{^isediting}}
+                                            data-readonly="1"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="{{#str}} view_action, tool_userautodelete {{/str}}"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            data-title="{{#str}} view_action, tool_userautodelete {{/str}}"
+                                            title="{{#str}} view_action, tool_userautodelete {{/str}}"
+                                        {{/isediting}}
+                                    >
+                                        <div>
+                                            <div class="font-weight-bold">
+                                                {{#iconclass}}
+                                                    <i class="{{iconclass}} pe-1"></i>
+                                                {{/iconclass}}
+                                                {{title}}
+                                                {{^isvalid}}
+                                                    <i
+                                                        class="fa-solid fa-triangle-exclamation text-warning ms-1"
+                                                        title="{{invalidityreason}}"
+                                                        data-toggle="tooltip"
+                                                        data-title="{{invalidityreason}}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-title="{{invalidityreason}}"
+                                                    ></i>
+                                                {{/isvalid}}
+                                            </div>
+                                            {{#details}}
+                                                <div>
+                                                    {{#shortentext}} 32, {{details}} {{/shortentext}}
+                                                </div>
+                                            {{/details}}
+                                        </div>
+                                    </a>
+                                {{/actions}}
+                                {{#isediting}}
+                                    <button
+                                        id="add-action-modal-{{id}}"
+                                        class="btn btn-outline-danger btn-sm m-1"
+                                        style="border-style: dashed;"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        data-title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                        title="{{#str}} add_action, tool_userautodelete {{/str}}"
+                                    >
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                {{/isediting}}
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted d-flex align-items-center {{#isediting}}justify-content-center{{/isediting}} {{^isediting}}justify-content-between{{/isediting}}">
+                            <span>
+                                <i class="fa-solid fa-user"></i>&nbsp;
+                                {{#str}} active_processes, tool_userautodelete, {{processes.active}} {{/str}}
+                            </span>
+                            {{^isediting}}
+                                <button
+                                    class="btn btn-sm btn-outline-secondary"
+                                    data-action="view-step-processes"
+                                    data-stepid="{{id}}"
+                                    title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="{{#str}} view_user_processes, tool_userautodelete {{/str}}"
+                                >
+                                    <i class="fa-solid fa-users-gear"></i>
+                                </button>
+                            {{/isediting}}
+                        </div>
+                    </div>
+
+                    {{#isediting}}
+                        <div>
+                            <div
+                                class="btn-group-vertical"
+                                role="group"
+                                aria-label="{{#str}} order {{/str}}"
+                            >
+                                <a
+                                    href="{{{urls.moveup}}}"
+                                    class="btn px-2 {{^isfirst}}btn-outline-primary{{/isfirst}} {{#isfirst}}btn-outline-secondary disabled{{/isfirst}}"
+                                    style="border-top-left-radius: 0;"
+                                    role="button"
+                                    title="{{#str}} up {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    data-title="{{#str}} up {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} up {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa fa-arrow-up fa-fw mx-0"
+                                        title="{{#str}} up {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} up {{/str}}"
+                                    ></i>
+                                </a>
+                                <a
+                                    href="{{{urls.movedown}}}"
+                                    class="btn px-2 {{^islast}}btn-outline-primary{{/islast}} {{#islast}}btn-outline-secondary disabled{{/islast}}"
+                                    role="button"
+                                    title="{{#str}} down {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    data-title="{{#str}} down {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} down {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa fa-arrow-down fa-fw mx-0"
+                                        title="{{#str}} down {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} down {{/str}}"
+                                    ></i>
+                                </a>
+                                <a
+                                    id="edit-step-modal-{{id}}"
+                                    class="btn px-2 btn-outline-primary"
+                                    role="button"
+                                    title="{{#str}} edit {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    data-title="{{#str}} edit {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} edit {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa-solid fa-pencil fa-fw mx-0"
+                                        title="{{#str}} edit {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} edit {{/str}}"
+                                    ></i>
+                                </a>
+                                <a
+                                    href="{{{urls.delete}}}"
+                                    class="btn px-2 btn-outline-primary"
+                                    style="border-bottom-left-radius: 0;"
+                                    role="button"
+                                    title="{{#str}} delete {{/str}}"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    data-title="{{#str}} delete {{/str}}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    data-bs-title="{{#str}} delete {{/str}}"
+                                >
+                                    <i
+                                        class="icon fa-solid fa-trash fa-fw mx-0"
+                                        title="{{#str}} delete {{/str}}"
+                                        role="img"
+                                        aria-label="{{#str}} delete {{/str}}"
+                                    ></i>
+                                </a>
+                            </div>
+                        </div>
+                    {{/isediting}}
+                </div>
+            </div>
+        </div>
+    {{/steps}}
+    {{#isediting}}
+        {{#stepcount}}
+            <div class="row py-3 text-center">
+                <div class="col-sm-12">
+                    <i class="fa-solid fa-arrow-down-long fa-2x text-secondary"></i>
+                </div>
+            </div>
+        {{/stepcount}}
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <a
+                    class="btn btn-outline-secondary"
+                    style="border-style: dashed;"
+                    role="button"
+                    href="{{{urls.addstep}}}"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    data-bs-title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                    title="{{#str}} add_step, tool_userautodelete {{/str}}"
+                >
+                    <i class="fa-solid fa-plus"></i>&nbsp;
+                    {{#str}} add_step, tool_userautodelete {{/str}}
+                </a>
+            </div>
+        </div>
+    {{/isediting}}
+</div>
+
+{{#js}}
+    require(
+        [
+            'jquery',
+            'core/ajax',
+            'core/modal',
+            'core/modal_events',
+            'core/templates',
+            'core/str',
+            'core/notification',
+            'core_form/modalform'
+        ],
+        function(
+            $,
+            Ajax,
+            Modal,
+            ModalEvents,
+            Templates,
+            Str,
+            Notification,
+            ModalForm
+        ) {
+            // Create step process inspection modals.
+            $('[data-action="view-step-processes"]').click(async function(e) {
+                const stepid = parseInt(e.currentTarget.dataset.stepid);
+                const title = await Str.get_string('user_processes', 'tool_userautodelete');
+
+                try {
+                    const processes = await Ajax.call([{
+                        methodname: 'tool_userautodelete_get_step_user_processes',
+                        args: {stepid: stepid, activeonly: true},
+                    }])[0];
+
+                    const modal = await Modal.create({
+                        title: title,
+                        body: Templates.render('tool_userautodelete/modal/step_processes', {
+                            processes: processes,
+                            hasprocesses: processes.length > 0,
+                        }),
+                        isVerticallyCentered: true,
+                        large: true,
+                    });
+
+                    modal.show();
+                } catch (err) {
+                    Notification.exception(err);
+                }
+            });
+
+            // Create subplugin instance settings modals.
+            $('.js-subplugin-modal').on('click', async function() {
+                const instanceid = parseInt(this.dataset.instanceid);
+                const instancetype = this.dataset.instancetype;
+                const readonly = this.dataset.readonly === '1';
+                const deleteurl = this.dataset.deleteurl || null;
+                const titlestrkey = (readonly ? 'view' : 'edit') + '_' + instancetype;
+
+                const modal = new ModalForm({
+                    formClass: 'tool_userautodelete\\form\\subplugin_instance_settings_form',
+                    moduleName: readonly
+                        ? 'core/modal_cancel'
+                        : 'tool_userautodelete/modal_delete_save_cancel',
+                    args: Object.assign(
+                        {instanceid: instanceid, instancetype: instancetype},
+                        readonly ? {readonly: '1'} : {}
+                    ),
+                    modalConfig: {
+                        title: Str.get_string(titlestrkey, 'tool_userautodelete'),
+                        isVerticallyCentered: true,
+                        large: true,
+                    },
+                });
+
+                await modal.show();
+
+                if (!readonly) {
+                    modal.addEventListener(modal.events.FORM_SUBMITTED, () => {
+                        location.reload();
+                    });
+                    if (deleteurl) {
+                        modal.modal.getRoot().on(ModalEvents.delete, () => {
+                            window.location.href = deleteurl;
+                        });
+                    }
+                }
+            });
+        }
+    );
+
+    {{#isediting}}
+        require(
+            [
+                'jquery',
+                'core/modal',
+                'core/modal_save_cancel',
+                'core/modal_events',
+                'core/templates',
+                'core/str',
+            ],
+            function(
+                $,
+                Modal,
+                ModalSaveCancel,
+                ModalEvents,
+                Templates,
+                Str,
+            ) {
+                // Deserialize available filters and actions
+                var availableFilters = JSON.parse(atob('{{{availablefilters}}}'));
+                var availableActions = JSON.parse(atob('{{{availableactions}}}'));
+
+                // Setup modals
+                $('#edit-workflow-modal-{{id}}').click(async() => {
+                    var modal = await ModalSaveCancel.create({
+                        title: Str.get_string('edit_workflow', 'tool_userautodelete'),
+                        body: Templates.render('tool_userautodelete/modal/editworkflow', {
+                            id: {{id}},
+                            title: '{{title}}',
+                            description: '{{description}}',
+                            submiturl: '{{{urls.update}}}',
+                        }),
+                        isVerticallyCentered: true,
+                    });
+                    modal.getRoot().on(ModalEvents.save, (e) => {
+                        e.target.querySelector('form').submit();
+                    });
+                    modal.show();
+                });
+
+                {{#steps}}
+                    $('#edit-step-modal-{{id}}').click(async() => {
+                        var modal = await ModalSaveCancel.create({
+                            title: Str.get_string('edit_step', 'tool_userautodelete'),
+                            body: Templates.render('tool_userautodelete/modal/editstep', {
+                                id: {{id}},
+                                title: '{{title}}',
+                                description: '{{description}}',
+                                submiturl: '{{{urls.edit}}}',
+                            }),
+                            isVerticallyCentered: true,
+                        });
+                        modal.getRoot().on(ModalEvents.save, (e) => {
+                            e.target.querySelector('form').submit();
+                        });
+                        modal.show();
+                    });
+
+                    $('#add-filter-modal-{{id}}').click(async() => {
+                        var modal = await Modal.create({
+                            title: Str.get_string('add_filter', 'tool_userautodelete'),
+                            body: Templates.render('tool_userautodelete/modal/addfilter', {
+                                stepid: {{id}},
+                                filters: availableFilters,
+                            }),
+                            isVerticallyCentered: true,
+                        });
+                        modal.show();
+                    });
+
+                    $('#add-action-modal-{{id}}').click(async() => {
+                        var modal = await Modal.create({
+                            title: Str.get_string('add_action', 'tool_userautodelete'),
+                            body: Templates.render('tool_userautodelete/modal/addaction', {
+                                stepid: {{id}},
+                                actions: availableActions,
+                            }),
+                            isVerticallyCentered: true,
+                        });
+                        modal.show();
+                    });
+                {{/steps}}
+            }
+        );
+    {{/isediting}}
+{{/js}}

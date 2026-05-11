@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for the log_table class
+ * Tests for the action log table renderer
  *
  * @package   tool_userautodelete
  * @copyright 2026 Niels Gandraß <niels@gandrass.de>
@@ -24,74 +24,190 @@
 
 namespace tool_userautodelete\output;
 
+use tool_userautodelete\logger;
 
 /**
- * Tests for the log_table class
- *
- * This suite basically just runs through all methods of the log_table class
- * to check if they throw warnings or errors on specific PHP / Moodle versions.
+ * Tests for the action log table renderer.
  */
 final class log_table_test extends \advanced_testcase {
     /**
-     * Tests that the log table displays a message when no log data is present.
+     * Creates a log table instance and renders its HTML output.
      *
-     * @covers \tool_userautodelete\output\log_table
-     *
-     * @return void
+     * @param int|null $workflowid Optional workflow ID filter
+     * @param int|null $stepid Optional step ID filter
+     * @return string Rendered HTML output
      * @throws \coding_exception
+     * @throws \moodle_exception
      */
-    public function test_render_empty_table(): void {
-        // Generate table without any log data being present.
-        $table = new log_table('testlogtable');
-        $table->define_baseurl(new \moodle_url('/'));
-        ob_start();
-        $table->out(10, true);
-        $html = ob_get_contents();
-        ob_end_clean();
+    protected function render_table(?int $workflowid = null, ?int $stepid = null): string {
+        $table = new log_table('log-table-test', $workflowid, $stepid);
+        $table->define_baseurl(new \moodle_url('/admin/tool/userautodelete/log.php'));
 
-        // Check that the table is rendered correctly.
-        $this->assertStringContainsString(get_string('nothingtodisplay'), $html);
+        ob_start();
+        $table->out(20, false);
+        return (string) ob_get_clean();
     }
 
     /**
-     * Tests that the log table displays data when log entries are present.
+     * Tests that a log entry with a known action, workflow, and step is rendered correctly.
      *
      * @covers \tool_userautodelete\output\log_table
      *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
-    public function test_render_table_with_data(): void {
-        global $DB;
+    public function test_rendered_table_html_contains_log_entry_data(): void {
         $this->resetAfterTest();
 
-        // Create some dummy log data.
-        $DB->insert_records('tool_userautodelete_log', [
-            [
-                'runtime' => time(),
-                'recovered' => 5,
-                'warned' => 3,
-                'deleted' => 2,
-            ],
-            [
-                'runtime' => time() - 3600,
-                'recovered' => 1234567890,
-                'warned' => 1,
-                'deleted' => 0,
-            ],
-        ]);
+        /** @var \tool_userautodelete_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_userautodelete');
+        $workflow = $generator->create_simple_suspend_workflow('Test Workflow', 'Description', true);
+        $step = $workflow->steps[0];
 
-        // Generate table with some log data.
-        $table = new log_table('testlogtable');
-        $table->define_baseurl(new \moodle_url('/'));
-        ob_start();
-        $table->out(10, true);
-        $html = ob_get_contents();
-        ob_end_clean();
+        $timestamp = 1700000000;
+        logger::action('unsuspend', 5, $workflow->id, $step->id, $timestamp);
 
-        // Check that the table is rendered correctly.
-        $this->assertStringNotContainsString(get_string('nothingtodisplay'), $html);
-        $this->assertStringContainsString(1234567890, $html);
+        $html = $this->render_table();
+
+        $this->assertStringContainsString(
+            'Test Workflow',
+            $html,
+            'Workflow title is missing from table output'
+        );
+        $this->assertStringContainsString(
+            '#step-' . $step->id,
+            $html,
+            'Step anchor is missing from table output'
+        );
+        $this->assertStringContainsString(
+            get_string('pluginname', 'userdeleteaction_unsuspend'),
+            $html,
+            'Action plugin name is missing from table output'
+        );
+    }
+
+    /**
+     * Tests that log entries are filtered correctly when a workflowid is provided.
+     *
+     * @covers \tool_userautodelete\output\log_table::__construct
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_workflow_filter_limits_displayed_entries(): void {
+        $this->resetAfterTest();
+
+        /** @var \tool_userautodelete_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_userautodelete');
+        $workflow1 = $generator->create_simple_suspend_workflow('Workflow One', '', true);
+        $workflow2 = $generator->create_simple_suspend_workflow('Workflow Two', '', true);
+
+        logger::action('unsuspend', 1, $workflow1->id, null, 1700000000);
+        logger::action('suspend', 2, $workflow2->id, null, 1700000001);
+
+        $html = $this->render_table($workflow1->id);
+
+        $this->assertStringContainsString('Workflow One', $html, 'Filtered workflow entry is missing');
+        $this->assertStringNotContainsString('Workflow Two', $html, 'Non-matching workflow entry should not be visible');
+    }
+
+    /**
+     * Tests that log entries are filtered correctly when a stepid is provided.
+     *
+     * @covers \tool_userautodelete\output\log_table::__construct
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_step_filter_limits_displayed_entries(): void {
+        $this->resetAfterTest();
+
+        /** @var \tool_userautodelete_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_userautodelete');
+        $workflow = $generator->create_multistep_suspend_workflow('Multi Workflow', '', true);
+        $step1 = $workflow->steps[0];
+        $step2 = $workflow->steps[1];
+
+        logger::action('unsuspend', 1, $workflow->id, $step1->id, 1700000000);
+        logger::action('suspend', 1, $workflow->id, $step2->id, 1700000001);
+
+        $html = $this->render_table(null, $step1->id);
+
+        $this->assertStringContainsString('#step-' . $step1->id, $html, 'Filtered step anchor is missing');
+        $this->assertStringNotContainsString('#step-' . $step2->id, $html, 'Non-matching step entry should not be visible');
+    }
+
+    /**
+     * Tests that the workflow column shows "None" when workflowid is null.
+     *
+     * @covers \tool_userautodelete\output\log_table::col_workflow
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_col_workflow_shows_none_when_no_workflow(): void {
+        $this->resetAfterTest();
+
+        logger::action('unsuspend', 3, null, null, 1700000000);
+
+        $html = $this->render_table();
+
+        $this->assertStringContainsString(get_string('none'), $html, '"None" label is missing for entries without a workflow');
+    }
+
+    /**
+     * Tests that the step column shows "None" when stepid is null.
+     *
+     * @covers \tool_userautodelete\output\log_table::col_step
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_col_step_shows_none_when_no_step(): void {
+        $this->resetAfterTest();
+
+        /** @var \tool_userautodelete_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_userautodelete');
+        $workflow = $generator->create_simple_suspend_workflow('Workflow', '', true);
+
+        logger::action('unsuspend', 1, $workflow->id, null, 1700000000);
+
+        $html = $this->render_table($workflow->id);
+
+        $this->assertStringContainsString(get_string('none'), $html, '"None" label is missing for entries without a step');
+    }
+
+    /**
+     * Tests that an unknown action name is rendered as a plain label with a fallback icon.
+     *
+     * @covers \tool_userautodelete\output\log_table::col_action
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_col_action_renders_unknown_action_as_plain_label(): void {
+        $this->resetAfterTest();
+
+        logger::action('nonexistentaction', 0, null, null, 1700000000);
+
+        $html = $this->render_table();
+
+        $this->assertStringContainsString(
+            'nonexistentaction',
+            $html,
+            'Unknown action name should appear as plain text in the table'
+        );
     }
 }

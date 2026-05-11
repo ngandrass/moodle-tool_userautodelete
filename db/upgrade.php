@@ -23,6 +23,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_userautodelete\local\type\process_state;
+use tool_userautodelete\step;
+use tool_userautodelete\userdeleteaction;
+use tool_userautodelete\userdeletefilter;
+use tool_userautodelete\workflow;
+
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
@@ -67,6 +73,329 @@ function xmldb_tool_userautodelete_upgrade($oldversion) {
 
         // Userautodelete savepoint reached.
         upgrade_plugin_savepoint(true, 2025052600, 'tool', 'userautodelete');
+    }
+
+    // The big v1 to v2 migration.
+    if ($oldversion < 2026050500) {
+        // Define table tool_userautodelete_workflow to be created.
+        $table = new xmldb_table('tool_userautodelete_workflow');
+
+        // Adding fields to table tool_userautodelete_workflow.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('sort', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('createdby', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_userautodelete_workflow.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('createdby', XMLDB_KEY_FOREIGN, ['createdby'], 'user', ['id']);
+        $table->add_key('modifiedby', XMLDB_KEY_FOREIGN, ['modifiedby'], 'user', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_workflow.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_step to be created.
+        $table = new xmldb_table('tool_userautodelete_step');
+
+        // Adding fields to table tool_userautodelete_step.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('workflowid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sort', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table tool_userautodelete_step.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('workflowid', XMLDB_KEY_FOREIGN, ['workflowid'], 'tool_userautodelete_workflow', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_step.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_filter to be created.
+        $table = new xmldb_table('tool_userautodelete_filter');
+
+        // Adding fields to table tool_userautodelete_filter.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('stepid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('pluginname', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_userautodelete_filter.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_filter.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_action to be created.
+        $table = new xmldb_table('tool_userautodelete_action');
+
+        // Adding fields to table tool_userautodelete_action.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('stepid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('pluginname', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_userautodelete_action.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_action.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_instance_settings to be created.
+        $table = new xmldb_table('tool_userautodelete_instance_settings');
+
+        // Adding fields to table tool_userautodelete_instance_settings.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('plugintype', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('datakey', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('datavalue', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_userautodelete_instance_settings.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_instance_settings.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_process to be created.
+        $table = new xmldb_table('tool_userautodelete_process');
+
+        // Adding fields to table tool_userautodelete_process.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('stepid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('state', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_userautodelete_process.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_process.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table tool_userautodelete_actionlog to be created.
+        $table = new xmldb_table('tool_userautodelete_actionlog');
+
+        // Adding fields to table tool_userautodelete_actionlog.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('workflowid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('stepid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('affectedusers', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('action', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('details', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table tool_userautodelete_actionlog.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('workflowid', XMLDB_KEY_FOREIGN, ['workflowid'], 'tool_userautodelete_workflow', ['id']);
+        $table->add_key('stepid', XMLDB_KEY_FOREIGN, ['stepid'], 'tool_userautodelete_step', ['id']);
+
+        // Conditionally launch create table for tool_userautodelete_actionlog.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // VVV | Take existing old v1 settings and migrate them to a new corresponding workflow | VVV.
+        $oldconfig = get_config('tool_userautodelete');
+        $workflow = workflow::create(
+            title: get_string('defaultworkflow_title', 'tool_userautodelete'),
+            description: get_string('defaultworkflow_desc', 'tool_userautodelete'),
+        );
+
+        // Migrate warning mail step if enabled.
+        $warningstep = null;
+        if ($oldconfig->warning_email_enable) {
+            $warningstep = step::create(
+                $workflow,
+                get_string('defaultworkflow_warning_step_title', 'tool_userautodelete'),
+                get_string('defaultworkflow_warning_step_desc', 'tool_userautodelete')
+            );
+            userdeleteaction::create_instance($warningstep, 'mail', [
+                'subject' => $oldconfig->warning_email_subject,
+                'message' => $oldconfig->warning_email_body,
+            ]);
+        }
+
+        // Migrate deletion step.
+        $deletionstep = step::create(
+            $workflow,
+            get_string('defaultworkflow_delete_step_title', 'tool_userautodelete'),
+            get_string('defaultworkflow_delete_step_desc', 'tool_userautodelete')
+        );
+        if ($oldconfig->delete_email_enable) {
+            userdeleteaction::create_instance($deletionstep, 'mail', [
+                'subject' => $oldconfig->delete_email_subject,
+                'message' => $oldconfig->delete_email_body,
+            ]);
+        }
+
+        userdeleteaction::create_instance($deletionstep, 'delete');
+
+        if ($oldconfig->anonymize_user_data) {
+            userdeleteaction::create_instance($deletionstep, 'anonymize');
+        }
+
+        // Create filter rules for steps.
+        if ($warningstep) {
+            // Warning and delete step present.
+            $ingeststep = $warningstep;
+
+            userdeletefilter::create_instance($warningstep, 'lastaccess', [
+                'thresholdsec' => ($oldconfig->delete_threshold_days - $oldconfig->warning_threshold_days) * DAYSECS,
+            ]);
+
+            userdeletefilter::create_instance($deletionstep, 'delay', [
+                'delaysec' => $oldconfig->warning_threshold_days * DAYSECS,
+            ]);
+            userdeletefilter::create_instance($deletionstep, 'lastaccess', [
+                'thresholdsec' => $oldconfig->delete_threshold_days * DAYSECS,
+            ]);
+        } else {
+            $ingeststep = $deletionstep;
+
+            // Only delete step present.
+            userdeletefilter::create_instance($deletionstep, 'lastaccess', [
+                'thresholdsec' => $oldconfig->delete_threshold_days * DAYSECS,
+            ]);
+        }
+
+        if ($oldconfig->suspended_only) {
+            userdeletefilter::create_instance($ingeststep, 'suspension', [
+                'suspended' => true,
+            ]);
+        }
+
+        if ($oldconfig->ignore_auths) {
+            userdeletefilter::create_instance($ingeststep, 'auth', [
+                'auths' => array_map(
+                    fn ($auth) => trim($auth),
+                    explode(',', $oldconfig->ignore_auths)
+                ),
+                'inverted' => true,
+            ]);
+        }
+
+        if ($oldconfig->ignore_roles) {
+            userdeletefilter::create_instance($ingeststep, 'role', [
+                'roleids' => array_map(
+                    fn ($role) => (int) trim($role),
+                    explode(',', $oldconfig->ignore_roles)
+                ),
+                'inverted' => true,
+            ]);
+        }
+
+        // Enable migrated workflow if plugin was active.
+        if ($oldconfig->enable) {
+            $workflow->activate();
+        }
+
+        // Migrate user warning state if applicable.
+        if ($oldconfig->enable && $oldconfig->warning_email_enable) {
+            $oldwarnedusers = $DB->get_recordset('tool_userautodelete_mail');
+            $processes = [];
+
+            foreach ($oldwarnedusers as $entry) {
+                // Build process chunks.
+                $processes[] = (object) [
+                    'userid' => $entry->userid,
+                    'stepid' => $warningstep->id,
+                    'state' => process_state::ACTIVE->value,
+                    'timecreated' => $entry->timesent,
+                    'timemodified' => $entry->timesent,
+                ];
+
+                // Persist.
+                if (count($processes) >= 128) {
+                    $DB->insert_records('tool_userautodelete_process', $processes);
+                    $processes = [];
+                }
+            }
+
+            if (count($processes) > 0) {
+                $DB->insert_records('tool_userautodelete_process', $processes);
+            }
+
+            $oldwarnedusers->close();
+        }
+
+        // Define table tool_userautodelete_mail to be dropped.
+        $table = new xmldb_table('tool_userautodelete_mail');
+
+        // Conditionally launch drop table for tool_userautodelete_mail.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Migrate logs.
+        $oldlogs = $DB->get_recordset('tool_userautodelete_log');
+        $chunk = [];
+        foreach ($oldlogs as $record) {
+            // Warned users.
+            if ($record->warned) {
+                $chunk[] = (object) [
+                    'timestamp' => $record->runtime,
+                    'workflowid' => $workflow->id,
+                    'stepid' => $warningstep->id ?? null,
+                    'affectedusers' => $record->warned,
+                    'action' => 'mail',
+                ];
+            }
+
+            // Deleted users.
+            if ($record->deleted) {
+                $chunk[] = (object) [
+                    'timestamp' => $record->runtime,
+                    'workflowid' => $workflow->id,
+                    'stepid' => $deletionstep->id ?? null,
+                    'affectedusers' => $record->deleted,
+                    'action' => 'delete',
+                ];
+            }
+
+            // Persist.
+            if (count($chunk) >= 128) {
+                $DB->insert_records('tool_userautodelete_actionlog', $chunk);
+                $chunk = [];
+            }
+        }
+
+        if (count($chunk) > 0) {
+            $DB->insert_records('tool_userautodelete_actionlog', $chunk);
+        }
+
+        $oldlogs->close();
+
+        // Define table tool_userautodelete_log to be dropped.
+        $table = new xmldb_table('tool_userautodelete_log');
+
+        // Conditionally launch drop table for tool_userautodelete_log.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Userautodelete savepoint reached.
+        upgrade_plugin_savepoint(true, 2026050500, 'tool', 'userautodelete');
     }
 
     return true;

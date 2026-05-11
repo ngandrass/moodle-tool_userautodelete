@@ -1,0 +1,33 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Plugin strings are defined here.
+ *
+ * @package     userdeletefilter_delay
+ * @category    string
+ * @copyright   2026 Niels Gandraß <niels@gandrass.de>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// @codingStandardsIgnoreFile
+
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
+$string['pluginname'] = 'Verzögerung';
+$string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['setting_delaysec'] = 'Verzögerung';
+$string['setting_delaysec_help'] = 'Die minimale Zeit, die ein Nutzerprozess im vorherigen Schritt verbringen muss, bevor er zu dem Schritt übergehen darf zu dem dieser Filter gehört.';

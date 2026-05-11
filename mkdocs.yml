@@ -1,0 +1,159 @@
+site_name: Automatic User Lifecycle Management
+site_url: "https://moodleuserlifecycle.gandrass.de/"
+use_directory_urls: !ENV [OFFLINE, true]
+repo_url: https://github.com/ngandrass/moodle-tool_userautodelete
+repo_name: ngandrass/moodle-tool_userautodelete
+edit_uri: edit/master/docs/
+
+copyright: "Copyright &copy; 2026 Niels Gandraß<br>License: GNU General Public License v3.0"
+
+extra:
+  social:
+    - icon: material/bug
+      link: https://github.com/ngandrass/moodle-tool_userautodelete/issues
+      name: "Issue Tracker"
+    - icon: fontawesome/brands/github
+      link: https://github.com/ngandrass/moodle-tool_userautodelete
+      name: "GitHub Repository"
+    - icon: simple/moodle
+      link: https://moodle.org/plugins/tool_userautodelete
+      name: "Moodle Plugin Directory: tool_userautodelete"
+  todo: "{== **TODO** ==}"
+  n1: "<span class='img-numeration-pill' style='padding-right: 1px;'>1</span>"
+  n2: "<span class='img-numeration-pill'>2</span>"
+  n3: "<span class='img-numeration-pill'>3</span>"
+  n4: "<span class='img-numeration-pill'>4</span>"
+  n5: "<span class='img-numeration-pill'>5</span>"
+  n6: "<span class='img-numeration-pill'>6</span>"
+  n7: "<span class='img-numeration-pill'>7</span>"
+  n8: "<span class='img-numeration-pill'>8</span>"
+  n9: "<span class='img-numeration-pill'>9</span>"
+  dcbl: "{{"
+  dcbr: "}}"
+
+#   version:
+#     provider: mike
+
+plugins:
+  # - mike
+  - drawio
+  - glightbox:
+      shadow: true
+  - macros:
+      module_name: mkdocs-macros
+      on_error_fail: true
+  - offline:
+      enabled: !ENV [OFFLINE, false]
+  - panzoom:
+      key: "shift"
+  - privacy
+  - search
+  - social
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - tables
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      extend_pygments_lang:
+        - name: php
+          lang: php
+          options:
+            startinline: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue grey
+      accent: blue grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue grey
+      accent: blue grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - css/extra.css
+
+nav:
+  - "Introduction": index.md
+  - "Screenshots": screenshots.md
+  - "Changelog": changelog.md
+
+  - "Getting Started":
+    - getstarted/index.md
+    - "Installation": getstarted/install.md
+    - "Creating a Workflow": getstarted/workflow.md
+    - "Verifying and Enabling": getstarted/verification.md
+
+  - "Workflows":
+    - workflow/index.md
+    - "Management": workflow/crud.md
+    - "Steps": workflow/steps.md
+    - "User Processes": workflow/processes.md
+    - "Execution Model": workflow/execution.md
+
+  - "Filters":
+    - filters/index.md
+    - "Authentication Method": filters/auth.md
+    - "Cohort Membership": filters/cohort.md
+    - "Date": filters/date.md
+    - "Last Access": filters/lastaccess.md
+    - "Role Assignment": filters/role.md
+    - "Suspension State": filters/suspension.md
+    - "Time Delay": filters/delay.md
+
+  - "Actions":
+    - actions/index.md
+    - "Anonymize User": actions/anonymize.md
+    - "Delete User": actions/delete.md
+    - "Send Mail": actions/mail.md
+    - "Suspend User": actions/suspend.md
+    - "Unsuspend User": actions/unsuspend.md
+
+  - "Verification and Logging":
+      - audit/index.md
+      - "Dry-run": audit/dryrun.md
+      - "Inspecting User Processes": audit/userprocesses.md
+      - "Action Log": audit/actionlog.md
+
+  - "Developer Documentation":
+    - dev/index.md
+    - "Action Subplugins": dev/createaction.md
+    - "Filter Subplugins": dev/createfilter.md
+    - "Instance Settings": dev/instancesettings.md
+    - "Testing": dev/testing.md
+    - "Build the Docs": dev/builddocs.md
+    - "Contributing": dev/contributing.md
