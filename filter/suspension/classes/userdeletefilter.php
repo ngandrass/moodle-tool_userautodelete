@@ -68,10 +68,10 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * @throws \coding_exception
      */
     public function get_instance_details(): string {
-        if ($this->get_instance_setting('inverted')) {
-            return get_string('active');
-        } else {
+        if ($this->get_instance_setting('suspended')) {
             return get_string('suspended');
+        } else {
+            return get_string('active');
         }
     }
 

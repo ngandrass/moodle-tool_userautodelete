@@ -169,11 +169,6 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
      * Tests that get_instance_details() returns the expected human-readable
      * summary string for each branch of the suspension filter.
      *
-     * When the 'inverted' flag is falsy the filter targets suspended users, so
-     * the returned string should equal get_string('suspended').
-     * When the 'inverted' flag is truthy the filter targets active users, so
-     * the returned string should equal get_string('active').
-     *
      * @covers \userdeletefilter_suspension\userdeletefilter
      *
      * @return void
@@ -185,20 +180,20 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
 
         $step = $this->create_step();
 
-        // Default: inverted is not set → details must describe "suspended" users.
+        // Match suspended users.
         $filter = $this->create_filter($step, ['suspended' => true]);
         $this->assertSame(
             get_string('suspended'),
             $filter->get_instance_details(),
-            'get_instance_details() must return the "suspended" string when inverted is falsy'
+            'get_instance_details() must return the "suspended" string when suspended users are targeted'
         );
 
-        // Set the inverted flag → details must describe "active" users.
-        $filter->set_instance_setting('inverted', true);
+        // Match unsuspended users.
+        $filter->set_instance_setting('suspended', false);
         $this->assertSame(
             get_string('active'),
             $filter->get_instance_details(),
-            'get_instance_details() must return the "active" string when inverted is truthy'
+            'get_instance_details() must return the "active" string when active users are targeted'
         );
     }
 }
