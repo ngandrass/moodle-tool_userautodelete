@@ -217,7 +217,7 @@ trait subplugin_instance_settings {
 
             $settings[] = (object) [
                 'plugintype' => static::get_plugin_type()->value,
-                'instanceid' => static::get_instance_id(),
+                'instanceid' => $this->get_instance_id(),
                 'datakey' => $key,
                 'datavalue' => $value,
             ];
