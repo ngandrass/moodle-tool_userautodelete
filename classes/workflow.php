@@ -615,6 +615,11 @@ class workflow {
             $inactiveprocidbatches[] = array_keys($procs);
         }
 
+        // Exit early if we have nothing to do.
+        if (empty($inactiveprocidbatches)) {
+            return;
+        }
+
         process::abort_multiple(array_merge(...$inactiveprocidbatches));
     }
 
