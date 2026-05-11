@@ -23,7 +23,7 @@ stages:
   stage: pluginci
   image: moodlehq/moodle-php-apache:${PHP_VERSION}
   services:
-    - name: postgres:15
+    - name: postgres:16
       alias: postgres
       variables:
         POSTGRES_USER: "postgres"
@@ -38,12 +38,13 @@ stages:
     - cd "$CI_PROJECT_DIR"
 
     # Install software dependencies
-    - apt-get update && apt-get install -y npm postgresql-client
+    - apt-get update
+    - apt-get install -y npm postgresql-client openjdk-17-jre-headless
 
     # Install Composer and Node Version Manager (nvm)
     - curl -sS https://getcomposer.org/installer | php
     - mv composer.phar /usr/local/bin/composer
-    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
     - export NVM_DIR="$HOME/.nvm"
     - "$NVM_DIR/nvm.sh"
 
@@ -94,13 +95,6 @@ stages:
 # Moodle Plugin CI - Jobs #
 ###########################
 
-moodle-plugin-ci-M401:
-    <<: *stage-pluginci-common
-    variables:
-      MOODLE_BRANCH: "MOODLE_401_STABLE"
-      PHP_VERSION: "7.4"
-      DB: "pgsql"
-
 moodle-plugin-ci-M405:
   <<: *stage-pluginci-common
   variables:
@@ -118,6 +112,13 @@ moodle-plugin-ci-M500:
 moodle-plugin-ci-M501:
   <<: *stage-pluginci-common
   variables:
-    MOODLE_BRANCH: "MOODLE_500_STABLE"
+    MOODLE_BRANCH: "MOODLE_501_STABLE"
     PHP_VERSION: "8.2"
+    DB: "pgsql"
+
+moodle-plugin-ci-M502:
+  <<: *stage-pluginci-common
+  variables:
+    MOODLE_BRANCH: "MOODLE_502_STABLE"
+    PHP_VERSION: "8.3"
     DB: "pgsql"
