@@ -22,7 +22,7 @@ jobs:
         with:
           lfs: true
       - name: Install dependencies
-        run: sudo apt install -y libjpeg-dev zlib1g-dev libtiff-dev libfreetype-dev libwebp-dev libopenjp2-7-dev libxml2-dev libxslt1-dev
+        run: sudo apt-get update && sudo apt install -y libjpeg-dev zlib1g-dev libtiff-dev libfreetype-dev libwebp-dev libopenjp2-7-dev libxml2-dev libxslt1-dev
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
