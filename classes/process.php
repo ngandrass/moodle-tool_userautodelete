@@ -330,7 +330,7 @@ class process {
             'JOIN {user} u ON proc.userid = u.id ' .
             'WHERE proc.stepid = :stepid ' .
             $processstatesql .
-            'ORDER BY timemodified DESC',
+            'ORDER BY proc.timemodified DESC',
             ['stepid' => $step->id, 'stateactive' => process_state::ACTIVE->value],
             IGNORE_MISSING
         ));
