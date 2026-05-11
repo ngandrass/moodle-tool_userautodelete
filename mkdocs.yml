@@ -77,6 +77,7 @@ markdown_extensions:
 
 theme:
   name: material
+  favicon: assets/favicon.webp
   icon:
     repo: fontawesome/brands/github
   features:
