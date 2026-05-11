@@ -93,8 +93,8 @@ final class manager_test extends \advanced_testcase {
 
         // Create two active workflows with identical first-step filter criteria.
         $generator = $this->get_userautodelete_generator();
-        $workflow1 = $generator->create_simple_suspend_workflow('Workflow 1', 'Description', true);
-        $workflow2 = $generator->create_simple_suspend_workflow('Workflow 2', 'Description', true);
+        $workflow1 = $generator->create_multistep_suspend_workflow('Workflow 1', 'Description', true);
+        $workflow2 = $generator->create_multistep_suspend_workflow('Workflow 2', 'Description', true);
 
         // Sanity-check that the generator produced the expected sort order.
         $this->assertLessThan(

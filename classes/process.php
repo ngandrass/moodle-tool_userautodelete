@@ -377,12 +377,16 @@ class process {
                 throw new \moodle_exception('user_already_in_workflow', 'tool_userautodelete');
             }
 
+            // We can determine the target state early because the transaction will result in
+            // a roleback if any action execution fails.
+            $targetstate = $initialstep->is_final() ? process_state::FINISHED : process_state::ACTIVE;
+
             // Create process.
             $now = time();
             $processid = $DB->insert_record(db_table::USER_PROCESS->value, [
                 'userid' => $userid,
                 'stepid' => $initialstep->id,
-                'state' => process_state::ACTIVE->value,
+                'state' => $targetstate->value,
                 'timecreated' => $now,
                 'timemodified' => $now,
             ]);
@@ -391,9 +395,7 @@ class process {
                 userid: $userid,
                 workflowid: $workflow->id,
                 stepid: $initialstep->id,
-                // We can determine the target state early because the transaction will result in
-                // a roleback if any action execution fails.
-                state: $initialstep->is_final() ? process_state::FINISHED : process_state::ACTIVE,
+                state: $targetstate,
                 timecreated: $now,
                 timemodified: $now
             );
