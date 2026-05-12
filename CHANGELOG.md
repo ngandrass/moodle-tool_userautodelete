@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
+
+
 ## Version 2.0.0 (2026051100)
 
 This is a full rewrite of the existing plugin, transforming it from a flexible but limited automatic user deletion tool into a fully-fledged user lifecycle workflow engine. All original features are still available but now embedded into a powerful framework that allows you to define your own multistep workflows and can easily be extended.
