@@ -76,7 +76,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
         }
 
         $availableroles = role_fix_names(get_all_roles(), null, ROLENAME_ORIGINAL, true);
-        $roles = array_map(fn ($roleid) => $availableroles[$roleid], $roleids);
+        $roles = array_map(fn ($roleid) => $availableroles[$roleid] ?? "#{$roleid}", $roleids);
 
         $inverted = $this->get_instance_setting('inverted') ? '! ' : '';
 

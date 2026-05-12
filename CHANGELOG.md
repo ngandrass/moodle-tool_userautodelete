@@ -9,6 +9,7 @@
 - Update users `timemodified` value during anonymization action
 - Add session checks to workflow management endpoints to prevent admin CSRF
 - Align `get_step_user_processes` web service function default values with descriptors
+- Fall back to display role ID instead of role name if a role was deleted after being selected for a role filter
 - Fix typos in workflow execution task log messages
 - Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
 
