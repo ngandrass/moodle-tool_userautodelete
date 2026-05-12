@@ -113,7 +113,7 @@ class logger {
      * This method works independent of the current logging suppression state.
      *
      * @param string $name Name of the action that happened
-     * @param int $affectedusers Number of users affacted by the action
+     * @param int $affectedusers Number of users affected by the action
      * @param int|null $workflowid Optional ID of a corresponding workflow
      * @param int|null $stepid Optional ID of a corresponding workflow step
      * @param int|null $timestamp Optional custom timestamp of the log event. Defaults to current unix time if null
