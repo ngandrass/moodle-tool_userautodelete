@@ -89,6 +89,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
             'middlename' => '',
             'alternatename' => '',
             'moodlenetprofile' => '',
+            'timemodified' => time(),
         ]);
     }
 
