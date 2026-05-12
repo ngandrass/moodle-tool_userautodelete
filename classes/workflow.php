@@ -518,7 +518,7 @@ class workflow {
             $processes = process::get_active_processes_for_step($step, transitionableonly: true);
             $targetstep = $step->next();
             if (empty($processes) || !$targetstep) {
-                logger::info("  -> No transitionalbe processes found");
+                logger::info("  -> No transitionable processes found");
                 continue;
             }
 
