@@ -65,10 +65,19 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     public function execute(process $process): bool {
         global $DB;
 
-        return $DB->update_record('user', [
-            'id' => $process->userid,
-            'suspended' => 0,
-        ]);
+        $user = $DB->get_record('user', ['id' => $process->userid], '*', MUST_EXIST);
+
+        try {
+            if ($user->suspended != 0) {
+                $user->suspended = 0;
+                $user->timemodified = time();
+                user_update_user($user, false);
+            }
+        } catch (\moodle_exception) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
