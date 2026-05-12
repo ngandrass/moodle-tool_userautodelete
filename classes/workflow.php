@@ -349,14 +349,18 @@ class workflow {
     public function set_title(string $title): void {
         global $DB, $USER;
 
+        $now = time();
+
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
             'title' => $title,
             'modifiedby' => $USER->id,
-            'timemodified' => time(),
+            'timemodified' => $now,
         ]);
 
         $this->title = $title;
+        $this->modifiedby = $USER->id;
+        $this->timemodified = $now;
     }
 
     /**
@@ -369,6 +373,8 @@ class workflow {
     public function set_description(?string $description): void {
         global $DB, $USER;
 
+        $now = time();
+
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
             'description' => $description,
@@ -377,6 +383,8 @@ class workflow {
         ]);
 
         $this->description = $description;
+        $this->modifiedby = $USER->id;
+        $this->timemodified = $now;
     }
 
     /**
@@ -410,7 +418,10 @@ class workflow {
      * Deactivates this workflow.
      *
      * @return void
+     * @throws \coding_exception
      * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \moodle_exception
      */
     public function deactivate(): void {
         global $DB, $USER;
@@ -472,23 +483,26 @@ class workflow {
         );
 
         // Swap sort indexes.
+        $now = time();
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $otherworkflowrecord->id,
             'sort' => $this->sort,
             'modifiedby' => $USER->id,
-            'timemodified' => time(),
+            'timemodified' => $now,
         ]);
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
             'sort' => $otherworkflowrecord->sort,
             'modifiedby' => $USER->id,
-            'timemodified' => time(),
+            'timemodified' => $now,
         ]);
 
         $transaction->allow_commit();
 
         // Update this object.
         $this->sort = $otherworkflowrecord->sort;
+        $this->modifiedby = $USER->id;
+        $this->timemodified = $now;
     }
 
     /**
