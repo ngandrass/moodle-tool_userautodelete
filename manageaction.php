@@ -57,6 +57,8 @@ adminpage_util::admin_hidden_externalpage_setup(
 // Handle actions.
 $output = '';
 if ($action == 'add') {
+    require_sesskey();
+
     $step = step::get_by_id($stepid);
     if ($step->workflow->active) {
         throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
@@ -67,6 +69,8 @@ if ($action == 'add') {
         pluginname: required_param('pluginname', PARAM_TEXT),
     );
 } else if ($action == 'delete') {
+    require_sesskey();
+
     $filter = userdeleteaction::get_instance_by_id($actionid);
     if ($filter->get_step()->workflow->active) {
         throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');

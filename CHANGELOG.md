@@ -4,6 +4,7 @@
 
 - Fix user filter query parameter prefixing if using multiple identically named parameters inside a single workflow step
 - Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
+- Add session checks to workflow management endpoints to prevent admin CSRF
 
 
 ## Version 2.0.0 (2026051100)

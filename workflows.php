@@ -91,11 +91,21 @@ foreach ($workflows as $workflow) {
             ),
             'moveup' => new moodle_url(
                 '/admin/tool/userautodelete/manageworkflow.php',
-                ['id' => $workflow->id, 'action' => 'moveup', 'returnurl' => $PAGE->url->out_as_local_url(true)],
+                [
+                    'id' => $workflow->id,
+                    'action' => 'moveup',
+                    'sesskey' => sesskey(),
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ],
             ),
             'movedown' => new moodle_url(
                 '/admin/tool/userautodelete/manageworkflow.php',
-                ['id' => $workflow->id, 'action' => 'movedown', 'returnurl' => $PAGE->url->out_as_local_url(true)],
+                [
+                    'id' => $workflow->id,
+                    'action' => 'movedown',
+                    'sesskey' => sesskey(),
+                    'returnurl' => $PAGE->url->out_as_local_url(true),
+                ],
             ),
         ],
     ];
@@ -106,11 +116,11 @@ $tplctx = [
     'urls' => [
         'add' => new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
-            ['action' => 'add']
+            ['action' => 'add', 'sesskey' => sesskey()]
         ),
         'adddefault' => new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
-            ['action' => 'add', 'loaddefault' => 1]
+            ['action' => 'add', 'loaddefault' => 1, 'sesskey' => sesskey()]
         ),
     ],
 ];

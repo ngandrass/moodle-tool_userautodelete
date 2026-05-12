@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_userautodelete\form\step_delete_form;
 use tool_userautodelete\local\type\sort_move_direction;
 use tool_userautodelete\local\util\adminpage_util;
 use tool_userautodelete\step;
@@ -59,14 +60,17 @@ if ($step->workflow->active) {
 // Handle actions.
 $output = '';
 if ($action == 'edit') {
+    require_sesskey();
     $step->set_title(required_param('title', PARAM_TEXT));
     $step->set_description(required_param('description', PARAM_TEXT));
 } else if ($action == 'moveup') {
+    require_sesskey();
     $step->move(sort_move_direction::UP);
 } else if ($action == 'movedown') {
+    require_sesskey();
     $step->move(sort_move_direction::DOWN);
 } else if ($action == 'delete') {
-    $form = new \tool_userautodelete\form\step_delete_form();
+    $form = new step_delete_form();
     if ($form->is_submitted()) {
         if (!$form->is_cancelled()) {
             $step->delete();

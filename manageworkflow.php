@@ -92,19 +92,25 @@ if ($action == 'enable') {
         $output = $deleteform->render();
     }
 } else if ($action == 'moveup') {
+    require_sesskey();
     $workflow->move(sort_move_direction::UP);
 } else if ($action == 'movedown') {
+    require_sesskey();
     $workflow->move(sort_move_direction::DOWN);
 } else if ($action == 'edit') {
+    require_sesskey();
     $workflow->set_title(required_param('title', PARAM_TEXT));
     $workflow->set_description(required_param('description', PARAM_TEXT));
 } else if ($action == 'addstep') {
+    require_sesskey();
     if ($workflow->active) {
         throw new moodle_exception('cannot_edit_active_workflow', 'tool_userautodelete');
     }
 
     step::create($workflow);
 } else if ($action == 'add') {
+    require_sesskey();
+
     // Create new workflow with an empty step.
     $workflow = workflow::create(
         get_string('newworkflow_title', 'tool_userautodelete'),

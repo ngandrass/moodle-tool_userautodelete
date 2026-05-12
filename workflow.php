@@ -113,6 +113,7 @@ foreach ($workflow->steps as $step) {
                 'delete' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
                     'id' => $filter->id,
                     'action' => 'delete',
+                    'sesskey' => sesskey(),
                     'returnurl' => $PAGE->url->out_as_local_url(true),
                 ]))->out(false),
             ],
@@ -133,6 +134,7 @@ foreach ($workflow->steps as $step) {
                 'delete' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
                     'id' => $action->id,
                     'action' => 'delete',
+                    'sesskey' => sesskey(),
                     'returnurl' => $PAGE->url->out_as_local_url(true),
                 ]))->out(false),
             ],
@@ -141,16 +143,19 @@ foreach ($workflow->steps as $step) {
             'moveup' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'moveup',
+                'sesskey' => sesskey(),
                 'returnurl' => $PAGE->url->out_as_local_url(true),
             ]))->out(false),
             'movedown' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'movedown',
+                'sesskey' => sesskey(),
                 'returnurl' => $PAGE->url->out_as_local_url(true),
             ]))->out(false),
             'edit' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
                 'id' => $step->id,
                 'action' => 'edit',
+                'sesskey' => sesskey(),
                 'returnurl' => $PAGE->url->out_as_local_url(true),
             ]))->out(false),
             'delete' => (new moodle_url('/admin/tool/userautodelete/managestep.php', [
@@ -179,6 +184,7 @@ if ($isediting) {
                 'addurlbase' => (new moodle_url('/admin/tool/userautodelete/managefilter.php', [
                     'action' => 'add',
                     'pluginname' => $filter,
+                    'sesskey' => sesskey(),
                     'returnurl' => $PAGE->url->out_as_local_url(true),
                 ]))->out(false),
             ];
@@ -201,6 +207,7 @@ if ($isediting) {
                 'addurlbase' => (new moodle_url('/admin/tool/userautodelete/manageaction.php', [
                     'action' => 'add',
                     'pluginname' => $action,
+                    'sesskey' => sesskey(),
                     'returnurl' => $PAGE->url->out_as_local_url(true),
                 ]))->out(false),
             ];
@@ -247,7 +254,12 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
         ))->out(false),
         'addstep' => (new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
-            ['id' => $workflow->id, 'action' => 'addstep', 'returnurl' => $PAGE->url->out_as_local_url(true)]
+            [
+                'id' => $workflow->id,
+                'action' => 'addstep',
+                'sesskey' => sesskey(),
+                'returnurl' => $PAGE->url->out_as_local_url(true),
+            ]
         ))->out(false),
         'delete' => new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
@@ -266,7 +278,12 @@ echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
         ))->out(false),
         'update' => new moodle_url(
             '/admin/tool/userautodelete/manageworkflow.php',
-            ['id' => $workflow->id, 'action' => 'edit', 'returnurl' => $PAGE->url->out_as_local_url(true)]
+            [
+                'id' => $workflow->id,
+                'action' => 'edit',
+                'sesskey' => sesskey(),
+                'returnurl' => $PAGE->url->out_as_local_url(true),
+            ]
         ),
         'back' => (new moodle_url('/admin/tool/userautodelete/workflows.php'))->out(false),
         'dryrun' => (new moodle_url(
