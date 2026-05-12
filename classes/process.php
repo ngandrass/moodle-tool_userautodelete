@@ -320,7 +320,13 @@ class process {
         global $DB;
 
         // Build state filter condition.
-        $processstatesql = $activeonly ? 'AND proc.state = :stateactive ' : ' ';
+        $params = ['stepid' => $step->id];
+        $processstatesql = ' ';
+
+        if ($activeonly) {
+            $processstatesql = ' AND proc.state = :stateactive ';
+            $params['stateactive'] = process_state::ACTIVE->value;
+        }
 
         // Retrieve user process metadata.
         return array_values($DB->get_records_sql(
@@ -331,7 +337,7 @@ class process {
             'WHERE proc.stepid = :stepid ' .
             $processstatesql .
             'ORDER BY proc.timemodified DESC',
-            ['stepid' => $step->id, 'stateactive' => process_state::ACTIVE->value],
+            $params,
             IGNORE_MISSING
         ));
     }
