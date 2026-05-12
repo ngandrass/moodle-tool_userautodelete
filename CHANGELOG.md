@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 2.1.0 (2026051200)
 
 - Prevent dry-run if a workflow currently contains errors
 - Fix user filter query parameter prefixing if using multiple identically named parameters inside a single workflow step
