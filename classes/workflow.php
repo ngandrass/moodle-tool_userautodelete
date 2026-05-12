@@ -502,7 +502,7 @@ class workflow {
     public function process(): void {
         // Only process active workflows.
         if (!$this->active) {
-            logger::error("-> Inactive workflow should now be processed!");
+            logger::error("-> Inactive workflow should not be processed!");
             return;
         }
 

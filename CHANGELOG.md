@@ -5,10 +5,11 @@
 - Prevent dry-run if a workflow currently contains errors
 - Fix user filter query parameter prefixing if using multiple identically named parameters inside a single workflow step
 - Fix user filter query parameter prefixing for future plugins that might re-use the same parameter name in a single query
-- Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
 - Terminate existing users sessions during suspension action
 - Update users `timemodified` value during anonymization action
 - Add session checks to workflow management endpoints to prevent admin CSRF
+- Fix typo in workflow execution task log message
+- Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
 
 
 ## Version 2.0.0 (2026051100)
