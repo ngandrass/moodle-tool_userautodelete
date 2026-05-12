@@ -95,7 +95,7 @@ class get_step_user_processes extends external_api {
      * @throws \moodle_exception
      * @throws \required_capability_exception
      */
-    public static function execute(int $stepidraw, bool $activeonlyraw = false): array {
+    public static function execute(int $stepidraw, bool $activeonlyraw = true): array {
         // Validate and clean parameters.
         [
             'stepid' => $stepid,

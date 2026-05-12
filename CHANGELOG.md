@@ -8,7 +8,8 @@
 - Terminate existing users sessions during suspension action
 - Update users `timemodified` value during anonymization action
 - Add session checks to workflow management endpoints to prevent admin CSRF
-- Fix typo in workflow execution task log message
+- Align `get_step_user_processes` web service function default values with descriptors
+- Fix typos in workflow execution task log messages
 - Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
 
 
