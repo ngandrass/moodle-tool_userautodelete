@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Fix user filter query parameter prefixing if using multiple identically named parameters inside a single workflow step
 - Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures
 
 

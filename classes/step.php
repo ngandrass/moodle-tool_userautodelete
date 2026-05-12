@@ -549,7 +549,7 @@ class step {
             // Prefix query parameters with filter ID to prevent name collisions.
             $clausesql = $clause->sql;
             foreach ($clause->params as $paramname => $paramvalue) {
-                $newparamname = "f{$this->id}{$paramname}";
+                $newparamname = "f{$filter->id}{$paramname}";
                 $clausesql = preg_replace(
                     '/(.*:)' . $paramname . '(\W.*)/',
                     '$1' . $newparamname . '$2',

@@ -259,11 +259,11 @@ final class step_test extends \advanced_testcase {
         // Prepare a step with a filter instance.
         $workflow = workflow::create('Test Workflow', 'Description');
         $step = step::create(workflow: $workflow, title: 'Filter step', description: '');
-        userdeletefilter::create_instance($step, 'suspension', ['suspended' => true]);
+        $filter = userdeletefilter::create_instance($step, 'suspension', ['suspended' => true]);
 
         // Generate user filter clause and validate.
         $clause = $step->generate_user_filter_clause();
-        $paramkey = 'f' . $step->id . 'suspended';
+        $paramkey = 'f' . $filter->id . 'suspended';
 
         $this->assertStringContainsString('u.suspended = :' . $paramkey, $clause->sql, 'Suspension filter SQL is missing');
         $this->assertArrayHasKey($paramkey, $clause->params, 'Renamed filter parameter is missing');
@@ -281,6 +281,42 @@ final class step_test extends \advanced_testcase {
             (string) $CFG->siteguest,
             $clause->sql,
             'Guest user ID is missing from ignored users clause'
+        );
+    }
+
+    /**
+     * Tests that filter SQL parameters are uniquely renamed across filters.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_generate_user_filter_clause_parameter_name_collisions(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Filter step', description: '');
+
+        // Both filters emit the same source parameter name (:suspended).
+        $filter1 = userdeletefilter::create_instance($step, 'suspension', ['suspended' => true]);
+        $filter2 = userdeletefilter::create_instance($step, 'suspension', ['suspended' => false]);
+
+        $clause = $step->generate_user_filter_clause();
+
+        preg_match_all('/:f\d+suspended/', $clause->sql, $matches);
+        $uniqueparamnames = array_values(array_unique($matches[0] ?? []));
+
+        $this->assertCount(2, $uniqueparamnames, 'Each filter parameter should get a unique generated name');
+        $this->assertCount(2, $clause->params, 'Generated params should contain one entry per filter parameter');
+        $this->assertSame(
+            [
+                "f{$filter1->id}suspended" => intval(true),
+                "f{$filter2->id}suspended" => intval(false),
+            ],
+            $clause->params,
+            'Generated params should preserve values from both filters'
         );
     }
 
