@@ -26,6 +26,8 @@ namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\sort_move_direction;
+use tool_userautodelete\local\type\subplugin_type;
+use tool_userautodelete\local\type\userfilter_clause;
 
 
 /**
@@ -318,6 +320,64 @@ final class step_test extends \advanced_testcase {
             $clause->params,
             'Generated params should preserve values from both filters'
         );
+    }
+
+    /**
+     * Tests that every occurrence of the same user filter clause parameter is
+     * renamed properly.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_generate_user_filter_clause_replaces_all_parameter_occurrences(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Filter step', description: '');
+
+        // Create a test filter with a user filter clause that contains the same parameter multiple times.
+        $filter = new class ($step->id) extends userdeletefilter {
+            // phpcs:disable moodle.Commenting.MissingDocblock.MissingTestcaseMethodDescription
+            public function __construct(int $stepid) {
+                parent::__construct(12345, $stepid);
+            }
+
+            public static function get_plugin_name(): string {
+                return 'step_test_filter_double';
+            }
+
+            public function user_records_filter_clause(): userfilter_clause {
+                return new userfilter_clause(
+                    '(u.username = :needle OR u.idnumber = :needle)',
+                    ['needle' => 'abc']
+                );
+            }
+
+            public static function instance_setting_descriptors(): array {
+                return [];
+            }
+            // phpcs:enable
+        };
+
+        // Inject test double directly to avoid database-backed filter loading.
+        $reflectionproperty = new \ReflectionProperty($step, 'filters');
+        $reflectionproperty->setValue($step, [$filter]);
+
+        // Generate user filter clause and assert that all parameter occurences were properly prefixed.
+        $clause = $step->generate_user_filter_clause();
+        $renamedparam = 'f' . $filter->id . 'needle';
+
+        $this->assertSame(
+            2,
+            substr_count($clause->sql, ':' . $renamedparam),
+            'All occurrences of the parameter placeholder should be renamed'
+        );
+        $this->assertStringNotContainsString(':needle', $clause->sql, 'Original placeholder should not remain in SQL');
+        $this->assertSame(['f12345needle' => 'abc'], $clause->params, 'Renamed parameter map is incorrect');
     }
 
     /**

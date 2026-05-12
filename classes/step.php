@@ -551,8 +551,8 @@ class step {
             foreach ($clause->params as $paramname => $paramvalue) {
                 $newparamname = "f{$filter->id}{$paramname}";
                 $clausesql = preg_replace(
-                    '/(.*:)' . $paramname . '(\W.*)/',
-                    '$1' . $newparamname . '$2',
+                    '/(.*:)' . preg_quote($paramname, '/') . '(\W.*)/U', // Note the 'U' for making .* ungreedy!
+                    '$1' . preg_quote($newparamname, '/') . '$2',
                     $clausesql . ' '  // Append space to ensure regex detects parameters at string end.
                 );
 
