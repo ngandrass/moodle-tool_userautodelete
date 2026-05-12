@@ -43,6 +43,7 @@ $string['back_to_overview'] = 'Back to overview';
 $string['back_to_settings'] = 'Back to settings';
 $string['back_to_workflow'] = 'Back to workflow';
 $string['can_not_activate_invalid_workflow'] = 'This workflow contains invalid steps and can therefore not be enabled right now. Please fix the issues and try again.';
+$string['can_not_dryrun_invalid_workflow'] = 'This workflow contains invalid steps. Therefore, we can not perform a dry run right now. Please fix the issue and try again.';
 $string['can_not_edit_active_workflow'] = 'Active workflows must be disabled before they can be edited.';
 $string['cant_modify_instance_settings_of_active_workflow'] = 'Can not modify instance settings of an active workflow.';
 $string['cant_modify_readonly_instance_settings'] = 'Can not modify instance settings in read-only mode.';

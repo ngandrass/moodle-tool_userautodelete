@@ -49,6 +49,11 @@ adminpage_util::admin_hidden_externalpage_setup(
 
 // Get requested workflow and prepare table.
 $workflow = workflow::get_by_id($workflowid);
+
+if (!$workflow->is_valid()) {
+    throw new \moodle_exception('can_not_dryrun_invalid_workflow', 'tool_userautodelete');
+}
+
 $ingressfilters = $workflow->steps[0]->filters;
 
 $dryruntable = new dryrun_users_table("dryrun-{$workflowid}", $workflow);

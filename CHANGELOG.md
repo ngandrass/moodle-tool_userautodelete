@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Prevent dry-run if a workflow currently contains errors
 - Fix user filter query parameter prefixing if using multiple identically named parameters inside a single workflow step
 - Fix user filter query parameter prefixing for future plugins that might re-use the same parameter name in a single query
 - Exclude custom docs CSS file from Moodle CI stylelint to prevent prechecks from unrelated failures

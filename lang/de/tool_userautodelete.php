@@ -43,6 +43,7 @@ $string['back_to_overview'] = 'Zurück zur Übersicht';
 $string['back_to_settings'] = 'Zurück zu den Einstellungen';
 $string['back_to_workflow'] = 'Zurück zum Workflow';
 $string['can_not_activate_invalid_workflow'] = 'Dieser Workflow enthält ungültige Schritte und kann daher derzeit nicht aktiviert werden. Bitte beheben Sie die Probleme und versuchen Sie es erneut.';
+$string['can_not_dryrun_invalid_workflow'] = 'Dieser Workflow enthält ungültige Schritte. Daher kann aktuell kein Probelauf durchgeführt werden. Bitte beheben Sie die Probleme und versuchen Sie es erneut.';
 $string['can_not_edit_active_workflow'] = 'Aktive Workflows müssen deaktiviert werden, bevor sie bearbeitet werden können.';
 $string['cant_modify_instance_settings_of_active_workflow'] = 'Einstellungen eines aktiven Workflows können nicht bearbeitet werden.';
 $string['cant_modify_readonly_instance_settings'] = 'Einstellungen können im Lesemodus nicht bearbeitet werden.';
