@@ -398,7 +398,7 @@ class workflow {
             'id' => $this->id,
             'active' => 1,
             'modifiedby' => $USER->id,
-            'timemodified' => time(),
+            'timemodified' => $now,
         ]);
 
         $this->active = true;
@@ -430,7 +430,7 @@ class workflow {
             'id' => $this->id,
             'active' => 0,
             'modifiedby' => $USER->id,
-            'timemodified' => time(),
+            'timemodified' => $now,
         ]);
         $transaction->allow_commit();
 
