@@ -70,7 +70,7 @@ class manager {
             count($workflows) . ' total workflows.');
 
         foreach ($workflowstoprocess as $workflow) {
-            logger::info("Start processing workfow: {$workflow->title} (ID: {$workflow->id})");
+            logger::info("Start processing workflow: {$workflow->title} (ID: {$workflow->id})");
             $workflow->process();
             logger::info("Finished processing workflow.");
         }
