@@ -64,6 +64,8 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     public function execute(process $process): bool {
         global $DB;
 
+        // We purposfully do not call user_update_user() here to circumvent any checks that might
+        // prevent storing the anonymized values inside the user record.
         return $DB->update_record('user', [
             'id' => $process->userid,
             'username' => "DELETED-USER-{$process->userid}",
