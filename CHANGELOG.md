@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Include users that historically have been part of a workflow on the dry-run page
 - Force password to `AUTH_PASSWORD_CACHED` during anonymization to prevent potentially unwanted side effects in auth plugins
 
 

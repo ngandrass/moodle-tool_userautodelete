@@ -27,6 +27,7 @@ namespace tool_userautodelete\output;
 use core\exception\moodle_exception;
 use moodle_url;
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\workflow;
 
 // @codingStandardsIgnoreLine
@@ -73,9 +74,14 @@ class dryrun_users_table extends \table_sql {
         $userfilterclause = $workflow->steps[0]->generate_user_filter_clause();
         $this->set_sql(
             fields: 'u.*',
-            from: '{user} u LEFT JOIN {' . db_table::USER_PROCESS->value . '} p ON p.userid = u.id',
-            where: 'u.deleted = 0 AND p.id IS NULL AND ' . $userfilterclause->sql,
-            params: $userfilterclause->params
+            from: '{user} u',
+            where: 'u.deleted = 0
+                AND NOT EXISTS (
+                    SELECT 1 FROM {' . db_table::USER_PROCESS->value . '} p
+                    WHERE p.userid = u.id AND p.state = :activestate
+                )
+                AND ' . $userfilterclause->sql,
+            params: array_merge(['activestate' => process_state::ACTIVE->value], $userfilterclause->params)
         );
 
         $this->sortable(true, 'lastaccess', SORT_DESC);
