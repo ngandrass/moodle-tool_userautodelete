@@ -69,7 +69,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
         return $DB->update_record('user', [
             'id' => $process->userid,
             'username' => "DELETED-USER-{$process->userid}",
-            'password' => '',
+            'password' => AUTH_PASSWORD_NOT_CACHED,
             'idnumber' => '',
             'firstname' => 'DELETED',
             'lastname' => 'DELETED',

@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Force password to `AUTH_PASSWORD_CACHED` during anonymization to prevent potentially unwanted side effects in auth plugins
+
+
 ## Version 2.1.0 (2026051200)
 
 - Prevent dry-run if a workflow currently contains errors
