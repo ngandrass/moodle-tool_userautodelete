@@ -379,7 +379,7 @@ class workflow {
             'id' => $this->id,
             'description' => $description,
             'modifiedby' => $USER->id,
-            'timemodified' => time(),
+            'timemodified' => $now,
         ]);
 
         $this->description = $description;
