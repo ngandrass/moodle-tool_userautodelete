@@ -46,7 +46,9 @@ plugins:
       enabled: !ENV [OFFLINE, false]
   - panzoom:
       key: "shift"
-  - privacy
+  - privacy:
+      assets_exclude:
+        - img.shields.io/*
   - search
   - social
 
