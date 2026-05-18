@@ -183,6 +183,22 @@ abstract class userdeleteaction_testcase extends \advanced_testcase {
     }
 
     /**
+     * Tests that get_help_url() returns a \moodle_url instance instead of null.
+     *
+     * @return void
+     * @throws \moodle_exception
+     */
+    public function test_get_help_url_returns_moodle_url(): void {
+        /** @var userdeleteaction $cls */
+        $cls = plugin_util::get_subplugin_class('userdeleteaction', $this->get_plugin_name());
+        $this->assertInstanceOf(
+            \moodle_url::class,
+            $cls::get_help_url(),
+            'get_help_url() must return a \moodle_url instance'
+        );
+    }
+
+    /**
      * Tests that instance_setting_descriptors() returns an array whose entries
      * are all instance_setting_descriptor objects.
      *
