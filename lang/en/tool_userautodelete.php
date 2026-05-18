@@ -107,6 +107,7 @@ $string['next_check_never'] = 'Never (plugin disabled)';
 $string['next_check_would'] = 'Would check';
 $string['no_workflows_exist_yet_create_one'] = 'Currently no workflows exist yet. You can create a new workflow using the buttons below.';
 $string['no_workflows_exist_yet_details'] = 'For beginners, it is suggested to create a new default workflow instead of an empty one. The default workflow targets users that have been inactive for a long time and sends them a warning email. If users do not log back in within a grace period, their accounts are deleted and anonymized (PII removal). If you wan\'t to define every step, filter, and action yourself, you can create an empty workflow instead.';
+$string['open_online_help'] = 'Open online help';
 $string['plugin_disabled_skipping_execution'] = 'Plugin is disabled globally, skipping execution.';
 $string['pluginname'] = 'User Lifecycle Management';
 $string['privacy:metadata:tool_userautodelete_process'] = 'Information about users that are part of a user lifecycle workflow.';

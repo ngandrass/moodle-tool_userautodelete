@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Add help button to instance settings form that allows quick access to the online documentation for the respective actions and filters 
 - Include users that historically have been part of a workflow on the dry-run page
 - Force password to `AUTH_PASSWORD_CACHED` during anonymization to prevent potentially unwanted side effects in auth plugins
 - Improve German translation of auth filter settings

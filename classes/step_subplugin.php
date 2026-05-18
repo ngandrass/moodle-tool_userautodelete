@@ -25,9 +25,7 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\trait\subplugin_instance_settings;
-use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\subplugin_type;
-use tool_userautodelete\local\util\plugin_util;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -122,6 +120,18 @@ abstract class step_subplugin {
      */
     public static function get_icon_class(): string {
         return 'fa-solid fa-question';
+    }
+
+    /**
+     * Returns an URL to additional documentation for this sub-plugin, if
+     * available. When this URL is set, an additional button to open the linked
+     * documentation will be shown in the sub-plugin instance settings form.
+     *
+     * @return \moodle_url|null URL to the sub-plugin specific documentation, or
+     * null if no additional documentation is available
+     */
+    public static function get_help_url(): ?\moodle_url {
+        return null;
     }
 
     /**

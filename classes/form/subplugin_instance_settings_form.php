@@ -178,6 +178,22 @@ class subplugin_instance_settings_form extends dynamic_form {
                 $mform->disabledIf($element, 'readonly', 'eq', 1);
             }
         }
+
+        // Add global help link to online docs if available.
+        $docsurl = $instance::get_help_url();
+        if ($docsurl) {
+            $docsbutton = '<a href="' . $docsurl->out() . '" target="_blank" class="btn btn-info">' .
+                '<i class="fa fa-search me-2"></i>' .
+                get_string('open_online_help', 'tool_userautodelete') .
+                '</a>';
+            if (!empty($settingdescriptors)) {
+                // We got other form elements: add with similar indentation.
+                $mform->addElement('static', 'docsurl', '', $docsbutton);
+            } else {
+                // No form elements present: add centered.
+                $mform->addElement('html', '<div class="text-center mt-2">' . $docsbutton . '</div>');
+            }
+        }
     }
 
     /**
