@@ -57,6 +57,18 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
     }
 
     /**
+     * Returns an URL to additional documentation for this sub-plugin, if
+     * available. When this URL is set, an additional button to open the linked
+     * documentation will be shown in the sub-plugin instance settings form.
+     *
+     * @return \moodle_url|null URL to the sub-plugin specific documentation, or
+     * null if no additional documentation is available
+     */
+    public static function get_help_url(): ?\moodle_url {
+        return new \moodle_url("https://moodleuserlifecycle.gandrass.de/actions/mail/");
+    }
+
+    /**
      * Returns a descriptive string of this action instance's settings to be shown in the UI
      *
      * This should be a human-readable string that describes the actual settings
