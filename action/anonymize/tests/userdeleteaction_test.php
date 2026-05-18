@@ -97,7 +97,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
             $anonymized->username,
             'Username must be set to DELETED-USER-{id}'
         );
-        $this->assertSame('', $anonymized->password, 'Password hash must be cleared');
+        $this->assertSame(AUTH_PASSWORD_NOT_CACHED, $anonymized->password, 'Password hash must be cleared');
         $this->assertSame('', $anonymized->idnumber, 'ID number must be cleared');
         $this->assertSame('DELETED', $anonymized->firstname, 'First name must be anonymized to DELETED');
         $this->assertSame('DELETED', $anonymized->lastname, 'Last name must be anonymized to DELETED');
