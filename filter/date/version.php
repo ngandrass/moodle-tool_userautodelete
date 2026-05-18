@@ -26,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $plugin->component = 'userdeletefilter_date';
-$plugin->release = '1.0.0';
-$plugin->version = 2026050500;
+$plugin->release = '1.0.1';
+$plugin->version = 2026051800;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 502]; // X meta-supported-moodle{4.5 - 5.2} meta-supported-php{8.1 - 8.4}.
 $plugin->maturity = MATURITY_STABLE;
