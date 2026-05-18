@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 2.2.0 (2026051800)
 
 - Add help button to instance settings form that allows quick access to the online documentation for the respective actions and filters 
 - Include users that historically have been part of a workflow on the dry-run page
