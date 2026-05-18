@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Auth method';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
-$string['setting_auths'] = 'Authentication methods';
+$string['setting_auths'] = 'Auth methods';
 $string['setting_auths_help'] = 'Select one or more authentication methods that should be targeted by this filter.';
 $string['setting_inverted'] = 'Inverted match';
 $string['setting_inverted_help'] = 'If set to yes, all users with authentication methods that are <b>different from the above</b> selected will be affected. If set to no, only users with one of the above selected authentication methods will be affected.';

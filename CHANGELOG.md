@@ -4,6 +4,7 @@
 
 - Include users that historically have been part of a workflow on the dry-run page
 - Force password to `AUTH_PASSWORD_CACHED` during anonymization to prevent potentially unwanted side effects in auth plugins
+- Improve German translation of auth filter settings
 
 
 ## Version 2.1.0 (2026051200)
