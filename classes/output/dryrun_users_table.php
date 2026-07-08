@@ -107,7 +107,7 @@ class dryrun_users_table extends \table_sql {
      * @return string HTML code to be displayed
      */
     public function col_lastaccess($values) {
-        return userdate($values->lastaccess);
+        return userdate($values->lastaccess > 0 ? $values->lastaccess : $values->timecreated);
     }
 
     /**
