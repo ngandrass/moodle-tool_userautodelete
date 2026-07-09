@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Display account creation date on dry-run page if a user never logged in (thanks to @35grain !)
+
+
 ## Version 2.2.0 (2026051800)
 
 - Add help button to instance settings form that allows quick access to the online documentation for the respective actions and filters 
