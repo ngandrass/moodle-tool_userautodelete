@@ -4,6 +4,7 @@
 
 - Display account creation date on dry-run page if a user never logged in (thanks to @35grain !)
 - Add support for AJAX-backed autocomplete elements in instance settings form
+- Cohort filter: Dynamically fetch available cohorts to prevent long loading times on Moodle instances with thousands of cohorts
 
 
 ## Version 2.2.0 (2026051800)

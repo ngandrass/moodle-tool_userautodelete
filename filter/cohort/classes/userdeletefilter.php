@@ -135,10 +135,11 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_TEXT,
                 required: true,
                 default: [],
-                choices: self::get_available_cohorts(),
+                choices: null,
                 serialize: true,
-                readonly: false,
-                mformtype: 'autocomplete-multi'
+                mformtype: 'autocomplete-multi',
+                ajax: 'userdeletefilter_cohort/filter_cohort_selector',
+                choicesresolver: static fn(array $ids): array => self::get_cohorts_by_ids($ids),
             ),
             new instance_setting_descriptor(
                 key: 'inverted',
