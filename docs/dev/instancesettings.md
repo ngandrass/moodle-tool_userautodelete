@@ -160,3 +160,32 @@ Please refer to the [Moodle Forms API Documentation](https://moodledev.io/docs/a
 to determine the usable types.
 
 ![Instance settings form for a mail action](../assets/screenshots/userdeleteaction_mail_example.png){.img-thumbnail}
+
+
+## AJAX-backed autocomplete elements
+
+For `autocomplete` and `autocomplete-multi` elements whose option list is too large to embed statically, you can
+delegate the search to an AJAX endpoint. Set `ajax` to the AMD module name of your search handler and provide a
+`choicesresolver` closure — both must always be supplied together. Leave `choices` as `null`.
+
+The form will call `choicesresolver(array $selectedValues): array<int|string, string>` at render time to resolve the
+labels of already-selected values without loading the full option list, and also uses it when the form is displayed in
+read-only mode.
+
+```php
+new instance_setting_descriptor(
+    key: 'cohortids',
+    title: new lang_string('setting_cohortids', 'userdeletefilter_cohort'),
+    type: PARAM_TEXT,
+    required: true,
+    default: [],
+    choices: null, // No static list here.
+    serialize: true,
+    mformtype: 'autocomplete-multi',
+    ajax: 'userdeletefilter_cohort/filter_cohort_selector',
+    choicesresolver: static fn(array $ids): array => self::get_cohorts_by_ids($ids),
+);
+```
+
+See [Moodle Forms API Documentation: Autocomplete](https://docs.moodle.org/dev/lib/formslib.php_Form_Definition#autocomplete)
+for more information.
