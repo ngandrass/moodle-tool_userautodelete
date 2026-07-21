@@ -80,9 +80,11 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
             return '';
         }
 
-        $availablecohorts = self::get_available_cohorts();
+        $cohorts = self::get_cohorts_by_ids($cohortids);
+
+        // Handle deleted cohorts.
         $cohortnames = array_map(
-            fn(int $cohortid): string => $availablecohorts[$cohortid] ?? '#' . $cohortid,
+            fn(int $cohortid): string => $cohorts[$cohortid] ?? '#' . $cohortid,
             $cohortids
         );
 
@@ -133,10 +135,11 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 type: PARAM_TEXT,
                 required: true,
                 default: [],
-                choices: self::get_available_cohorts(),
+                choices: null,
                 serialize: true,
-                readonly: false,
-                mformtype: 'autocomplete-multi'
+                mformtype: 'autocomplete-multi',
+                ajax: 'userdeletefilter_cohort/filter_cohort_selector',
+                choicesresolver: static fn(array $ids): array => self::get_cohorts_by_ids($ids),
             ),
             new instance_setting_descriptor(
                 key: 'inverted',
@@ -151,30 +154,101 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     }
 
     /**
-     * Generates a list of all available cohorts, indexed by their identifier.
+     * Returns the labels for a specific set of cohorts, indexed by cohort ID.
      *
-     * @return array<int, string> List of available cohorts
+     * Only loads the requested IDs, making this suitable for resolving labels
+     * of already-selected values without scanning the full cohort table.
+     *
+     * @param int[] $ids Cohort IDs to look up
+     * @return array<int, string> Cohort labels indexed by cohort ID
+     * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function get_available_cohorts(): array {
+    public static function get_cohorts_by_ids(array $ids): array {
         global $DB;
 
+        // Fail early in the obvious case.
+        if (empty($ids)) {
+            return [];
+        }
+
+        // Get cohorts for IDs from DB.
+        [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cohortbyid');
         $cohorts = $DB->get_records_sql(
-            'SELECT id, name, idnumber, contextid
-               FROM {cohort}
-           ORDER BY name ASC, id ASC'
+            "SELECT id, name, idnumber FROM {cohort} WHERE id {$insql} ORDER BY name ASC, id ASC",
+            $inparams
         );
 
+        // Prepare response.
         $choices = [];
         foreach ($cohorts as $cohort) {
-            $label = format_string($cohort->name, true);
-            if (!empty($cohort->idnumber)) {
-                $label .= ' [' . $cohort->idnumber . ']';
-            }
-            $label .= ' (#' . $cohort->id . ')';
-            $choices[(int) $cohort->id] = $label;
+            $choices[(int)$cohort->id] = self::format_cohort_label(
+                id: (int)$cohort->id,
+                name: $cohort->name,
+                idnumber: $cohort->idnumber
+            );
         }
 
         return $choices;
+    }
+
+    /**
+     * Generates a list of all available cohorts, indexed by their identifier.
+     *
+     * @param string|null $query Search term to filter cohort names and idnumbers by
+     * @param int $limitfrom First row of the resultset to return
+     * @param int $limitnum Maximum number of rows to return
+     * @return array<int, string> List of available cohorts
+     * @throws \dml_exception
+     */
+    public static function get_cohorts(?string $query = null, int $limitfrom = 0, int $limitnum = 0): array {
+        global $DB;
+
+        // Prepare cohort query.
+        $sql = "SELECT id, name, idnumber FROM {cohort}";
+        $params = [];
+        if ($query) {
+            $searchpattern = '%' . $DB->sql_like_escape($query) . '%';
+            $params["qname"] = $searchpattern;
+            $params["qidnum"] = $searchpattern;
+
+            $sql .= " WHERE " . $DB->sql_like('name', ':qname', false);
+            $sql .= " OR " . $DB->sql_like('idnumber', ':qidnum', false);
+        }
+        $sql .= " ORDER BY name ASC, id ASC";
+
+        // Get cohorts from DB and prepare response.
+        $cohorts = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+
+        $choices = [];
+        foreach ($cohorts as $cohort) {
+            $choices[(int) $cohort->id] = self::format_cohort_label(
+                id: (int) $cohort->id,
+                name: $cohort->name,
+                idnumber: $cohort->idnumber
+            );
+        }
+
+        return $choices;
+    }
+
+    /**
+     * Generates a human-readable label for a cohort.
+     *
+     * @param int $id Internal ID of the cohort
+     * @param string $name Name of the cohort
+     * @param string|null $idnumber ID number of the cohort if available
+     * @return string Formatted cohort label
+     */
+    protected static function format_cohort_label(int $id, string $name, ?string $idnumber): string {
+        $label = format_string($name, true);
+
+        if (!empty($idnumber)) {
+            $label .= ' [' . $idnumber . ']';
+        }
+
+        $label .= ' (#' . $id . ')';
+
+        return $label;
     }
 }

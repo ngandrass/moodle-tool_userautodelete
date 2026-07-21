@@ -71,6 +71,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
      * @param string $name Cohort name
      * @param string|null $idnumber Optional idnumber
      * @return \stdClass Cohort record
+     * @throws \dml_exception
      */
     private function create_cohort(string $name, ?string $idnumber = null): \stdClass {
         return $this->getDataGenerator()->create_cohort([
@@ -288,10 +289,165 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         $this->resetAfterTest();
 
         $cohort = $this->create_cohort('Employees', 'staff');
-        $choices = \userdeletefilter_cohort\userdeletefilter::get_available_cohorts();
+        $choices = \userdeletefilter_cohort\userdeletefilter::get_cohorts();
 
         $this->assertArrayHasKey($cohort->id, $choices, 'Created cohort must be available in cohort choices');
         $this->assertStringContainsString('Employees', $choices[$cohort->id], 'Cohort name must be present in choice label');
         $this->assertStringContainsString('[staff]', $choices[$cohort->id], 'Cohort idnumber must be present in choice label');
+    }
+
+    /**
+     * Tests that get_cohorts_by_ids() returns labels in the expected format.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_by_ids_returns_expected_labels(): void {
+        $this->resetAfterTest();
+
+        $cohort = $this->create_cohort('Employees', 'emp');
+        $choices = \userdeletefilter_cohort\userdeletefilter::get_cohorts_by_ids([(int) $cohort->id]);
+
+        $this->assertArrayHasKey((int) $cohort->id, $choices, 'Requested cohort must be present in result');
+        $label = $choices[(int) $cohort->id];
+        $this->assertStringContainsString('Employees', $label, 'Label must contain the cohort name');
+        $this->assertStringContainsString('[emp]', $label, 'Label must contain the cohort idnumber');
+        $this->assertStringContainsString('(#' . $cohort->id . ')', $label, 'Label must contain the cohort ID');
+    }
+
+    /**
+     * Tests that get_cohorts_by_ids() returns an empty array for an empty input.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_by_ids_returns_empty_array_for_empty_input(): void {
+        $this->resetAfterTest();
+
+        $result = \userdeletefilter_cohort\userdeletefilter::get_cohorts_by_ids([]);
+        $this->assertSame([], $result, 'Empty input must produce an empty result array');
+    }
+
+    /**
+     * Tests that get_cohorts_by_ids() silently omits IDs that do not exist in the database.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_by_ids_omits_nonexistent_ids(): void {
+        $this->resetAfterTest();
+
+        $result = \userdeletefilter_cohort\userdeletefilter::get_cohorts_by_ids([99999999]);
+        $this->assertSame([], $result, 'Non-existent IDs must be omitted from the result');
+    }
+
+    /**
+     * Tests that get_cohorts() without a query returns all available cohorts.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_returns_all_when_no_query(): void {
+        $this->resetAfterTest();
+
+        $first = $this->create_cohort('Group A');
+        $second = $this->create_cohort('Group B');
+
+        $result = \userdeletefilter_cohort\userdeletefilter::get_cohorts();
+
+        $this->assertArrayHasKey((int) $first->id, $result, 'First cohort must be in the result');
+        $this->assertArrayHasKey((int) $second->id, $result, 'Second cohort must be in the result');
+    }
+
+    /**
+     * Tests that get_cohorts() filters results by cohort name when a query is given.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_filters_by_name(): void {
+        $this->resetAfterTest();
+
+        $matching = $this->create_cohort('Group Alpha');
+        $this->create_cohort('Group Beta');
+
+        $result = \userdeletefilter_cohort\userdeletefilter::get_cohorts('Alpha');
+
+        $this->assertArrayHasKey((int) $matching->id, $result, 'Name-matching cohort must be in the filtered result');
+        foreach (array_keys($result) as $id) {
+            $this->assertStringNotContainsString('Beta', $result[$id], 'Non-matching cohort must not appear in filtered result');
+        }
+    }
+
+    /**
+     * Tests that get_cohorts() filters results by idnumber when a query is given.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_filters_by_idnumber(): void {
+        $this->resetAfterTest();
+
+        $withkey = $this->create_cohort('Group X', 'id-aaa');
+        $this->create_cohort('Group Y', 'id-bbb');
+
+        $result = \userdeletefilter_cohort\userdeletefilter::get_cohorts('aaa');
+
+        $this->assertArrayHasKey((int) $withkey->id, $result, 'Cohort with matching idnumber must be in the filtered result');
+        foreach (array_keys($result) as $id) {
+            $this->assertStringNotContainsString('Group Y', $result[$id], 'Non-matching cohort must not appear in filtered result');
+        }
+    }
+
+    /**
+     * Tests that get_cohorts() honours the limitnum parameter.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     */
+    public function test_get_cohorts_respects_limitnum(): void {
+        $this->resetAfterTest();
+
+        $this->create_cohort('Group One');
+        $this->create_cohort('Group Two');
+        $this->create_cohort('Group Three');
+
+        $result = \userdeletefilter_cohort\userdeletefilter::get_cohorts(null, 0, 2);
+
+        $this->assertCount(2, $result, 'Result count must not exceed limitnum');
+    }
+
+    /**
+     * Tests that get_instance_details() falls back to the raw ID notation when a
+     * previously configured cohort has been deleted from the database.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_instance_details_handles_deleted_cohort(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $cohort = $this->create_cohort('Deletable Group');
+        $step = $this->create_step();
+        $filter = $this->create_filter($step, ['cohortids' => [(int) $cohort->id]]);
+
+        // Delete the cohort from the database to simulate a dangling reference.
+        $DB->delete_records('cohort', ['id' => $cohort->id]);
+
+        $details = $filter->get_instance_details();
+
+        $this->assertStringContainsString('#' . $cohort->id, $details, 'Deleted cohort must be represented by its raw ID fallback');
     }
 }

@@ -15,22 +15,23 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * External function declarations for the userdeletefilter_cohort sub-plugin.
  *
  * @package     userdeletefilter_cohort
- * @copyright   2026 ssystems GmbH <oss@ssystems.de>
+ * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'userdeletefilter_cohort';
-$plugin->release = '1.1.0';
-$plugin->version = 2026072100;
-$plugin->requires = 2024100700;
-$plugin->supported = [405, 502]; // X meta-supported-moodle{4.5 - 5.2} meta-supported-php{8.1 - 8.4}.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = [
-    'tool_userautodelete' => 2026072100,
+$functions = [
+    'userdeletefilter_cohort_get_cohorts' => [
+        'classname' => 'userdeletefilter_cohort\external\get_cohorts',
+        'description' => 'Search for cohorts by name or ID number.',
+        'type' => 'read',
+        'ajax' => true,
+        'loginrequired' => true,
+        'capabilities' => 'moodle/site:config',
+    ],
 ];
