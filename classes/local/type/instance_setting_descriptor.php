@@ -32,31 +32,41 @@ use core\lang_string;
 
 /**
  * Descriptor for instance settings of sub-plugins
- *
- * @codeCoverageIgnore
  */
 class instance_setting_descriptor {
     /**
-     * Creates a new instance setting descriptor
+     * Creates a new instance setting descriptor.
      *
      * These objects are used to describe a single setting that a sub-plugin
      * instance exposes.
      *
      * @param string $key Internal string that uniquely identifies this setting
      * @param lang_string $title Identifier and component that point to a localized
-     * human-readable title of this setting. A _help entry mus also be defined
+     * human-readable title of this setting. A _help entry must also be defined
      * for every setting.
      * @param string $type Moodle parameter type (e.g., PARAM_INT)
      * @param bool $required If true, the value must be set for any instance
      * @param mixed|null $default Default value to load if no concrete value is given
      * @param array|null $choices List of valid choices as key-value pairs where the
      * key represents the data that will be stored and the value the title of the
-     * option when displaying in the UI
+     * option when displaying in the UI. Required for select and non-AJAX autocomplete
+     * elements. Required (non-empty) for readonly autocomplete elements, unless both
+     * $ajax and $choicesresolver are provided.
      * @param bool $serialize If true, the value will be serialized before storing.
      * This is required when working with complex structures, e.g., arrays
      * @param bool $readonly If true, the value can not be changed by the user
      * @param string $mformtype Moodle form element type that is rendered in the
      * settings edit form
+     * @param string|null $ajax AMD module name for AJAX-backed autocomplete search
+     * (e.g. 'userdeletefilter_cohort/filter_cohort_selector'). Valid only for
+     * 'autocomplete' and 'autocomplete-multi' mformtypes. Must always be set
+     * together with $choicesresolver.
+     * @param \Closure|null $choicesresolver Resolves display labels for
+     * already-selected values to avoid a full table scan. Signature:
+     * fn(array $selectedValues): array<int|string, string>. Requires $ajax to be
+     * set. Also used to display selected values when the form is in readonly mode.
+     * @throws \coding_exception If the provided combination of arguments violates
+     * the descriptor contract.
      */
     public function __construct(
         /** @var string Internal string that uniquely identifies this setting */
@@ -83,6 +93,41 @@ class instance_setting_descriptor {
         /** @var string Moodle form element type that is rendered in the settings
          * edit form */
         public readonly string $mformtype = 'text',
+        /** @var string|null AMD module name for AJAX-backed autocomplete search.
+         * Valid only for 'autocomplete' and 'autocomplete-multi' mformtypes.
+         * Must always be set together with $choicesresolver. */
+        public readonly ?string $ajax = null,
+        /** @var \Closure|null Resolves display labels for already-selected values.
+         * Signature: fn(array $selectedValues): array<int|string, string>.
+         * Requires $ajax to be set; never called otherwise. */
+        public readonly ?\Closure $choicesresolver = null,
     ) {
+        // AJAX is only meaningful for autocomplete elements.
+        if ($ajax !== null && !str_starts_with($mformtype, 'autocomplete')) {
+            throw new \coding_exception(
+                'instance_setting_descriptor: $ajax is only valid for autocomplete mformtypes.'
+            );
+        }
+
+        // AJAX requires choicesresolver to resolve display labels for selected values.
+        if ($ajax !== null && $choicesresolver === null) {
+            throw new \coding_exception(
+                'instance_setting_descriptor: $ajax requires $choicesresolver to be set.'
+            );
+        }
+
+        // The $choicesresolver is only invoked when $ajax is set; without it the closure is dead code.
+        if ($choicesresolver !== null && $ajax === null) {
+            throw new \coding_exception(
+                'instance_setting_descriptor: $choicesresolver requires $ajax to be set.'
+            );
+        }
+
+        // Non-AJAX autocomplete elements need $choices to populate their options.
+        if ($ajax === null && str_starts_with($mformtype, 'autocomplete') && $choices === null) {
+            throw new \coding_exception(
+                'instance_setting_descriptor: $choices must be provided for non-AJAX autocomplete elements.'
+            );
+        }
     }
 }

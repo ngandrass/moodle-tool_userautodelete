@@ -77,6 +77,7 @@ class subplugin_instance_settings_form extends dynamic_form {
         );
         $settingdescriptors = $instance::instance_setting_descriptors();
         $isreadonly = (bool) $this->optional_param('readonly', 0, PARAM_INT);
+        $currentsettings = $instance->get_all_instance_settings();
 
         // Add internal information.
         $mform->addElement('hidden', 'instanceid', $instance->get_instance_id());
@@ -109,6 +110,13 @@ class subplugin_instance_settings_form extends dynamic_form {
             $element = 's_' . $descriptor->key;
             $disable = $isreadonly;  // Use extra flag for disabling to allow element-specific handling.
 
+            // Resolve initial choices: full list for regular, selected-only for AJAX.
+            $choices = $descriptor->choices ?? [];
+            if ($descriptor->ajax !== null && $descriptor->choicesresolver !== null) {
+                $currentvalue = $currentsettings[$descriptor->key] ?? [];
+                $choices = ($descriptor->choicesresolver)((array) $currentvalue);
+            }
+
             switch ($descriptor->mformtype) {
                 case 'autocomplete':
                     // Disabling does not work properly. Display static version in readonly mode.
@@ -120,13 +128,11 @@ class subplugin_instance_settings_form extends dynamic_form {
                     }
 
                     // Default case (edit mode).
-                    $mform->addElement(
-                        'autocomplete',
-                        $element,
-                        $descriptor->title->out(),
-                        $descriptor->choices,
-                        ['multiple' => false]
-                    );
+                    $attrs = ['multiple' => false];
+                    if ($descriptor->ajax !== null) {
+                        $attrs['ajax'] = $descriptor->ajax;
+                    }
+                    $mform->addElement('autocomplete', $element, $descriptor->title->out(), $choices, $attrs);
                     break;
                 case 'autocomplete-multi':
                     // Disabling does not work properly. Display static version in readonly mode.
@@ -138,13 +144,11 @@ class subplugin_instance_settings_form extends dynamic_form {
                     }
 
                     // Default case (edit mode).
-                    $mform->addElement(
-                        'autocomplete',
-                        $element,
-                        $descriptor->title->out(),
-                        $descriptor->choices,
-                        ['multiple' => true]
-                    );
+                    $attrs = ['multiple' => true];
+                    if ($descriptor->ajax !== null) {
+                        $attrs['ajax'] = $descriptor->ajax;
+                    }
+                    $mform->addElement('autocomplete', $element, $descriptor->title->out(), $choices, $attrs);
                     break;
                 case 'select':
                     $mform->addElement('select', $element, $descriptor->title->out(), $descriptor->choices);
@@ -364,9 +368,14 @@ class subplugin_instance_settings_form extends dynamic_form {
                 $this->optional_param('readonly', 0, PARAM_INT) &&
                 str_starts_with($descriptors[$key]->mformtype, 'autocomplete')
             ) {
-                $value = empty($value)
-                    ? get_string('noselection', 'form')
-                    : implode(', ', array_intersect_key($descriptors[$key]->choices, array_flip($value)));
+                if (empty($value)) {
+                    $value = get_string('noselection', 'form');
+                } else {
+                    $choices = $descriptors[$key]->choicesresolver !== null
+                        ? ($descriptors[$key]->choicesresolver)((array) $value)
+                        : ($descriptors[$key]->choices ?? []);
+                    $value = implode(', ', array_intersect_key($choices, array_flip($value)));
+                }
             }
 
             // Set instance setting data key.
