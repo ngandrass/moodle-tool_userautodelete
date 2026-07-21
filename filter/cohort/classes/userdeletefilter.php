@@ -195,6 +195,9 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     /**
      * Generates a list of all available cohorts, indexed by their identifier.
      *
+     * @param string|null $query Search term to filter cohort names and idnumbers by
+     * @param int $limitfrom First row of the resultset to return
+     * @param int $limitnum Maximum number of rows to return
      * @return array<int, string> List of available cohorts
      * @throws \dml_exception
      */
