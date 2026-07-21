@@ -26,11 +26,11 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $plugin->component = 'userdeletefilter_cohort';
-$plugin->release = '1.0.1';
-$plugin->version = 2026051800;
+$plugin->release = '1.1.0';
+$plugin->version = 2026072100;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 502]; // X meta-supported-moodle{4.5 - 5.2} meta-supported-php{8.1 - 8.4}.
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
-    'tool_userautodelete' => 2026050500,
+    'tool_userautodelete' => 2026072100,
 ];
