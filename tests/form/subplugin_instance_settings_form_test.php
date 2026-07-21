@@ -24,6 +24,7 @@
 
 namespace tool_userautodelete\form;
 
+use context_system;
 use tool_userautodelete\step;
 use tool_userautodelete\userdeleteaction;
 use tool_userautodelete\userdeletefilter;
@@ -414,6 +415,86 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
 
         $updatedfilter = userdeletefilter::get_instance_by_id($filter->id);
         $this->assertSame(1, (int) $updatedfilter->get_instance_setting('suspended'));
+    }
+
+    /**
+     * Tests that the form definition path succeeds for a filter that uses an
+     * AJAX-backed autocomplete element (no static choices array).
+     *
+     * The cohort filter uses ajax + choicesresolver instead of a static choices
+     * list, so this test exercises the branch that calls choicesresolver in
+     * definition() to populate the initial choices for already-selected values.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_definition_runs_for_ajax_autocomplete_mformtype(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $cohort = $this->getDataGenerator()->create_cohort([
+            'name' => 'Test Group',
+            'contextid' => context_system::instance()->id,
+        ]);
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $filter = userdeletefilter::create_instance($step, 'cohort', ['cohortids' => [(int) $cohort->id]]);
+        $this->get_generator()->prepare_form_environment('/admin/tool/userautodelete/managefilter.php', [
+            'instanceid' => $filter->id,
+            'instancetype' => 'filter',
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+        ]);
+
+        $form = new subplugin_instance_settings_form();
+        $this->assertInstanceOf(
+            subplugin_instance_settings_form::class,
+            $form,
+            'Form could not be instantiated for AJAX autocomplete filter'
+        );
+    }
+
+    /**
+     * Tests that the readonly form display resolves selected cohort labels via
+     * choicesresolver and renders them as human-readable text.
+     *
+     * When readonly=1, autocomplete elements are replaced with a static element
+     * whose value is built by calling choicesresolver on the selected IDs.
+     *
+     * @covers \tool_userautodelete\form\subplugin_instance_settings_form
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_readonly_display_uses_choicesresolver_for_ajax_element(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $cohort = $this->getDataGenerator()->create_cohort([
+            'name' => 'View Group',
+            'contextid' => context_system::instance()->id,
+        ]);
+        $workflow = workflow::create('Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        $filter = userdeletefilter::create_instance($step, 'cohort', ['cohortids' => [(int) $cohort->id]]);
+        $this->get_generator()->prepare_form_environment('/admin/tool/userautodelete/managefilter.php', [
+            'instanceid' => $filter->id,
+            'instancetype' => 'filter',
+            'readonly' => 1,
+            'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
+        ]);
+
+        $form = new subplugin_instance_settings_form();
+        $form->set_data_for_dynamic_submission();
+
+        $this->assertStringContainsString(
+            'View Group',
+            $form->render(),
+            'Readonly form must display the cohort label resolved via choicesresolver'
+        );
     }
 
     /**
