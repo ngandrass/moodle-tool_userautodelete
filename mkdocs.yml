@@ -16,7 +16,7 @@ extra:
       link: https://github.com/ngandrass/moodle-tool_userautodelete
       name: "GitHub Repository"
     - icon: simple/moodle
-      link: https://moodle.org/plugins/tool_userautodelete
+      link: https://marketplace.moodle.com/plugins/tool_userautodelete
       name: "Moodle Plugin Directory: tool_userautodelete"
   todo: "{== **TODO** ==}"
   n1: "<span class='img-numeration-pill' style='padding-right: 1px;'>1</span>"

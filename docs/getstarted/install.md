@@ -14,7 +14,7 @@ executing the upgrade routine afterward.
 
 ## Installing via the site administration (uploaded ZIP file)
 
-1. Download the latest release of this plugin from the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete).
+1. Download the latest release of this plugin from the [Moodle plugin directory](https://marketplace.moodle.com/plugins/tool_userautodelete).
 2. Log in to your Moodle site as an admin and go to {{ moodle_nav_path('Site administration', 'Plugins', 'Install plugins') }}.
 3. Upload the ZIP file with the plugin code.
 4. Check the plugin validation report and finish the installation.

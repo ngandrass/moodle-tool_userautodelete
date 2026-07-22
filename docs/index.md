@@ -37,10 +37,10 @@ activity. The default filters and actions can easily be extended by further subp
 </div>
 ---
 
-The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
+The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://marketplace.moodle.com/plugins/tool_userautodelete):
 
 <div style="text-align: center;" markdown>
-[![Moodle plugin directory](/assets/buttons/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
+[![Moodle plugin directory](/assets/buttons/moodle-plugin-directory-button.png)](https://marketplace.moodle.com/plugins/tool_userautodelete)
 </div>
 
 

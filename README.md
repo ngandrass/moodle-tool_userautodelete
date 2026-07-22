@@ -24,9 +24,9 @@ warn inactive users, suspend them after a grace period, and finally delete their
 built-in dry-run mode and action log let administrators safely preview and audit all automated activity. The default
 filters and actions can easily be extended by further subplugins.
 
-The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://moodle.org/plugins/tool_userautodelete):
+The automatic user lifecycle management plugin is available via the [Moodle plugin directory](https://marketplace.moodle.com/plugins/tool_userautodelete):
 
-[![Moodle plugin directory](docs/assets/buttons/moodle-plugin-directory-button.png)](https://moodle.org/plugins/tool_userautodelete)
+[![Moodle plugin directory](docs/assets/buttons/moodle-plugin-directory-button.png)](https://marketplace.moodle.com/plugins/tool_userautodelete)
 
 More information about the plugin and a comprehensive
 [quickstart guide](https://moodleuserlifecycle.gandrass.de/getstarted/) can be found in our
