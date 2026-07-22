@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 2.3.0 (2026072200)
 
 - Display account creation date on dry-run page if a user never logged in (thanks to @35grain !)
 - Add support for AJAX-backed autocomplete elements in instance settings form
