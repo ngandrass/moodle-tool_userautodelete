@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.4.0 (YYYYMMDDXX)
+
+- Create a user profile filter that supports both standard and custom profile fields. See [Filter: Profile Field](https://moodleuserlifecycle.gandrass.de/filters/profilefield.md) for more information.
+
+
 ## Version 2.3.0 (2026072200)
 
 - Display account creation date on dry-run page if a user never logged in (thanks to @35grain !)
