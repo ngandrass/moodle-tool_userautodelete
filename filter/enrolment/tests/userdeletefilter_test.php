@@ -178,7 +178,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         // Match users enrolled in at least one course.
         $filter = $this->create_filter($step, ['enrolled' => userdeletefilter::MUST_BE_ENROLLED]);
         $this->assertSame(
-            get_string('enrolled', 'userdeletefilter_enrolment'),
+            get_string('enrolled_short', 'userdeletefilter_enrolment'),
             $filter->get_instance_details(),
             'get_instance_details() must return the "enrolled" string when targeting enrolled users'
         );
@@ -186,7 +186,7 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
         // Match users not enrolled in any course.
         $filter->set_instance_setting('enrolled', userdeletefilter::MUST_NOT_BE_ENROLLED);
         $this->assertSame(
-            get_string('not_enrolled', 'userdeletefilter_enrolment'),
+            get_string('not_enrolled_short', 'userdeletefilter_enrolment'),
             $filter->get_instance_details(),
             'get_instance_details() must return the "not_enrolled" string when targeting unenrolled users'
         );
