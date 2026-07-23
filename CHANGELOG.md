@@ -1,7 +1,8 @@
 # Changelog
 
-## Version 2.4.0 (YYYYMMDDXX)
+## Version X.Y.Z (YYYYMMDDXX)
 
+- Create a course enrolment filter that allows to select users based on whether they are currently enrolled in at least one course or not. See [Filter: Course Enrolment](https://moodleuserlifecycle.gandrass.de/filters/enrolment/) for more information. (Thanks to @35grain !)
 - Create a user profile filter that supports both standard and custom profile fields. See [Filter: Profile Field](https://moodleuserlifecycle.gandrass.de/filters/profilefield.md) for more information.
 
 

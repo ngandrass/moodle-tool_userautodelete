@@ -41,6 +41,7 @@ More information about the plugin and a comprehensive
 - User filter subplugins for effectively targeting users. Core filters available:
   - Authentication method
   - Cohort membership
+  - Course enrolment status
   - Current Date
   - Last access to site
   - Profile field (standard and custom)
