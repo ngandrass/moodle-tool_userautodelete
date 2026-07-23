@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Create a course enrolment filter that allows to select users based on whether they are currently enrolled in at least one course or not. See [Filter: Course Enrolment](https://moodleuserlifecycle.gandrass.de/filters/enrolment/) for more information. (Thanks to @35grain !)
+
+
 ## Version 2.3.0 (2026072200)
 
 - Display account creation date on dry-run page if a user never logged in (thanks to @35grain !)
