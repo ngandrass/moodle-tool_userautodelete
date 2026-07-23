@@ -44,6 +44,7 @@ More information about the plugin and a comprehensive
   - Course enrolment status
   - Current Date
   - Last access to site
+  - Profile field (standard and custom)
   - Role assignment
   - Suspension state
   - Time delay

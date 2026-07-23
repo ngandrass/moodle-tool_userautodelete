@@ -20,6 +20,8 @@ part of the core plugin and therefore available within every installation:
 
 [:fontawesome-solid-clock-rotate-left:<br>Last Access](lastaccess.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
 
+[:fontawesome-regular-id-card:<br>Profile Field](profilefield.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
+
 [:fontawesome-solid-user-tag:<br>Role Assignment](role.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
 
 [:fontawesome-solid-user-slash:<br>Suspension State](suspension.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
