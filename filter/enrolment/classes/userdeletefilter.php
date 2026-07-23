@@ -38,7 +38,10 @@ require_once("{$CFG->libdir}/accesslib.php"); // @codeCoverageIgnore
  * User delete filter based on course enrolments
  */
 class userdeletefilter extends \tool_userautodelete\userdeletefilter {
+    /** @var int Internal data value to store for "User must not be enroled" condition */
     const MUST_NOT_BE_ENROLLED = 0;
+
+    /** @var int Internal data value to store for "User must be enroled" condition */
     const MUST_BE_ENROLLED = 1;
 
     /**
@@ -84,8 +87,9 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * @return string A descriptive string of this filter instance's settings to be shown in the UI
      */
     public function get_instance_details(): string {
-        return (int)$this->get_instance_setting('enrolled') === self::MUST_BE_ENROLLED ? new lang_string('enrolled',
-            'userdeletefilter_enrolment') : new lang_string('not_enrolled', 'userdeletefilter_enrolment');
+        return (int)$this->get_instance_setting('enrolled') === self::MUST_BE_ENROLLED
+            ? new lang_string('enrolled', 'userdeletefilter_enrolment')
+            : new lang_string('not_enrolled', 'userdeletefilter_enrolment');
     }
 
     /**
@@ -128,7 +132,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
                 default: self::MUST_NOT_BE_ENROLLED,
                 choices: [
                     self::MUST_NOT_BE_ENROLLED => new lang_string('not_enrolled', 'userdeletefilter_enrolment'),
-                    self::MUST_BE_ENROLLED => new lang_string('enrolled', 'userdeletefilter_enrolment')
+                    self::MUST_BE_ENROLLED => new lang_string('enrolled', 'userdeletefilter_enrolment'),
                 ],
                 readonly: false,
                 mformtype: 'select'
