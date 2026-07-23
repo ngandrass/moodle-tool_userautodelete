@@ -86,8 +86,8 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      */
     public function get_instance_details(): string {
         return (int)$this->get_instance_setting('enrolled') === self::MUST_BE_ENROLLED
-            ? new lang_string('enrolled', 'userdeletefilter_enrolment')
-            : new lang_string('not_enrolled', 'userdeletefilter_enrolment');
+            ? new lang_string('enrolled_short', 'userdeletefilter_enrolment')
+            : new lang_string('not_enrolled_short', 'userdeletefilter_enrolment');
     }
 
     /**

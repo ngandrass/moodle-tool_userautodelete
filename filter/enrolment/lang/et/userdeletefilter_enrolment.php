@@ -33,4 +33,6 @@ $string['privacy:metadata'] = 'See pistikprogramm ei salvesta isikuandmeid.';
 $string['setting_enrolled'] = 'Kasutaja kursusele registreerimise olek';
 $string['setting_enrolled_help'] = 'Valige, kas kasutaja PEAB olema või EI TOHI olla kursusele registreeritud.';
 $string['enrolled'] = 'Peab olema registreeritud vähemalt ühele kursusele';
+$string['enrolled_short'] = 'Registreeritud';
 $string['not_enrolled'] = 'Ei tohi olla registreeritud ühelegi kursusele';
+$string['not_enrolled_short'] = 'Ei ole registreeritud';

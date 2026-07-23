@@ -33,4 +33,6 @@ $string['privacy:metadata'] = 'Dieses Plugin speicher keine personenbezogenen Da
 $string['setting_enrolled'] = 'Status der Einschreibung';
 $string['setting_enrolled_help'] = 'Wählen Sie aus, ob der Benutzer in mindestens einen Kurs eingeschrieben sein muss oder nicht.';
 $string['enrolled'] = 'Muss in mindestens einen Kurs eingeschrieben sein';
+$string['enrolled_short'] = 'Eingeschrieben';
 $string['not_enrolled'] = 'Darf in keinen Kurs eingeschrieben sein';
+$string['not_enrolled_short'] = 'Nicht eingeschrieben';
