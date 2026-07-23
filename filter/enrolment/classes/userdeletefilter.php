@@ -70,7 +70,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * null if no additional documentation is available
      */
     public static function get_help_url(): ?\moodle_url {
-        return null;
+        return new \moodle_url('https://moodleuserlifecycle.gandrass.de/filters/enrolment/');
     }
 
     /**
