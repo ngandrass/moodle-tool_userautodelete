@@ -37,10 +37,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  */
 class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     /** @var int Internal data value to store for "User must not be enroled" condition */
-    const MUST_NOT_BE_ENROLLED = 0;
+    public const MUST_NOT_BE_ENROLLED = 0;
 
     /** @var int Internal data value to store for "User must be enroled" condition */
-    const MUST_BE_ENROLLED = 1;
+    public const MUST_BE_ENROLLED = 1;
 
     /**
      * Returns the name of this filter sub-plugin, e.g., 'lastaccess' for 'userdeletefilter_lastaccess'
@@ -102,7 +102,9 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * @return userfilter_clause The SQL where clause and parameters for filtering user datasets
      */
     public function user_records_filter_clause(): userfilter_clause {
-        $sqlverb = (int)$this->get_instance_setting('enrolled') === self::MUST_BE_ENROLLED ? 'EXISTS' : 'NOT EXISTS';
+        $sqlverb = (int) $this->get_instance_setting('enrolled') === self::MUST_BE_ENROLLED
+            ? 'EXISTS'
+            : 'NOT EXISTS';
 
         return new userfilter_clause(
             sql: "{$sqlverb} (
@@ -118,6 +120,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      * defines and exposes.
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
+     * @throws \coding_exception
      */
     #[\Override]
     public static function instance_setting_descriptors(): array {
