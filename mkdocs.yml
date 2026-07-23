@@ -134,6 +134,7 @@ nav:
     - "Cohort Membership": filters/cohort.md
     - "Date": filters/date.md
     - "Last Access": filters/lastaccess.md
+    - "Profile Field": filters/profilefield.md
     - "Role Assignment": filters/role.md
     - "Suspension State": filters/suspension.md
     - "Time Delay": filters/delay.md
