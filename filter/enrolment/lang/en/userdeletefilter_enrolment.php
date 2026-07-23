@@ -31,8 +31,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 $string['pluginname'] = 'Course enrolment';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['setting_enrolled'] = 'User course enrollment status';
-$string['setting_enrolled_help'] = 'Select whether the user MUST or MUST NOT be enrolled to some course.';
-$string['enrolled'] = 'Must be enrolled to at least one course';
+$string['setting_enrolled_help'] = 'Select whether the user MUST or MUST NOT be enrolled in at least one course.';
+$string['enrolled'] = 'Must be enrolled in at least one course';
 $string['enrolled_short'] = 'Enrolled';
-$string['not_enrolled'] = 'Must not be enrolled to any courses';
+$string['not_enrolled'] = 'Must not be enrolled in any courses';
 $string['not_enrolled_short'] = 'Not Enrolled';

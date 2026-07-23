@@ -132,6 +132,7 @@ nav:
     - filters/index.md
     - "Authentication Method": filters/auth.md
     - "Cohort Membership": filters/cohort.md
+    - "Course Enrolment": filters/enrolment.md
     - "Date": filters/date.md
     - "Last Access": filters/lastaccess.md
     - "Role Assignment": filters/role.md
