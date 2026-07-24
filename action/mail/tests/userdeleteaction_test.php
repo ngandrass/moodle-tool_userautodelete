@@ -27,6 +27,8 @@ namespace userdeleteaction_mail;
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die();
 
+use userdeleteaction_mail\local\type\recipient;
+
 require_once(__DIR__ . '/../../../tests/userdeleteaction_testcase.php');
 
 
@@ -296,6 +298,431 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
             '',
             $action->get_instance_details(),
             'get_instance_details() must return an empty string when no subject is configured'
+        );
+    }
+
+    /**
+     * Tests that an action with recipient set to 'user' is valid without a
+     * customrecipient value.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_instance_validity_recipient_user_does_not_require_customrecipient(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::USER->value,
+            'subject'   => 'Subject',
+            'message'   => 'Message',
+        ]);
+
+        $this->assertTrue($action->is_valid(), 'Action with recipient=user must be valid without customrecipient.');
+    }
+
+    /**
+     * Tests that an action with recipient set to 'admins' is valid without a
+     * customrecipient value.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_instance_validity_recipient_admins_does_not_require_customrecipient(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::ADMINS->value,
+            'subject'   => 'Subject',
+            'message'   => 'Message',
+        ]);
+
+        $this->assertTrue($action->is_valid(), 'Action with recipient=admins must be valid without customrecipient.');
+    }
+
+    /**
+     * Tests that an action with recipient set to 'custom' is invalid when
+     * customrecipient is not configured.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_instance_validity_recipient_custom_requires_customrecipient(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::CUSTOM_MAIL->value,
+            'subject'   => 'Subject',
+            'message'   => 'Message',
+        ]);
+
+        $this->assertFalse($action->is_valid(), 'Action with recipient=custom and no customrecipient must be invalid.');
+    }
+
+    /**
+     * Tests that an action with recipient set to 'custom' and an invalid email
+     * address in customrecipient is invalid.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_instance_validity_recipient_custom_with_invalid_email_is_invalid(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient'       => recipient::CUSTOM_MAIL->value,
+            'customrecipient' => 'not-a-valid-email',
+            'subject'         => 'Subject',
+            'message'         => 'Message',
+        ]);
+
+        $this->assertFalse($action->is_valid(), 'Action with recipient=custom and invalid email must be invalid.');
+    }
+
+    /**
+     * Tests that an action with recipient set to 'custom' and a valid email address
+     * in customrecipient is valid.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_instance_validity_recipient_custom_with_valid_email_is_valid(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient'       => recipient::CUSTOM_MAIL->value,
+            'customrecipient' => 'custom@example.com',
+            'subject'         => 'Subject',
+            'message'         => 'Message',
+        ]);
+
+        $this->assertTrue($action->is_valid(), 'Action with recipient=custom and valid email must be valid.');
+    }
+
+    /**
+     * Tests that validate_instance_settings_data() returns no errors when
+     * recipient is set to 'user'.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_no_errors_for_recipient_user(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings_data([
+            'recipient' => recipient::USER->value,
+            'subject'   => 'Subject',
+            'message'   => 'Message',
+        ]);
+
+        $this->assertArrayNotHasKey('customrecipient', $errors, 'No customrecipient error for recipient=user.');
+    }
+
+    /**
+     * Tests that validate_instance_settings_data() returns no errors when
+     * recipient is set to 'admins'.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_no_errors_for_recipient_admins(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings_data([
+            'recipient' => recipient::ADMINS->value,
+            'subject'   => 'Subject',
+            'message'   => 'Message',
+        ]);
+
+        $this->assertArrayNotHasKey('customrecipient', $errors, 'No customrecipient error for recipient=admins.');
+    }
+
+    /**
+     * Tests that validate_instance_settings_data() returns an error for
+     * customrecipient when recipient is 'custom' and no address is provided.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_error_for_custom_recipient_without_address(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings_data([
+            'recipient' => recipient::CUSTOM_MAIL->value,
+            'subject'   => 'Subject',
+            'message'   => 'Message',
+        ]);
+
+        $this->assertArrayHasKey('customrecipient', $errors, 'An error must be reported when customrecipient is missing.');
+    }
+
+    /**
+     * Tests that validate_instance_settings_data() returns an error for
+     * customrecipient when the provided address is not a valid email.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_error_for_custom_recipient_with_invalid_email(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings_data([
+            'recipient'       => recipient::CUSTOM_MAIL->value,
+            'customrecipient' => 'not-a-valid-email',
+            'subject'         => 'Subject',
+            'message'         => 'Message',
+        ]);
+
+        $this->assertArrayHasKey('customrecipient', $errors, 'An error must be reported for an invalid email address.');
+    }
+
+    /**
+     * Tests that validate_instance_settings_data() returns no errors when
+     * recipient is 'custom' and a valid email address is provided.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_validate_instance_settings_returns_no_errors_for_custom_recipient_with_valid_email(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        $errors = $action->validate_instance_settings_data([
+            'recipient'       => recipient::CUSTOM_MAIL->value,
+            'customrecipient' => 'valid@example.com',
+            'subject'         => 'Subject',
+            'message'         => 'Message',
+        ]);
+
+        $this->assertArrayNotHasKey('customrecipient', $errors, 'No error must be reported for a valid custom email address.');
+    }
+
+    /**
+     * Tests that execute() with recipient explicitly set to 'user' sends exactly
+     * one email to the process user.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_with_recipient_user_sends_to_process_user(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'processuser@example.com']);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::USER->value,
+            'subject'   => 'Test Subject',
+            'message'   => 'Test message',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $result = $action->execute($process);
+        $mailsink->close();
+
+        $this->assertTrue($result, 'execute() must return true for recipient=user.');
+        $messages = $mailsink->get_messages();
+        $this->assertCount(1, $messages, 'Exactly one email must be sent.');
+        $this->assertSame($user->email, $messages[0]->to, 'Email must be addressed to the process user.');
+    }
+
+    /**
+     * Tests that execute() with recipient set to 'admins' sends one email to
+     * each site administrator.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_with_recipient_admins_sends_to_all_admins(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        // Add a second admin so the multi-recipient assertion is non-trivial.
+        $admin2 = $this->getDataGenerator()->create_user(['email' => 'admin2@example.com']);
+        set_config('siteadmins', $CFG->siteadmins . ',' . $admin2->id);
+
+        $admins = get_admins();
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'processuser@example.com']);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::ADMINS->value,
+            'subject'   => 'Admin Notification',
+            'message'   => 'A user entered the workflow.',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $result = $action->execute($process);
+        $mailsink->close();
+
+        $this->assertTrue($result, 'execute() must return true when sending to admins.');
+        $messages = $mailsink->get_messages();
+        $this->assertCount(count($admins), $messages, 'One email must be sent per administrator.');
+
+        $recipients = array_column($messages, 'to');
+        foreach ($admins as $admin) {
+            $this->assertContains($admin->email, $recipients, "Admin {$admin->email} must have received an email.");
+        }
+    }
+
+    /**
+     * Tests that execute() with recipient set to 'admins' still resolves variable
+     * placeholders against the process user, not the admin recipients.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_with_recipient_admins_resolves_variables_against_process_user(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(['firstname' => 'Jane']);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::ADMINS->value,
+            'subject'   => 'User: {{user.firstname}}',
+            'message'   => 'Process user is {{user.firstname}}.',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $action->execute($process);
+        $mailsink->close();
+
+        foreach ($mailsink->get_messages() as $msg) {
+            $this->assertSame(
+                'User: Jane',
+                $msg->subject,
+                'Subject variables must resolve against the process user, not the admin.'
+            );
+        }
+    }
+
+    /**
+     * Tests that execute() with recipient set to 'custom' delivers the email to
+     * the configured custom address and not to the process user.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_with_recipient_custom_sends_to_configured_address(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(['email' => 'processuser@example.com']);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient'       => recipient::CUSTOM_MAIL->value,
+            'customrecipient' => 'custom@example.com',
+            'subject'         => 'Notification',
+            'message'         => 'A user entered the workflow.',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $result = $action->execute($process);
+        $mailsink->close();
+
+        $this->assertTrue($result, 'execute() must return true for recipient=custom.');
+        $messages = $mailsink->get_messages();
+        $this->assertCount(1, $messages, 'Exactly one email must be sent.');
+        $this->assertSame('custom@example.com', $messages[0]->to, 'Email must be addressed to the custom recipient.');
+        $this->assertNotSame($user->email, $messages[0]->to, 'Email must not be addressed to the process user.');
+    }
+
+    /**
+     * Tests that execute() with recipient set to 'custom' still resolves variable
+     * placeholders against the process user.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_with_recipient_custom_resolves_variables_against_process_user(): void {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(['firstname' => 'Bob']);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient'       => recipient::CUSTOM_MAIL->value,
+            'customrecipient' => 'custom@example.com',
+            'subject'         => 'About {{user.firstname}}',
+            'message'         => 'Process user is {{user.firstname}}.',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $action->execute($process);
+        $mailsink->close();
+
+        $messages = $mailsink->get_messages();
+        $this->assertCount(1, $messages, 'Exactly one email must be sent.');
+        $this->assertSame(
+            'About Bob',
+            $messages[0]->subject,
+            'Subject variables must resolve against the process user.'
         );
     }
 
