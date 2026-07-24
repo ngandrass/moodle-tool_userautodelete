@@ -1,8 +1,8 @@
 # Action: Send Mail
 
-The send mail action emails users when they enter a workflow step. Mail subject and body can be fully customized and
-allow the use of various dynamic variables. This action can be used for notifications, reminders, and warnings before
-subsequent lifecycle actions are executed.
+The send mail action emails users, site administrators, or a custom defined mail address, when they enter a workflow
+step. Mail subject and body can be fully customized and allow the use of various dynamic variables. This action can be
+used for notifications, reminders, and warnings before subsequent lifecycle actions are executed.
 
 <div class="subplugin-grid" markdown>
 [:fontawesome-solid-envelope:<br>Send Mail](#){.md-button .md-button-subplugin .md-button-subplugin-action .md-button-disabled}
@@ -49,14 +49,21 @@ The following variables are available:
 
 ## Settings
 
+!!! setting "Recipient"
+    Determines who receives the email. The following options are available:
+
+    - **User** – the email is delivered to the user referenced by the workflow process.
+    - **Site administrators** – the email is delivered to every Moodle site administrator.
+    - **Custom address** – the email is delivered to the address configured in the _"Custom recipient address"_ field.
+
 !!! setting "Subject"
     Defines the email subject line. You can use plain text and placeholders for dynamic variables (see above).
 
 !!! setting "Message"
     Defines the email body. You can use rich text (Moodle editor) and placeholders for dynamic variables (see above).
 
-If invalid placeholders for dynamic variables are used, an error message will be displayed that lists all the unresolved
-placeholders. You can then adjust your text accordingly before saving.
+!!! setting "Custom recipient address"
+    Only required when **Recipient** is set to _"Custom address"_. Accepts a single RFC-compliant email address.
 
 
 ## Example
