@@ -435,6 +435,9 @@ final class workflow_test extends \advanced_testcase {
             $workflow->description,
             'Default workflow description was not loaded'
         );
+
+        // Assert that all required settings (including recipient) are populated so the workflow is valid.
+        $this->assertTrue($workflow->is_valid(), 'Default workflow must be valid after loading');
     }
 
     /**

@@ -27,6 +27,7 @@ namespace tool_userautodelete;
 use tool_userautodelete\local\type\db_table;
 use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\sort_move_direction;
+use userdeleteaction_mail\local\type\recipient;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -719,6 +720,7 @@ class workflow {
             'thresholdsec' => YEARSECS * 3 - 30 * DAYSECS,
         ]);
         userdeleteaction::create_instance($warningstep, 'mail', [
+            'recipient' => recipient::USER->value,
             'subject' => get_string('defaultworkflow_warningmail_subject', 'tool_userautodelete'),
             'message' => get_string('defaultworkflow_warningmail_message', 'tool_userautodelete'),
         ]);
@@ -736,6 +738,7 @@ class workflow {
             'thresholdsec' => YEARSECS * 3,
         ]);
         userdeleteaction::create_instance($deletionstep, 'mail', [
+            'recipient' => recipient::USER->value,
             'subject' => get_string('defaultworkflow_deletemail_subject', 'tool_userautodelete'),
             'message' => get_string('defaultworkflow_deletemail_message', 'tool_userautodelete'),
         ]);
