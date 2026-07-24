@@ -28,6 +28,7 @@ use core\lang_string;
 use tool_userautodelete\local\type\instance_setting_descriptor;
 use tool_userautodelete\local\variable_resolver;
 use tool_userautodelete\process;
+use userdeleteaction_mail\local\type\recipient;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -117,7 +118,48 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
             }
         }
 
+        // Conditionally require customrecipient when recipient is 'custom'.
+        $recipienttype = recipient::tryFrom($settings['recipient'] ?? '');
+        if ($recipienttype === recipient::CUSTOM_MAIL) {
+            if (empty($settings['customrecipient'])) {
+                $errors['customrecipient'] = get_string('error_customrecipient_required', 'userdeleteaction_mail');
+            } else if (!validate_email($settings['customrecipient'])) {
+                $errors['customrecipient'] = get_string('error_customrecipient_invalid', 'userdeleteaction_mail');
+            }
+        }
+
         return $errors;
+    }
+
+    /**
+     * Validates this action instance for runtime readiness.
+     *
+     * In addition to the base required-setting check, enforces that a non-empty,
+     * syntactically valid email address is configured when the recipient type is
+     * set to 'custom'.
+     *
+     * @return string|null Null if valid; a localized error string otherwise.
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function validate(): string|null {
+        if ($error = parent::validate()) {
+            return $error;
+        }
+
+        $recipienttype = recipient::from($this->get_instance_setting('recipient'));
+        $customrecipient = $this->get_instance_setting('customrecipient');
+
+        if ($recipienttype === recipient::CUSTOM_MAIL) {
+            if (empty($customrecipient)) {
+                return get_string('error_customrecipient_required', 'userdeleteaction_mail');
+            }
+            if (!validate_email($customrecipient)) {
+                return get_string('error_customrecipient_invalid', 'userdeleteaction_mail');
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -129,12 +171,11 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * @throws \moodle_exception
      */
     public function execute(process $process): bool {
-        // Fetch and validate user and message data.
         $user = \core_user::get_user($process->userid);
         $subject = $this->get_instance_setting('subject');
         $message = $this->get_instance_setting('message');
 
-        if (!$user || !$user->email) {
+        if (!$user) {
             return false;
         }
         if (empty($subject) || empty($message)) {
@@ -146,14 +187,56 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
         $subject = variable_resolver::resolve($subject, $ctx);
         $message = variable_resolver::resolve($message, $ctx);
 
-        // Send the email.
-        return email_to_user(
-            user: $user,
-            from: get_admin(),
-            subject: $subject,
-            messagetext: html_to_text(nl2br($message)),
-            messagehtml: $message
-        );
+        $recipienttype = recipient::from($this->get_instance_setting('recipient'));
+
+        if ($recipienttype === recipient::ADMINS) {
+            foreach (get_admins() as $admin) {
+                $sent = email_to_user(
+                    user: $admin,
+                    from: get_admin(),
+                    subject: $subject,
+                    messagetext: html_to_text(nl2br($message)),
+                    messagehtml: $message
+                );
+
+                if (!$sent) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        if ($recipienttype === recipient::CUSTOM_MAIL) {
+            // Build dummy receiving user.
+            $customuser = clone \core_user::get_noreply_user();
+            $customuser->email = $this->get_instance_setting('customrecipient');
+
+            return email_to_user(
+                user: $customuser,
+                from: get_admin(),
+                subject: $subject,
+                messagetext: html_to_text(nl2br($message)),
+                messagehtml: $message
+            );
+        }
+
+        if ($recipienttype === recipient::USER) {
+            if (!validate_email($user->email)) {
+                return false;
+            }
+
+            return email_to_user(
+                user: $user,
+                from: get_admin(),
+                subject: $subject,
+                messagetext: html_to_text(nl2br($message)),
+                messagehtml: $message
+            );
+        }
+
+        // Safeguard.
+        return false;
     }
 
     /**
@@ -161,9 +244,23 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * defines and exposes.
      *
      * @return instance_setting_descriptor[] An array of setting descriptors
+     * @throws \coding_exception
      */
     public static function instance_setting_descriptors(): array {
         return [
+            new instance_setting_descriptor(
+                key: 'recipient',
+                title: new lang_string('setting_recipient', 'userdeleteaction_mail'),
+                type: PARAM_ALPHA,
+                required: true,
+                default: recipient::USER->value,
+                choices: [
+                    recipient::USER->value        => new lang_string('setting_recipient_user', 'userdeleteaction_mail'),
+                    recipient::ADMINS->value      => new lang_string('setting_recipient_admins', 'userdeleteaction_mail'),
+                    recipient::CUSTOM_MAIL->value => new lang_string('setting_recipient_custom', 'userdeleteaction_mail'),
+                ],
+                mformtype: 'select',
+            ),
             new instance_setting_descriptor(
                 key: 'subject',
                 title: new lang_string('setting_subject', 'userdeleteaction_mail'),
@@ -177,6 +274,13 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
                 type: PARAM_RAW,
                 required: true,
                 mformtype: 'editor',
+            ),
+            new instance_setting_descriptor(
+                key: 'customrecipient',
+                title: new lang_string('setting_customrecipient', 'userdeleteaction_mail'),
+                type: PARAM_EMAIL,
+                required: false,
+                mformtype: 'text',
             ),
         ];
     }

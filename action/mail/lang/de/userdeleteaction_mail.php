@@ -29,6 +29,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'E-Mail senden';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
+$string['error_customrecipient_invalid'] = 'Die benutzerdefinierte Empfänger-E-Mail-Adresse ist ungültig.';
+$string['error_customrecipient_required'] = 'Eine Empfänger-E-Mail-Adresse ist erforderlich, wenn der Empfängertyp auf "Benutzerdefinierte Adresse" gesetzt ist.';
 $string['error_unknown_variables'] = 'Die folgenden Variablen sind unbekannt und können nicht aufgelöst werden: {$a}. Entfernen oder korrigieren Sie diese vor der Speicherung.';
 $string['setting_message'] = 'Nachricht';
 $string['setting_message_help'] = 'Der Inhalt der E-Mail, die an den Benutzer gesendet wird. Sie können alle verfügbaren Formatierungsoptionen sowie die unten aufgeführten Variablen verwenden.
@@ -63,6 +65,13 @@ $string['setting_message_help'] = 'Der Inhalt der E-Mail, die an den Benutzer ge
 <li><code>{{urls.profile}}</code> - URL zum Profil des Benutzers</li>
 <li><code>{{urls.support}}</code> - URL zum Kontakt des Website-Supports</li>
 </ul>';
+$string['setting_customrecipient'] = 'Benutzerdefinierte Empfängeradresse';
+$string['setting_customrecipient_help'] = 'Die E-Mail-Adresse, an die die Nachricht zugestellt wird. Wird nur verwendet, wenn der Empfängertyp auf "Benutzerdefinierte E-Mail-Adresse" gesetzt ist. Variablenplatzhalter werden in diesem Feld nicht unterstützt.';
+$string['setting_recipient'] = 'Empfänger';
+$string['setting_recipient_help'] = 'Legt fest, wer die E-Mail erhält.';
+$string['setting_recipient_admins'] = 'Website-Administratoren';
+$string['setting_recipient_custom'] = 'Benutzerdefinierte E-Mail-Adresse';
+$string['setting_recipient_user'] = 'Benutzer';
 $string['setting_subject'] = 'Betreff';
 $string['setting_subject_help'] = 'Betreff der E-Mail, die an den Benutzer gesendet wird. Sie können alle verfügbaren Formatierungsoptionen sowie die unten aufgeführten Variablen verwenden.
 

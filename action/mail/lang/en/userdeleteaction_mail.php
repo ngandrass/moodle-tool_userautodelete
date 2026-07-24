@@ -29,6 +29,8 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Send mail';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$string['error_customrecipient_invalid'] = 'The custom recipient email address is not valid.';
+$string['error_customrecipient_required'] = 'A recipient email address is required when the recipient type is set to "Custom address".';
 $string['error_unknown_variables'] = 'The following variable references are unknown and cannot be resolved: {$a}. Fix or remove them before saving.';
 $string['setting_message'] = 'Message';
 $string['setting_message_help'] = 'The body of the email that will be sent to the user. You can use all available formatting options as well as the variables listed below.
@@ -63,6 +65,13 @@ $string['setting_message_help'] = 'The body of the email that will be sent to th
 <li><code>{{urls.profile}}</code> – Target user profile URL</li>
 <li><code>{{urls.support}}</code> – Contact site support URL</li>
 </ul>';
+$string['setting_customrecipient'] = 'Custom recipient address';
+$string['setting_customrecipient_help'] = 'The email address to deliver the message to. Only used when the recipient type is set to "Custom address". Variable placeholders are not supported in this field.';
+$string['setting_recipient'] = 'Recipient';
+$string['setting_recipient_help'] = 'Controls who receives the email.';
+$string['setting_recipient_admins'] = 'Site administrators';
+$string['setting_recipient_custom'] = 'Custom address';
+$string['setting_recipient_user'] = 'User';
 $string['setting_subject'] = 'Subject';
 $string['setting_subject_help'] = 'Subject of the email that will be sent to the user. You can use all available formatting options as well as the variables listed below.
 

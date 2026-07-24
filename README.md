@@ -51,7 +51,7 @@ More information about the plugin and a comprehensive
 - Action subplugins to perform various operations. Core actions available:
   - Anonymize user account (GDPR compliance)
   - Delete user
-  - Send mail to user
+  - Send mail to user, site admins, or custom address
   - Suspend user
   - Unsuspend user
 - GDPR-compliant user account anonymization and deletion

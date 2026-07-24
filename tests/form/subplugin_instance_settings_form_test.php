@@ -29,6 +29,7 @@ use tool_userautodelete\step;
 use tool_userautodelete\userdeleteaction;
 use tool_userautodelete\userdeletefilter;
 use tool_userautodelete\workflow;
+use userdeleteaction_mail\local\type\recipient;
 
 /**
  * Tests for the subplugin_instance_settings_form class
@@ -298,6 +299,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
         $workflow = workflow::create('Workflow', 'Description');
         $step = step::create(workflow: $workflow, title: 'Step 1', description: '');
         $action = userdeleteaction::create_instance($step, 'mail', [
+            'recipient' => recipient::USER->value,
             'subject' => 'Initial subject',
             'message' => 'Initial body',
         ]);
@@ -308,6 +310,7 @@ final class subplugin_instance_settings_form_test extends \advanced_testcase {
             'returnurl' => '/admin/tool/userautodelete/workflow.php?id=' . $workflow->id,
         ];
         $postdata = $requestparams + [
+            's_recipient' => recipient::USER->value,
             's_subject' => 'Updated subject',
             's_message' => [
                 'text' => '<p>Updated body</p>',

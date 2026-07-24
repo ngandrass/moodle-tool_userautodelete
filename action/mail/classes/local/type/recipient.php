@@ -14,23 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+// phpcs:disable moodle.Commenting.InlineComment.DocBlock
+
 /**
- * Plugin version and other meta-data are defined here.
+ * Recipient types for the mail action sub-plugin.
  *
  * @package     userdeleteaction_mail
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// @codingStandardsIgnoreLine
+namespace userdeleteaction_mail\local\type;
+
+// phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$plugin->component = 'userdeleteaction_mail';
-$plugin->release = '1.2.0';
-$plugin->version = 2026072400;
-$plugin->requires = 2024100700;
-$plugin->supported = [405, 502]; // X meta-supported-moodle{4.5 - 5.2} meta-supported-php{8.1 - 8.4}.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = [
-    'tool_userautodelete' => 2026050500,
-];
+
+/**
+ * Recipient types for the mail action sub-plugin.
+ *
+ * Backed value is persisted as the recipient setting in the database.
+ */
+enum recipient: string {
+    /** @var string Send the email to the user referenced by the workflow process. */
+    case USER = 'user';
+    /** @var string Send the email to all Moodle site administrators. */
+    case ADMINS = 'admins';
+    /** @var string Send the email to a custom configured email address. */
+    case CUSTOM_MAIL = 'custom';
+}
