@@ -143,6 +143,7 @@ nav:
   - "Actions":
     - actions/index.md
     - "Anonymize User": actions/anonymize.md
+    - "Cohort Membership": actions/cohort.md
     - "Delete User": actions/delete.md
     - "Send Mail": actions/mail.md
     - "Suspend User": actions/suspend.md

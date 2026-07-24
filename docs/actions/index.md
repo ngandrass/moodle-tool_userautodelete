@@ -13,6 +13,8 @@ of the core plugin and therefore available within every installation:
 <div class="subplugin-grid" markdown>
 [:fontawesome-solid-user-secret:<br>Anonymize User](anonymize.md){.md-button .md-button-subplugin .md-button-subplugin-action}
 
+[:fontawesome-solid-users:<br>Cohort Membership](cohort.md){.md-button .md-button-subplugin .md-button-subplugin-action}
+
 [:fontawesome-solid-trash:<br>Delete User](delete.md){.md-button .md-button-subplugin .md-button-subplugin-action}
 
 [:fontawesome-solid-envelope:<br>Send Mail](mail.md){.md-button .md-button-subplugin .md-button-subplugin-action}
