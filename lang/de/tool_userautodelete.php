@@ -28,7 +28,10 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['a'] = '${a}';
+$string['abort_process'] = 'Prozess abbrechen';
+$string['abort_process_warning'] = 'Sie sind dabei, den aktiven Prozess für <b>{$a}</b> abzubrechen. Der Benutzer wird aus dem Workflow entfernt. Bei der nächsten geplanten Ausführung kann der Benutzer automatisch erneut aufgenommen werden, sofern er weiterhin den Filterkriterien des ersten Schritts entspricht. Sind Sie sicher, dass Sie fortfahren möchten?';
 $string['aborted'] = 'Abgebrochen';
+$string['cannot_abort_inactive_process'] = 'Ein nicht aktiver Prozess kann nicht abgebrochen werden.';
 $string['action'] = 'Aktion';
 $string['action_is_invalid'] = 'Diese Aktion ist aktuell ungültig und muss korrigiert werden, bevor der Workflow aktiviert werden kann.';
 $string['actions'] = 'Aktionen';

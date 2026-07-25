@@ -28,7 +28,10 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['a'] = '${a}';
+$string['abort_process'] = 'Abort process';
+$string['abort_process_warning'] = 'You are about to abort the active workflow process for <b>{$a}</b>. The user will be removed from the workflow. They may re-enter automatically on the next scheduled execution if they still match the first step\'s filters. Are you sure you want to continue?';
 $string['aborted'] = 'Aborted';
+$string['cannot_abort_inactive_process'] = 'Cannot abort a process that is not active.';
 $string['action'] = 'Action';
 $string['action_is_invalid'] = 'This action is currently invalid and must be fixed before the workflow can be enabled.';
 $string['actions'] = 'Actions';

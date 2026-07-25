@@ -29,6 +29,7 @@
                 "username": "jdoe",
                 "fullname": "John Doe",
                 "profileurl": "https://mymoodle/user/profile.php?id=42",
+                "aborturl": "https://mymoodle/admin/tool/userautodelete/manageprocess.php?id=1&action=abort&returnurl=%2F...",
                 "isactive": true,
                 "isfinished": false,
                 "isaborted": false,
@@ -51,6 +52,7 @@
                 <th>{{#str}} lastaccess {{/str}}</th>
                 <th>{{#str}} state, tool_userautodelete {{/str}}</th>
                 <th>{{#str}} in_step_since, tool_userautodelete {{/str}}</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -96,6 +98,22 @@
                     >
                         {{timemodifiedrel}}
                     </span>
+                </td>
+                <td class="ps-2">
+                    {{#isactive}}
+                        <a
+                            href="{{{aborturl}}}"
+                            class="btn btn-sm btn-outline-danger"
+                            role="button"
+                            title="{{#str}} abort_process, tool_userautodelete {{/str}}"
+                            data-toggle="tooltip"
+                            data-title="{{#str}} abort_process, tool_userautodelete {{/str}}"
+                            data-bs-toggle="tooltip"
+                            data-bs-title="{{#str}} abort_process, tool_userautodelete {{/str}}"
+                        >
+                            <i class="fa-solid fa-ban fa-fw"></i>
+                        </a>
+                    {{/isactive}}
                 </td>
             </tr>
             {{/processes}}
