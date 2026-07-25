@@ -10,6 +10,8 @@ part of the core plugin and therefore available within every installation:
 ---
 
 <div class="subplugin-grid" markdown>
+[:fontawesome-solid-circle-check:<br>Account Confirmation](confirmed.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
+
 [:fontawesome-solid-key:<br>Authentication Method](auth.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
 
 [:fontawesome-solid-users:<br>Cohort Membership](cohort.md){.md-button .md-button-subplugin .md-button-subplugin-filter}
