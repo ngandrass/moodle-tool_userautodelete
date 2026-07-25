@@ -2,9 +2,14 @@
 
 Filters are used to select the Moodle users that are eligible to enter or transition between
 [workflow steps](../workflow/steps.md). Each filter contributes a SQL `WHERE` clause fragment that is combined with
-all other active filters via a logical `AND` to produce the final user selection query.
+all other active filters via a logical `AND` to produce the final user selection query. An additional PHP-based 
+post-filtering stage is available for use cases that cannot be expressed in SQL.
 
 Filters are implemented as small subplugins and can therefore be easily extended by your own institution-specific filters.
+
+!!! example "Example filter subplugin implementations"
+    You can find many examples of filter subplugins directly within {{ source_file('filter/') }}.
+
 
 ## Overview
 
@@ -46,6 +51,7 @@ classDiagram
         +get_plugin_name()$ string
         +instance_setting_descriptors()$ array
         +user_records_filter_clause() userfilter_clause
+        +user_records_postfilter(userids: int[]) int[]
     }
 
     %% Supporting classes
@@ -81,36 +87,59 @@ classDiagram
 
 </div>
 
+!!! warning "PHPDocs are the ground source of truth"
+    Please refer to the PHPDocs in the source code as the ground source of truth for detailed
+    information regarding the implementation of these methods and their expected behavior.
+
 
 ## Implementation
 
 All filter subplugins must use the `userdeletefilter` frankenstyle plugin type and extend the abstract
 {{ source_file('classes/userdeletefilter.php', '\\tool_userautodelete\\userdeletefilter') }} base class.
 
-Any filter subplugin must implement the following methods:
+Filtering is possible in two stages that are described in detail below:
+
+  - [SQL-based filtering](#sql-based-filtering) (preferred)
+  - [PHP-based post-filtering](#post-filtering)
+
+At a minimum, any filter subplugin must implement the following methods:
 
 1. {{ source_file('classes/step_subplugin.php', 'get_plugin_name(): string') }}
 2. {{ source_file('classes/userdeletefilter.php', 'user_records_filter_clause(): userfilter_clause') }}
 3. {{ source_file('classes/local/trait/subplugin_instance_settings.php', 'instance_setting_descriptors(): array') }}
    (see also: [instance settings](instancesettings.md))
 
-The `user_records_filter_clause()` method must return a
-{{ source_file('classes/local/type/userfilter_clause.php', 'userfilter_clause') }} object that contains
-a SQL `WHERE` clause fragment and the associated named parameters. All references to user table columns
-**must** use the `u` table alias (e.g., `u.lastaccess`). All active filter clauses are joined with a SQL
-`AND` operator at the time of evaluation.
-
-You do not have to prefix your SQL parameter names in any way, as the core plugin will automatically
-prefix them uniquely for you at the time of evaluation.
-
 Of course you can also override other methods like {{ source_file('classes/step_subplugin.php',
 'get_instance_details(): string') }} or {{ source_file('classes/userdeletefilter.php',
 'get_icon_class(): string') }} to further customize the behavior of your filter subplugin and how it
 displays within the UI.
 
-!!! warning "PHPDocs are the ground source of truth"
-    Please refer to the PHPDocs in the source code as the ground source of truth for detailed
-    information regarding the implementation of these methods and their expected behavior.
+### SQL-based filtering
 
-!!! example "Example filter subplugin implementations"
-    You can find many examples of filter subplugins directly within {{ source_file('filter/') }}.
+Every filter **must** implement `user_records_filter_clause()` to select target users from the Moodle database. The
+`user_records_filter_clause()` method must return a
+{{ source_file('classes/local/type/userfilter_clause.php', 'userfilter_clause') }} object that contains a SQL `WHERE`
+clause fragment and the associated named parameters. All references to user table columns **must** use the `u` table
+alias (e.g., `u.lastaccess`). All active filter clauses are joined with a SQL `AND` operator at the time of evaluation.
+
+!!! info "SQL parameter names are automatically prefixed"
+    You do not have to prefix your SQL parameter names in any way, as the core plugin will automatically
+    prefix them uniquely for you at the time of evaluation.
+
+### Post-filtering
+
+For use cases that cannot be expressed as SQL, such as remote API lookups, multi-system aggregations, or any logic that
+depends on data outside the Moodle database, filters can **optionally** implement a second, PHP-based stage by
+overriding `user_records_postfilter()`.
+
+This method is called **after** `user_records_filter_clause()` has already narrowed the candidate set. It receives all
+surviving user IDs in a single batch, so implementations can perform efficient bulk lookups instead of one call per
+user. Return the subset of `$userids` that passes this filter.
+
+By default, the `user_records_postfilter()` method returns the input unchanged so that the filter has no effect unless
+explicitly implemented.
+
+!!! danger "Prefer SQL filtering when possible"
+    The SQL stage runs as a single database query and scales well. Reserve
+    `user_records_postfilter()` for logic that genuinely cannot be expressed in SQL, since every
+    PHP-based check adds overhead proportional to the number of candidate users.
