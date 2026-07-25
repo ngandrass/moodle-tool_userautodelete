@@ -19,6 +19,8 @@ of the core plugin and therefore available within every installation:
 
 [:fontawesome-solid-envelope:<br>Send Mail](mail.md){.md-button .md-button-subplugin .md-button-subplugin-action}
 
+[:fontawesome-solid-user-pen:<br>Set Profile Field](profilefield.md){.md-button .md-button-subplugin .md-button-subplugin-action}
+
 [:fontawesome-regular-circle-pause:<br>Suspend User](suspend.md){.md-button .md-button-subplugin .md-button-subplugin-action}
 
 [:fontawesome-regular-circle-play:<br>Unsuspend User](unsuspend.md){.md-button .md-button-subplugin .md-button-subplugin-action}
