@@ -26,6 +26,8 @@ namespace userdeletefilter_confirmed\privacy;
 
 /**
  * Privacy provider declaring that this plugin stores no personal data.
+ *
+ * @codeCoverageIgnore This is handled by Moodle core tests
  */
 class provider implements \core_privacy\local\metadata\null_provider {
     #[\Override]
