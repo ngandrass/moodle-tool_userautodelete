@@ -894,6 +894,143 @@ final class workflow_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that get_applicable_users_count() respects user_records_postfilter().
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_get_applicable_users_count_respects_postfilter(): void {
+        require_once(__DIR__ . '/fixtures/filter_postfilterblock/userdeletefilter.php');
+
+        $this->resetAfterTest();
+
+        // Prepare inactive single-step workflow with a suspension SQL-filter.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_simple_suspend_workflow('Workflow', 'Description', false);
+        $firststep = $workflow->steps[0];
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Add postfilterblock filter that blocks user3.
+        userdeletefilter::create_instance($firststep, 'postfilterblock', ['blockeduserids' => (string) $user3->id]);
+
+        // All three pass SQL, but only two survive the post-filter.
+        $this->assertSame(2, $workflow->get_applicable_users_count(), 'Post-filter must reduce the applicable user count');
+    }
+
+    /**
+     * Tests that workflow::process() applies user_records_postfilter() during user ingestion.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_applies_postfilter_during_ingestion(): void {
+        require_once(__DIR__ . '/fixtures/filter_postfilterblock/userdeletefilter.php');
+
+        $this->resetAfterTest();
+
+        // Prepare active single-step workflow with a suspension SQL-filter.
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_simple_suspend_workflow('Workflow', 'Description', true);
+        $firststep = $workflow->steps[0];
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Add postfilterblock filter that blocks user3 from being ingested.
+        userdeletefilter::create_instance($firststep, 'postfilterblock', ['blockeduserids' => (string) $user3->id]);
+
+        $workflow->process();
+
+        // Single-step workflows finish processes immediately on creation, so includefinished is required.
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $user1->id, includefinished: true),
+            'User 1 should be ingested into the workflow'
+        );
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $user2->id, includefinished: true),
+            'User 2 should be ingested into the workflow'
+        );
+        $this->assertEmpty(
+            process::get_user_processes((int) $user3->id, includefinished: true),
+            'User 3 must not be ingested because the post-filter blocks them'
+        );
+    }
+
+    /**
+     * Tests that workflow::process() does not transition a user rejected by user_records_postfilter().
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_does_not_transition_user_rejected_by_postfilter(): void {
+        global $DB;
+        require_once(__DIR__ . '/fixtures/filter_postfilterblock/userdeletefilter.php');
+
+        $this->resetAfterTest();
+
+        // Prepare active two-step workflow: step 1 unsuspends, step 2 deletes (filter: suspended = 0).
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_delete_workflow('Workflow', 'Description', true);
+
+        // Create two suspended users and seed them into step 1 (the creation unsuspends them).
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $process1 = process::create((int) $user1->id, $workflow);
+        $process2 = process::create((int) $user2->id, $workflow);
+
+        // Both users are now unsuspended (step-1 action) and active in step 1.
+        $this->assertSame(process_state::ACTIVE, $process1->state, 'Fixture process 1 should be active in step 1');
+        $this->assertSame(process_state::ACTIVE, $process2->state, 'Fixture process 2 should be active in step 1');
+
+        // Attach post-filter to step 2 that blocks user2 from transitioning.
+        userdeletefilter::create_instance($workflow->steps[1], 'postfilterblock', ['blockeduserids' => (string) $user2->id]);
+
+        // Process: user1 passes step-2 SQL + post-filter → deleted; user2 blocked by post-filter → stays in step 1.
+        $workflow->process();
+
+        $this->assertSame(
+            1,
+            (int) $DB->get_field('user', 'deleted', ['id' => $user1->id]),
+            'User 1 must be deleted after transitioning through the final step'
+        );
+        $this->assertSame(
+            0,
+            (int) $DB->get_field('user', 'deleted', ['id' => $user2->id]),
+            'User 2 must not be deleted because the post-filter blocked the transition'
+        );
+        $this->assertSame(
+            process_state::FINISHED,
+            process::get_by_id($process1->id)->state,
+            'Process 1 must be finished after the final step'
+        );
+        $this->assertSame(
+            process_state::ACTIVE,
+            process::get_by_id($process2->id)->state,
+            'Process 2 must remain active because the post-filter blocked the transition'
+        );
+        $this->assertSame(
+            $workflow->steps[0]->id,
+            process::get_by_id($process2->id)->stepid,
+            'Process 2 must still be in step 1 after being rejected by the post-filter'
+        );
+    }
+
+    /**
      * Tests that cleanup_processes() is a no-op when no process timed out.
      *
      * @covers \tool_userautodelete\workflow
