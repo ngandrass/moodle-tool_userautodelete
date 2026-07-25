@@ -166,4 +166,22 @@ abstract class userdeletefilter extends step_subplugin {
      * @return userfilter_clause The SQL where clause and parameters for filtering user datasets
      */
     abstract public function user_records_filter_clause(): userfilter_clause;
+
+    /**
+     * Optionally post-filters a pre-selected set of user IDs using arbitrary PHP logic.
+     *
+     * ATTENTION: Use this function very sparingly. Always implement as much filtering
+     * as possible inside user_records_filter_clause() for performance reasons!
+     *
+     * Override this to perform checks that cannot be expressed as SQL (e.g., remote
+     * API calls, complex aggregations). Called only after user_records_filter_clause()
+     * has already narrowed the candidate set. Receives all surviving IDs in one batch
+     * so implementations can minimize round-trips.
+     *
+     * @param int[] $userids Candidate user IDs that passed the SQL filter stage.
+     * @return int[] Subset of $userids that also pass this filter.
+     */
+    public function user_records_postfilter(array $userids): array {
+        return $userids;
+    }
 }
