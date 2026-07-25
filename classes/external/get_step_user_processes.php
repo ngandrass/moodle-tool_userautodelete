@@ -74,6 +74,7 @@ class get_step_user_processes extends external_api {
                 'username'        => new external_value(PARAM_TEXT, 'Username'),
                 'fullname'        => new external_value(PARAM_TEXT, 'Full name of the user'),
                 'profileurl'      => new external_value(PARAM_URL, 'URL to the user\'s profile page'),
+                'aborturl'        => new external_value(PARAM_URL, 'URL to abort this process (empty if not active)'),
                 'isactive'        => new external_value(PARAM_BOOL, 'Whether the process is currently active'),
                 'isfinished'      => new external_value(PARAM_BOOL, 'Whether the process has finished successfully'),
                 'isaborted'       => new external_value(PARAM_BOOL, 'Whether the process was aborted'),
@@ -115,16 +116,26 @@ class get_step_user_processes extends external_api {
         $records = process::get_user_process_metadata_for_step($step, $activeonly);
 
         // Map DB records to the return structure.
+        $returnurl = (new \moodle_url('/admin/tool/userautodelete/workflow.php', ['id' => $step->workflow->id]))->out(false);
         $now = time();
         $result = [];
         foreach ($records as $record) {
             $state = process_state::from((int) $record->state);
+            $aborturl = $state === process_state::ACTIVE
+                ? (new \moodle_url('/admin/tool/userautodelete/manageprocess.php', [
+                    'id'        => (int) $record->id,
+                    'action'    => 'abort',
+                    'returnurl' => $returnurl,
+                ]))->out(false)
+                : '';
+
             $result[] = [
                 'processid'       => (int) $record->id,
                 'userid'          => (int) $record->userid,
                 'username'        => (string) $record->username,
                 'fullname'        => "{$record->firstname} {$record->lastname}",
                 'profileurl'      => (new \moodle_url('/user/profile.php', ['id' => $record->userid]))->out(false),
+                'aborturl'        => $aborturl,
                 'isactive'        => $state === process_state::ACTIVE,
                 'isfinished'      => $state === process_state::FINISHED,
                 'isaborted'       => $state === process_state::ABORTED,
