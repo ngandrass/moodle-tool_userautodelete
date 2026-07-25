@@ -4,6 +4,7 @@
 
 - Create a course enrolment filter that allows to select users based on whether they are currently enrolled in at least one course or not. See [Filter: Course Enrolment](https://moodleuserlifecycle.gandrass.de/filters/enrolment/) for more information. (Thanks to @35grain !)
 - Create a user profile filter that supports both standard and custom profile fields. See [Filter: Profile Field](https://moodleuserlifecycle.gandrass.de/filters/profilefield/) for more information.
+- Create a account confirmation filter that allows to select users based on whether they have confirmed their account or not. See [Filter: Account Confirmation](https://moodleuserlifecycle.gandrass.de/filters/confirmed/) for more information.
 - Create a cohort action that allows to add or remove users to / from one or more cohorts. See [Action: Cohort Membership](https://moodleuserlifecycle.gandrass.de/actions/cohort/) for more information.
 - Create a user profile field action that allows to set a user profile field to a configured value. See [Action: Set Profile Field](https://moodleuserlifecycle.gandrass.de/actions/profilefield/) for more information.
 - Extend mail action to support different recipient types: targeted user (previously fixed behavior), site administrators, custom email address

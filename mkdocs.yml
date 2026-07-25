@@ -130,6 +130,7 @@ nav:
 
   - "Filters":
     - filters/index.md
+    - "Account Confirmation": filters/confirmed.md
     - "Authentication Method": filters/auth.md
     - "Cohort Membership": filters/cohort.md
     - "Course Enrolment": filters/enrolment.md
