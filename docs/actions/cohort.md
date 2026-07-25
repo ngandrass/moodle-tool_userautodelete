@@ -1,6 +1,6 @@
 # Action: Cohort Membership
 
-The **Cohort Membership** action adds users to or removes users from one or more [cohorts](https://docs.moodle.org/en/Cohorts).
+The cohort membership action adds users to or removes users from one or more [cohorts](https://docs.moodle.org/en/Cohorts).
 This can be useful to automatically manage cohort membership for users or mark them during workflow execution.
 
 

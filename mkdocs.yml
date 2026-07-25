@@ -146,6 +146,7 @@ nav:
     - "Cohort Membership": actions/cohort.md
     - "Delete User": actions/delete.md
     - "Send Mail": actions/mail.md
+    - "Set Profile Field": actions/profilefield.md
     - "Suspend User": actions/suspend.md
     - "Unsuspend User": actions/unsuspend.md
 

@@ -50,7 +50,9 @@ More information about the plugin and a comprehensive
   - Time delay
 - Action subplugins to perform various operations. Core actions available:
   - Anonymize user account (GDPR compliance)
+  - Cohort membership changes
   - Delete user
+  - Profile field changes (standard and custom)
   - Send mail to user, site admins, or custom address
   - Suspend user
   - Unsuspend user
