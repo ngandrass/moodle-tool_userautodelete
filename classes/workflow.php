@@ -533,7 +533,18 @@ class workflow {
             $processes = process::get_active_processes_for_step($step, transitionableonly: true);
             $targetstep = $step->next();
             if (empty($processes) || !$targetstep) {
-                logger::info("  -> No transitionable processes found");
+                logger::info("  -> No transitionable processes found after SQL-filtering");
+                continue;
+            }
+
+            // Apply post-filters from the target step.
+            $filtereduserids = array_flip($targetstep->apply_user_postfilters(
+                array_map(fn($p) => $p->userid, $processes)
+            ));
+            $processes = array_filter($processes, fn($p) => isset($filtereduserids[$p->userid]));
+
+            if (empty($processes)) {
+                logger::info('  -> No transitionable processes found after post-filtering');
                 continue;
             }
 
@@ -649,11 +660,12 @@ class workflow {
     protected function get_applicable_users(): array {
         global $DB;
 
-        $userfilterclause = $this->get_steps()[0]->generate_user_filter_clause();
+        $firststep = $this->get_steps()[0];
+        $userfilterclause = $firststep->generate_user_filter_clause();
 
         // Get all users this workflow is sensitive to and that are not yet part
         // of any other workflow.
-        return $DB->get_fieldset_sql(
+        $userids = $DB->get_fieldset_sql(
             'SELECT u.id
             FROM {user} u
             WHERE u.deleted = 0
@@ -668,6 +680,8 @@ class workflow {
                 $userfilterclause->params
             )
         );
+
+        return $firststep->apply_user_postfilters($userids);
     }
 
     /**

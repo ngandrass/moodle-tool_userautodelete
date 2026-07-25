@@ -575,4 +575,26 @@ class step {
             params: $filterparams
         );
     }
+
+    /**
+     * Applies all post-filters to the given list of user IDs.
+     *
+     * Calls user_records_postfilter() on each filter linked to this step,
+     * progressively narrowing the candidate list. Stops early if the list
+     * becomes empty.
+     *
+     * @param int[] $userids Candidate user IDs to filter.
+     * @return int[] Subset of $userids that pass all post-filters.
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function apply_user_postfilters(array $userids): array {
+        foreach ($this->get_filters() as $filter) {
+            if (empty($userids)) {
+                break;
+            }
+            $userids = $filter->user_records_postfilter($userids);
+        }
+        return $userids;
+    }
 }
