@@ -650,9 +650,10 @@
                             hasprocesses: processes.length > 0,
                         }),
                         isVerticallyCentered: true,
-                        large: true,
+                        // large: true,
                     });
 
+                    modal.getModal().addClass('modal-xl');
                     modal.show();
                 } catch (err) {
                     Notification.exception(err);
