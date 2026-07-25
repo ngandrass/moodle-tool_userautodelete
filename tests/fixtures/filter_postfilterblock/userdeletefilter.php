@@ -21,6 +21,7 @@
  * discovered by Moodle's plugin manager and therefore never installed in
  * production. It is loaded in unit tests via require_once.
  *
+ * @package     tool_userautodelete
  * @copyright   2026 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
