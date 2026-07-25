@@ -46,6 +46,14 @@ class plugin_util {
     public static function get_subplugin_class(string $plugintype, string $pluginname): string {
         global $CFG;
 
+        // During unit tests allow fixture classes that are loaded by the test case but are not formally installed.
+        if (defined('PHPUNIT_TEST') && PHPUNIT_TEST) {
+            $plugincls = "\\{$plugintype}_{$pluginname}\\{$plugintype}";
+            if (class_exists($plugincls)) {
+                return $plugincls;
+            }
+        }
+
         // During upgrades do not expect plugins to be enabled and fully installed.
         // This case is required when migrating existing settings into new sub-plugins in one go.
         if (isset($CFG->upgraderunning) || during_initial_install()) {
