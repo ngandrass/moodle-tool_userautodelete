@@ -39,10 +39,11 @@ More information about the plugin and a comprehensive
 
 - Workflow-based user lifecycle management with freely configurable, multi-step workflows
 - User filter subplugins for effectively targeting users. Core filters available:
+  - Account confirmation status
   - Authentication method
   - Cohort membership
   - Course enrolment status
-  - Current Date
+  - Current date
   - Last access to site
   - Profile field (standard and custom)
   - Role assignment
