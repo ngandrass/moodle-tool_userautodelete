@@ -924,15 +924,31 @@ final class workflow_test extends \advanced_testcase {
     }
 
     /**
+     * Provides data for post-filter tests.
+     *
+     * @return array<string, array<bool>> Data sets for the test.
+     */
+    public static function provide_withsurvivors_flag(): array {
+        return [
+            "with survivors" => [true],
+            "without survivors" => [false],
+        ];
+    }
+
+    /**
      * Tests that workflow::process() applies user_records_postfilter() during user ingestion.
      *
      * @covers \tool_userautodelete\workflow
+     * @dataProvider provide_withsurvivors_flag
      *
+     * @param bool $withsurvivors If true, post-filter will be setup to allow some users to survive.
+     * If false, all users will be rejected by the post-filter.
      * @return void
+     * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function test_process_applies_postfilter_during_ingestion(): void {
+    public function test_process_applies_postfilter_during_ingestion(bool $withsurvivors): void {
         require_once(__DIR__ . '/fixtures/filter_postfilterblock/userdeletefilter.php');
 
         $this->resetAfterTest();
@@ -947,21 +963,36 @@ final class workflow_test extends \advanced_testcase {
         $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
 
         // Add postfilterblock filter that blocks user3 from being ingested.
-        userdeletefilter::create_instance($firststep, 'postfilterblock', ['blockeduserids' => (string) $user3->id]);
+        userdeletefilter::create_instance($firststep, 'postfilterblock', [
+            'blockeduserids' => $withsurvivors
+                ? "{$user3->id}"
+                : "{$user1->id},{$user2->id},{$user3->id}",
+        ]);
 
         $workflow->process();
 
         // Single-step workflows finish processes immediately on creation, so includefinished is required.
-        $this->assertCount(
-            1,
-            process::get_user_processes((int) $user1->id, includefinished: true),
-            'User 1 should be ingested into the workflow'
-        );
-        $this->assertCount(
-            1,
-            process::get_user_processes((int) $user2->id, includefinished: true),
-            'User 2 should be ingested into the workflow'
-        );
+        if ($withsurvivors) {
+            $this->assertCount(
+                1,
+                process::get_user_processes((int) $user1->id, includefinished: true),
+                'User 1 should be ingested into the workflow'
+            );
+            $this->assertCount(
+                1,
+                process::get_user_processes((int) $user2->id, includefinished: true),
+                'User 2 should be ingested into the workflow'
+            );
+        } else {
+            $this->assertEmpty(
+                process::get_user_processes((int) $user1->id, includefinished: true),
+                'User 1 must not be ingested because the post-filter blocks them'
+            );
+            $this->assertEmpty(
+                process::get_user_processes((int) $user2->id, includefinished: true),
+                'User 2 must not be ingested because the post-filter blocks them'
+            );
+        }
         $this->assertEmpty(
             process::get_user_processes((int) $user3->id, includefinished: true),
             'User 3 must not be ingested because the post-filter blocks them'
@@ -972,12 +1003,15 @@ final class workflow_test extends \advanced_testcase {
      * Tests that workflow::process() does not transition a user rejected by user_records_postfilter().
      *
      * @covers \tool_userautodelete\workflow
+     * @dataProvider provide_withsurvivors_flag
      *
+     * @param bool $withsurvivors If true, post-filter will be setup to allow some users to survive.
+     * If false, all users will be rejected by the post-filter.
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function test_process_does_not_transition_user_rejected_by_postfilter(): void {
+    public function test_process_does_not_transition_user_rejected_by_postfilter(bool $withsurvivors): void {
         global $DB;
         require_once(__DIR__ . '/fixtures/filter_postfilterblock/userdeletefilter.php');
 
@@ -998,25 +1032,49 @@ final class workflow_test extends \advanced_testcase {
         $this->assertSame(process_state::ACTIVE, $process2->state, 'Fixture process 2 should be active in step 1');
 
         // Attach post-filter to step 2 that blocks user2 from transitioning.
-        userdeletefilter::create_instance($workflow->steps[1], 'postfilterblock', ['blockeduserids' => (string) $user2->id]);
+        userdeletefilter::create_instance($workflow->steps[1], 'postfilterblock', [
+            'blockeduserids' => $withsurvivors
+                ? "{$user2->id}"               // User 1 survives filter. User 1 is deleted.
+                : "{$user1->id},{$user2->id}", // User 1 and user 2 are blocked by the filter. Nothing is deleted.
+        ]);
 
-        // Process: user1 passes step-2 SQL + post-filter → deleted; user2 blocked by post-filter → stays in step 1.
         $workflow->process();
 
-        $this->assertSame(
-            1,
-            (int) $DB->get_field('user', 'deleted', ['id' => $user1->id]),
-            'User 1 must be deleted after transitioning through the final step'
-        );
+        if ($withsurvivors) {
+            // User 2 was blocked by post-filter, user 1 survided. So user 1 should advance to the deletion step.
+            $this->assertSame(
+                1,
+                (int) $DB->get_field('user', 'deleted', ['id' => $user1->id]),
+                'User 1 must be deleted after transitioning through the final step'
+            );
+            $this->assertSame(
+                process_state::FINISHED,
+                process::get_by_id($process1->id)->state,
+                'Process 1 must be finished after the final step'
+            );
+        } else {
+            $this->assertSame(
+                0,
+                (int) $DB->get_field('user', 'deleted', ['id' => $user1->id]),
+                'User 1 must not be deleted after transitioning through the final step'
+            );
+            $this->assertSame(
+                process_state::ACTIVE,
+                process::get_by_id($process1->id)->state,
+                'Process 1 must remain active because the post-filter blocked the transition'
+            );
+            $this->assertSame(
+                $workflow->steps[0]->id,
+                process::get_by_id($process1->id)->stepid,
+                'Process 1 must still be in step 1 after being rejected by the post-filter'
+            );
+        }
+
+        // User 2 is always blocked by the post-filter so should stay in any case.
         $this->assertSame(
             0,
             (int) $DB->get_field('user', 'deleted', ['id' => $user2->id]),
             'User 2 must not be deleted because the post-filter blocked the transition'
-        );
-        $this->assertSame(
-            process_state::FINISHED,
-            process::get_by_id($process1->id)->state,
-            'Process 1 must be finished after the final step'
         );
         $this->assertSame(
             process_state::ACTIVE,

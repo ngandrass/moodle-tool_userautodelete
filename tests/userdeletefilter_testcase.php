@@ -330,4 +330,46 @@ abstract class userdeletefilter_testcase extends \advanced_testcase {
             'Filter record must be removed from the database after delete()'
         );
     }
+
+    /**
+     * Tests that user_records_postfilter() executes without error.
+     *
+     * Actual functional tests must be provided by the specific implementations themselves.
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_user_records_postfilter_executes_with_users(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $filter = $this->create_valid_filter_instance($step);
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+
+        // At this point we simply check that the postfilter hook can be called without throwing an exception.
+        $filter->user_records_postfilter([$user1->id, $user2->id, $user3->id]);
+    }
+
+    /**
+     * Tests that user_records_postfilter() executes without error when given an
+     * emtpy userid list.
+     *
+     * Actual functional tests must be provided by the specific implementations themselves.
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_user_records_postfilter_executes_with_empty_list(): void {
+        $this->resetAfterTest();
+
+        $step = $this->create_step();
+        $filter = $this->create_valid_filter_instance($step);
+
+        $filter->user_records_postfilter([]);
+    }
 }
