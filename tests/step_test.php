@@ -510,6 +510,65 @@ final class step_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that apply_user_postfilters() returns the input unchanged when no filters are attached.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_apply_user_postfilters_with_no_filters(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step', description: '');
+
+        $userids = [1, 2, 3];
+        $this->assertSame(
+            $userids,
+            $step->apply_user_postfilters($userids),
+            'A step with no filters must return user IDs unchanged.'
+        );
+    }
+
+    /**
+     * Tests that apply_user_postfilters() chains multiple post-filters in sequence.
+     *
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_apply_user_postfilters_chains_multiple_filters(): void {
+        $this->resetAfterTest();
+
+        $workflow = workflow::create('Test Workflow', 'Description');
+        $step = step::create(workflow: $workflow, title: 'Step', description: '');
+
+        // First mock: keeps only IDs <= 10.
+        $filter1 = $this->createMock(userdeletefilter::class);
+        $filter1->method('user_records_postfilter')
+            ->willReturnCallback(fn($ids) => array_values(array_filter($ids, fn($id) => $id <= 10)));
+
+        // Second mock: keeps only even IDs.
+        $filter2 = $this->createMock(userdeletefilter::class);
+        $filter2->method('user_records_postfilter')
+            ->willReturnCallback(fn($ids) => array_values(array_filter($ids, fn($id) => $id % 2 === 0)));
+
+        $reflectionproperty = new \ReflectionProperty($step, 'filters');
+        $reflectionproperty->setValue($step, [$filter1, $filter2]);
+
+        $this->assertSame(
+            [2, 8],
+            $step->apply_user_postfilters([2, 5, 8, 11, 12]),
+            'Filters must be applied in sequence; result must be the intersection of both constraints.'
+        );
+    }
+
+    /**
      * Tests timeout determination based on next-step delay filters.
      *
      * @covers \tool_userautodelete\step
