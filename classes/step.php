@@ -161,9 +161,8 @@ class step {
         if ($this->filters === null) {
             $this->filters = array_map(
                 fn($filterid) => userdeletefilter::get_instance_by_id($filterid),
-                $DB->get_fieldset(
-                    db_table::WORKFLOW_FILTER->value,
-                    'id',
+                $DB->get_fieldset_sql(
+                    'SELECT id FROM {' . db_table::WORKFLOW_FILTER->value . '} WHERE stepid = :stepid ORDER BY id ASC',
                     ['stepid' => $this->id]
                 )
             );
@@ -213,9 +212,8 @@ class step {
         if ($this->actions === null) {
             $this->actions = array_map(
                 fn($actionid) => userdeleteaction::get_instance_by_id($actionid),
-                $DB->get_fieldset(
-                    db_table::WORKFLOW_ACTION->value,
-                    'id',
+                $DB->get_fieldset_sql(
+                    'SELECT id FROM {' . db_table::WORKFLOW_ACTION->value . '} WHERE stepid = :stepid ORDER BY id ASC',
                     ['stepid' => $this->id]
                 )
             );
