@@ -25,6 +25,7 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\log_event;
 use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\sort_move_direction;
 
@@ -1122,5 +1123,91 @@ final class workflow_test extends \advanced_testcase {
             $freshmodifiedafter,
             'Cleanup should not update timemodified when no process timed out'
         );
+    }
+
+    /**
+     * Tests that cleanup_processes() creates a PROCESS_TIMEOUT actionlog entry for each step with timed-out processes.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_cleanup_processes_logs_timeout_events(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $firststep = $workflow->steps[0];
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        $timedoutprocess1 = process::create((int) $user1->id, $workflow);
+        $timedoutprocess2 = process::create((int) $user2->id, $workflow);
+        process::create((int) $user3->id, $workflow);
+
+        // Push two processes beyond the timeout threshold.
+        $oldtimestamp = time() - $firststep->timeoutsec - 30;
+        $DB->update_record(db_table::USER_PROCESS->value, ['id' => $timedoutprocess1->id, 'timemodified' => $oldtimestamp]);
+        $DB->update_record(db_table::USER_PROCESS->value, ['id' => $timedoutprocess2->id, 'timemodified' => $oldtimestamp]);
+
+        $this->assertSame(0, $DB->count_records(db_table::ACTIONLOG->value), 'No actionlog rows should exist before cleanup');
+
+        $workflow->cleanup_processes();
+
+        $logs = $DB->get_records(db_table::ACTIONLOG->value);
+        $this->assertCount(1, $logs, 'Exactly one actionlog entry expected for the timed-out step');
+
+        $log = reset($logs);
+        $this->assertSame(log_event::PROCESS_TIMEOUT->value, $log->action, 'Log entry must use the PROCESS_TIMEOUT event name');
+        $this->assertSame($workflow->id, (int) $log->workflowid, 'Log entry must reference the correct workflow');
+        $this->assertSame($firststep->id, (int) $log->stepid, 'Log entry must reference the step that had timed-out processes');
+        $this->assertSame(2, (int) $log->affectedusers, 'Log entry must count exactly the two timed-out processes');
+    }
+
+    /**
+     * Tests that deactivate() creates PROCESS_ABORT_WORKFLOW_DEACTIVATED actionlog entries per step.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_deactivate_logs_workflow_deactivated_events(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $generator = $this->get_userautodelete_generator();
+        $workflow = $generator->create_multistep_suspend_workflow('Workflow', 'Description', true);
+        $firststep = $workflow->steps[0];
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        process::create((int) $user1->id, $workflow);
+        process::create((int) $user2->id, $workflow);
+
+        $this->assertSame(0, $DB->count_records(db_table::ACTIONLOG->value), 'No actionlog rows should exist before deactivation');
+
+        $workflow->deactivate();
+
+        $logs = $DB->get_records(db_table::ACTIONLOG->value);
+        $this->assertCount(1, $logs, 'Exactly one actionlog entry expected (one step had active processes)');
+
+        $log = reset($logs);
+        $this->assertSame(
+            log_event::PROCESS_ABORT_WORKFLOW_DEACTIVATED->value,
+            $log->action,
+            'Log entry must use the PROCESS_ABORT_WORKFLOW_DEACTIVATED event name'
+        );
+        $this->assertSame($workflow->id, (int) $log->workflowid, 'Log entry must reference the correct workflow');
+        $this->assertSame($firststep->id, (int) $log->stepid, 'Log entry must reference the step that had active processes');
+        $this->assertSame(2, (int) $log->affectedusers, 'Log entry must count both aborted processes');
     }
 }
