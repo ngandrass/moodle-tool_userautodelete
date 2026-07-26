@@ -228,6 +228,43 @@ final class userdeletefilter_test extends \tool_userautodelete\userdeletefilter_
     }
 
     /**
+     * Tests that user_records_filter_clause() throws a coding_exception when cohortids is an empty array.
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_filter_clause_throws_on_empty_cohortids(): void {
+        $this->resetAfterTest();
+        $this->expectException(\coding_exception::class);
+
+        $step = $this->create_step();
+        $filter = $this->create_filter($step, ['cohortids' => []]);
+        $filter->user_records_filter_clause();
+    }
+
+    /**
+     * Tests that user_records_filter_clause() throws a coding_exception when cohortids setting row is absent (null).
+     *
+     * @covers \userdeletefilter_cohort\userdeletefilter
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_filter_clause_throws_on_null_cohortids(): void {
+        $this->resetAfterTest();
+        $this->expectException(\coding_exception::class);
+
+        $step = $this->create_step();
+        $filter = $this->create_filter($step);
+        $filter->set_instance_setting('cohortids', null);
+        $filter->user_records_filter_clause();
+    }
+
+    /**
      * Tests that is_valid() returns false when the required 'cohortids' setting
      * is empty and true once a valid cohort ID has been configured.
      *
