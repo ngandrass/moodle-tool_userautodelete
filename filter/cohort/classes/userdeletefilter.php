@@ -104,7 +104,7 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
 
         $cohortids = $this->get_instance_setting('cohortids') ?? [];
         if (empty($cohortids)) {
-            throw new \coding_exception('user_records_filter_clause() called on unconfigured cohort filter: cohortids is empty or null.');
+            throw new \coding_exception('user_records_filter_clause() called while cohortids is empty or null.');
         }
 
         [$insql, $inparams] = $DB->get_in_or_equal(
