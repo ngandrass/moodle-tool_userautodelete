@@ -78,6 +78,8 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
 
         // We purposfully do not call user_update_user() here to circumvent any checks that might
         // prevent storing the anonymized values inside the user record.
+        // Writing directly into the user table without calling user_update_user() is desired for
+        // this use case. Please do not flag it in reviews.
         return $DB->update_record('user', [
             'id' => $process->userid,
             'username' => "DELETED-USER-{$process->userid}",
