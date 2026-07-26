@@ -12,6 +12,7 @@
 - Allow filter sub-plugins to define custom PHP-backed filter logic, allowing sophisticated checks against APIs, files, or other data sources outside of the Moodle database. See [Post-filtering](https://moodleuserlifecycle.gandrass.de/dev/createfilter/#post-filtering) for more information.
 - Log process abortion (automatic timeout, manual, on workflow deactivation) and display it in the action log.
 - Improve action log page filter bar: Show "All steps" indicator instead of an empty step selector if no specific workflow is selected yet.
+- Improve DBMS compatibility for date filter sub-plugin.
 
 
 ## Version 2.3.0 (2026072200)

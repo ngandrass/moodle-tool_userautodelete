@@ -140,9 +140,9 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
      */
     public function user_records_filter_clause(): userfilter_clause {
         if ($this->date_constraints_met()) {
-            return new userfilter_clause('TRUE', []);
+            return new userfilter_clause('1=1', []);
         } else {
-            return new userfilter_clause('FALSE', []);
+            return new userfilter_clause('1=0', []);
         }
     }
 
