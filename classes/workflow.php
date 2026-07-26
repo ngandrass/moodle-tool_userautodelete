@@ -446,7 +446,7 @@ class workflow {
                 affectedusers: count($processes),
                 workflowid: $this->id,
                 stepid: $step->id,
-                details: json_encode(['deactivatedby' => $USER->id])
+                details: ['deactivatedby' => $USER->id]
             );
         }
 

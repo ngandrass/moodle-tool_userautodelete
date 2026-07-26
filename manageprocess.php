@@ -73,7 +73,7 @@ if ($action == 'abort') {
                 affectedusers: 1,
                 workflowid: $process->workflowid,
                 stepid: $process->stepid,
-                details: json_encode(['abortedby' => $USER->id])
+                details: ['abortedby' => $USER->id]
             );
         }
     } else {
