@@ -25,6 +25,7 @@
 namespace tool_userautodelete;
 
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\log_event;
 use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\type\sort_move_direction;
 use userdeleteaction_mail\local\type\recipient;
@@ -431,12 +432,25 @@ class workflow {
 
         // Abort all active processes.
         foreach ($this->get_steps() as $step) {
-            foreach (process::get_active_processes_for_step($step) as $process) {
+            $processes = process::get_active_processes_for_step($step);
+            if (empty($processes)) {
+                continue;
+            }
+
+            foreach ($processes as $process) {
                 $process->abort();
             }
+
+            logger::action(
+                name: log_event::PROCESS_ABORT_WORKFLOW_DEACTIVATED->value,
+                affectedusers: count($processes),
+                workflowid: $this->id,
+                stepid: $step->id,
+                details: json_encode(['deactivatedby' => $USER->id])
+            );
         }
 
-        // Update process metadata entry.
+        // Update workflow metadata entry.
         $now = time();
         $DB->update_record(db_table::WORKFLOW->value, [
             'id' => $this->id,
@@ -638,7 +652,7 @@ class workflow {
                 ]
             );
 
-            $inactiveprocidbatches[] = array_keys($procs);
+            $inactiveprocidbatches[$step->id] = array_keys($procs);
         }
 
         // Exit early if we have nothing to do.
@@ -646,7 +660,34 @@ class workflow {
             return;
         }
 
-        process::abort_multiple(array_merge(...$inactiveprocidbatches));
+        try {
+            $transaction = $DB->start_delegated_transaction();
+
+            // Abort processes.
+            process::abort_multiple(array_merge(...$inactiveprocidbatches));
+
+            // Create log entries for all affected steps.
+            foreach ($inactiveprocidbatches as $stepid => $procs) {
+                if (empty($procs)) {
+                    continue;
+                }
+
+                logger::action(
+                    name: log_event::PROCESS_TIMEOUT->value,
+                    affectedusers: count($procs),
+                    workflowid: $this->id,
+                    stepid: $stepid,
+                );
+            }
+
+            $transaction->allow_commit();
+        } catch (\Exception $e) {
+            if (isset($transaction)) {
+                $transaction->rollback($e);
+            }
+
+            throw $e;
+        }
     }
 
     /**

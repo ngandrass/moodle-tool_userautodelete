@@ -23,8 +23,10 @@
  */
 
 use tool_userautodelete\form\process_abort_form;
+use tool_userautodelete\local\type\log_event;
 use tool_userautodelete\local\type\process_state;
 use tool_userautodelete\local\util\adminpage_util;
+use tool_userautodelete\logger;
 use tool_userautodelete\process;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -66,6 +68,13 @@ if ($action == 'abort') {
     if ($form->is_submitted()) {
         if (!$form->is_cancelled()) {
             $process->abort();
+            logger::action(
+                name: log_event::PROCESS_ABORT_MANUAL->value,
+                affectedusers: 1,
+                workflowid: $process->workflowid,
+                stepid: $process->stepid,
+                details: json_encode(['abortedby' => $USER->id])
+            );
         }
     } else {
         $output = $form->render();

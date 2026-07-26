@@ -137,6 +137,8 @@ class log_table extends \table_sql {
      * @param mixed $values Current data row
      * @return string Rendered field content
      * @throws \coding_exception
+     * @throws moodle_exception
+     * @throws \dml_exception
      */
     public function col_workflow($values) {
         if (!$values->workflowid) {
@@ -163,6 +165,9 @@ class log_table extends \table_sql {
      * @param mixed $values Current data row
      * @return string Rendered field content
      * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public function col_step($values) {
         if (!$values->stepid) {
@@ -189,7 +194,6 @@ class log_table extends \table_sql {
      *
      * @param int $workflowid ID of the workflow to retrieve
      * @return workflow Requested workflow object
-     * @throws \dml_exception
      */
     protected function get_workflow(int $workflowid) {
         if (!array_key_exists($workflowid, $this->workflows)) {
