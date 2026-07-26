@@ -1171,6 +1171,241 @@ final class workflow_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that an action failure during ingestion does not abort remaining users and that
+     * the action log counts only the users that were ingested successfully.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_ingestion_failure_does_not_abort_remaining_users(): void {
+        global $DB;
+        require_once(__DIR__ . '/fixtures/action_failforuser/userdeleteaction.php');
+
+        $this->resetAfterTest();
+        $this->preventResetByRollback();
+
+        // Create three suspended users. User B (the middle one) will fail during ingestion.
+        $usera = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $userb = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $userc = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Build a single-step workflow whose only action fails for user B.
+        $workflow = workflow::create('Workflow', '');
+        $firststep = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        userdeletefilter::create_instance($firststep, 'suspension', ['suspended' => true]);
+        userdeleteaction::create_instance($firststep, 'failforuser', ['failuserids' => (string) $userb->id]);
+        $workflow->activate();
+
+        try {
+            $workflow->process();
+        } catch (\Throwable $e) {
+            $this->fail("workflow->process() must not throw when a per-user action fails: {$e->getMessage()}");
+        }
+
+        // Users A and C must have been ingested despite B failing.
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $usera->id, includefinished: true),
+            'User A should have been ingested despite user B failing'
+        );
+        $this->assertEmpty(
+            process::get_user_processes((int) $userb->id, includefinished: true),
+            'User B must not have a process because its ingestion action failed'
+        );
+        $this->assertCount(
+            1,
+            process::get_user_processes((int) $userc->id, includefinished: true),
+            'User C should have been ingested despite user B failing'
+        );
+
+        // Action log must reflect only the two successfully ingested users.
+        $logs = $DB->get_records(db_table::ACTIONLOG->value);
+        $this->assertCount(1, $logs, 'Exactly one action log entry expected for the ingestion step');
+        $log = reset($logs);
+        $this->assertSame(2, (int) $log->affectedusers, 'Action log must count only the two successfully ingested users');
+        $this->assertSame($firststep->id, (int) $log->stepid, 'Action log entry must reference the ingestion step');
+    }
+
+    /**
+     * Tests that when all ingestion actions fail no process records and no action log entries are created.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_ingestion_total_failure_creates_no_action_log(): void {
+        global $DB;
+        require_once(__DIR__ . '/fixtures/action_failforuser/userdeleteaction.php');
+
+        $this->resetAfterTest();
+        $this->preventResetByRollback();
+
+        // Create two suspended users, both of which will fail during ingestion.
+        $usera = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $userb = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Build a single-step workflow whose action fails for all applicable users.
+        $workflow = workflow::create('Workflow', '');
+        $firststep = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        userdeletefilter::create_instance($firststep, 'suspension', ['suspended' => true]);
+        userdeleteaction::create_instance($firststep, 'failforuser', [
+            'failuserids' => implode(',', [(int) $usera->id, (int) $userb->id]),
+        ]);
+        $workflow->activate();
+
+        try {
+            $workflow->process();
+        } catch (\Throwable $e) {
+            $this->fail("workflow->process() must not throw when all ingestion actions fail: {$e->getMessage()}");
+        }
+
+        $this->assertSame(
+            0,
+            $DB->count_records(db_table::USER_PROCESS->value),
+            'No process records should exist when all ingestion actions fail'
+        );
+        $this->assertSame(
+            0,
+            $DB->count_records(db_table::ACTIONLOG->value),
+            'No action log entries should be written when no users are successfully ingested'
+        );
+    }
+
+    /**
+     * Tests that an action failure during transition does not abort remaining processes and that
+     * the action log counts only the processes that transitioned successfully.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_transition_failure_does_not_abort_remaining_processes(): void {
+        global $DB;
+        require_once(__DIR__ . '/fixtures/action_failforuser/userdeleteaction.php');
+
+        $this->resetAfterTest();
+        $this->preventResetByRollback();
+
+        // Create three suspended users. User B will fail during transition.
+        $usera = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $userb = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $userc = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Build a two-step workflow: step 1 unsuspends on ingestion; step 2 fails for user B on transition.
+        $workflow = workflow::create('Workflow', '');
+        $firststep = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        userdeletefilter::create_instance($firststep, 'suspension', ['suspended' => true]);
+        userdeleteaction::create_instance($firststep, 'unsuspend');
+
+        $secondstep = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        userdeletefilter::create_instance($secondstep, 'suspension', ['suspended' => false]);
+        userdeleteaction::create_instance($secondstep, 'failforuser', ['failuserids' => (string) $userb->id]);
+
+        $workflow->activate();
+
+        // Pre-seed active processes in step 1. The unsuspend action runs, so all users become unsuspended.
+        $processa = process::create((int) $usera->id, $workflow);
+        $processb = process::create((int) $userb->id, $workflow);
+        $processc = process::create((int) $userc->id, $workflow);
+
+        try {
+            $workflow->process();
+        } catch (\Throwable $e) {
+            $this->fail("workflow->process() must not throw when a per-process action fails: {$e->getMessage()}");
+        }
+
+        // A and C must have transitioned to the final step; B must remain in step 1.
+        $reloadeda = process::get_by_id($processa->id);
+        $this->assertSame($secondstep->id, $reloadeda->stepid, 'User A must have transitioned to step 2');
+        $this->assertSame(process_state::FINISHED, $reloadeda->state, 'User A process must be finished after the final step');
+
+        $reloadedb = process::get_by_id($processb->id);
+        $this->assertSame($firststep->id, $reloadedb->stepid, 'User B must remain in step 1 after transition failure');
+        $this->assertSame(process_state::ACTIVE, $reloadedb->state, 'User B process must still be active after transition failure');
+
+        $reloadedc = process::get_by_id($processc->id);
+        $this->assertSame($secondstep->id, $reloadedc->stepid, 'User C must have transitioned to step 2');
+        $this->assertSame(process_state::FINISHED, $reloadedc->state, 'User C process must be finished after the final step');
+
+        // Action log must count only the two successfully transitioned processes.
+        $logs = $DB->get_records(db_table::ACTIONLOG->value);
+        $this->assertCount(1, $logs, 'Exactly one action log entry expected for the transition step');
+        $log = reset($logs);
+        $this->assertSame(2, (int) $log->affectedusers, 'Action log must count only the two successfully transitioned processes');
+        $this->assertSame($secondstep->id, (int) $log->stepid, 'Action log entry must reference the transition target step');
+    }
+
+    /**
+     * Tests that when all transition actions fail no action log entries are created and
+     * all processes remain in their original step.
+     *
+     * @covers \tool_userautodelete\workflow
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_process_transition_total_failure_creates_no_action_log(): void {
+        global $DB;
+        require_once(__DIR__ . '/fixtures/action_failforuser/userdeleteaction.php');
+
+        $this->resetAfterTest();
+        $this->preventResetByRollback();
+
+        // Create two suspended users, both of which will fail during transition.
+        $usera = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $userb = $this->getDataGenerator()->create_user(['suspended' => 1]);
+
+        // Build a two-step workflow where step 2's action fails for all pre-seeded users.
+        $workflow = workflow::create('Workflow', '');
+        $firststep = step::create(workflow: $workflow, title: 'Step 1', description: '');
+        userdeletefilter::create_instance($firststep, 'suspension', ['suspended' => true]);
+        userdeleteaction::create_instance($firststep, 'unsuspend');
+
+        $secondstep = step::create(workflow: $workflow, title: 'Step 2', description: '');
+        userdeletefilter::create_instance($secondstep, 'suspension', ['suspended' => false]);
+        userdeleteaction::create_instance($secondstep, 'failforuser', [
+            'failuserids' => implode(',', [(int) $usera->id, (int) $userb->id]),
+        ]);
+
+        $workflow->activate();
+
+        // Pre-seed active processes in step 1 (unsuspend action runs for both users).
+        $processa = process::create((int) $usera->id, $workflow);
+        $processb = process::create((int) $userb->id, $workflow);
+
+        try {
+            $workflow->process();
+        } catch (\Throwable $e) {
+            $this->fail("workflow->process() must not throw when all transition actions fail: {$e->getMessage()}");
+        }
+
+        // Both processes must remain in step 1 unchanged.
+        $this->assertSame(
+            $firststep->id,
+            process::get_by_id($processa->id)->stepid,
+            'User A process must remain in step 1 after total transition failure'
+        );
+        $this->assertSame(
+            $firststep->id,
+            process::get_by_id($processb->id)->stepid,
+            'User B process must remain in step 1 after total transition failure'
+        );
+        $this->assertSame(
+            0,
+            $DB->count_records(db_table::ACTIONLOG->value),
+            'No action log entries should be written when no processes transition successfully'
+        );
+    }
+
+    /**
      * Tests that deactivate() creates PROCESS_ABORT_WORKFLOW_DEACTIVATED actionlog entries per step.
      *
      * @covers \tool_userautodelete\workflow
