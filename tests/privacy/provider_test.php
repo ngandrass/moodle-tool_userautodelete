@@ -59,18 +59,15 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
         $newcollection = provider::get_metadata($collection);
         $tables = $newcollection->get_collection();
 
-        $this->assertCount(1, $tables);
+        $this->assertCount(2, $tables);
 
         $table = reset($tables);
         $this->assertEquals(db_table::USER_PROCESS->value, $table->get_name());
         $this->assertEquals('privacy:metadata:tool_userautodelete_process', $table->get_summary());
 
-        $fields = $table->get_privacy_fields();
-        $this->assertArrayHasKey('userid', $fields);
-        $this->assertArrayHasKey('stepid', $fields);
-        $this->assertArrayHasKey('state', $fields);
-        $this->assertArrayHasKey('timecreated', $fields);
-        $this->assertArrayHasKey('timemodified', $fields);
+        $table = next($tables);
+        $this->assertEquals(db_table::WORKFLOW->value, $table->get_name());
+        $this->assertEquals('privacy:metadata:tool_userautodelete_workflow', $table->get_summary());
     }
 
     /**
