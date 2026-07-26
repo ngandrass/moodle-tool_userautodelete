@@ -111,9 +111,14 @@ class userdeletefilter extends \tool_userautodelete\userdeletefilter {
     public function user_records_filter_clause(): userfilter_clause {
         global $DB;
 
+        $roleids = $this->get_instance_setting('roleids') ?? [];
+        if (empty($roleids)) {
+            throw new \coding_exception('user_records_filter_clause() called on unconfigured role filter: roleids is empty or null.');
+        }
+
         // Transform comma separated list of role IDs into SQL clause.
         [$insql, $inparams] = $DB->get_in_or_equal(
-            items: $this->get_instance_setting('roleids'),
+            items: $roleids,
             type: SQL_PARAMS_NAMED,
             prefix: 'roleparam',
         );
