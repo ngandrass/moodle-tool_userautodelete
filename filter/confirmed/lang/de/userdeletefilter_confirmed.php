@@ -25,7 +25,7 @@
 $string['missing_mode_setting'] = 'Die erforderliche Einstellung für den Bestätigungsmodus wurde nicht konfiguriert.';
 $string['mode_confirmed'] = 'Bestätigt';
 $string['mode_unconfirmed'] = 'Nicht bestätigt';
-$string['pluginname'] = 'Kontobestätigung';
+$string['pluginname'] = 'Konto­bestätigung';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
-$string['setting_mode'] = 'Bestätigungsstatus';
+$string['setting_mode'] = 'Bestätigungs­status';
 $string['setting_mode_help'] = 'Wählen Sie aus, welche Nutzer anhand ihres Kontobestätigungsstatus ausgewählt werden sollen.<br><br>Bei <b>Nicht bestätigt</b> werden nur Nutzer ausgewählt, die ihr Konto noch nicht bestätigt haben (z.B. durch die E-Mail-Bestätigung nach der Selbstregistrierung).<br><br>Bei <b>Bestätigt</b> werden nur Nutzer ausgewählt, deren Konto bereits bestätigt ist.';

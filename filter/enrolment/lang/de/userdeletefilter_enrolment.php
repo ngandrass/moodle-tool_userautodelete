@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$string['pluginname'] = 'Kurseinschreibung';
+$string['pluginname'] = 'Kurs­ein­schreibung';
 $string['privacy:metadata'] = 'Dieses Plugin speicher keine personenbezogenen Daten';
 $string['setting_enrolled'] = 'Status der Einschreibung';
 $string['setting_enrolled_help'] = 'Wählen Sie aus, ob der Benutzer in mindestens einen Kurs eingeschrieben sein muss oder nicht.';

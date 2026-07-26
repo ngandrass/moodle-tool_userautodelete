@@ -8,6 +8,7 @@
 - Create a cohort action that allows to add or remove users to / from one or more cohorts. See [Action: Cohort Membership](https://moodleuserlifecycle.gandrass.de/actions/cohort/) for more information.
 - Create a user profile field action that allows to set a user profile field to a configured value. See [Action: Set Profile Field](https://moodleuserlifecycle.gandrass.de/actions/profilefield/) for more information.
 - Extend mail action to support different recipient types: targeted user (previously fixed behavior), site administrators, custom email address.
+- Improve design of filter and action addition modals.
 - Add button to process inspection dialog that allows admins to abort specific user processes on demand.
 - Allow filter sub-plugins to define custom PHP-backed filter logic, allowing sophisticated checks against APIs, files, or other data sources outside of the Moodle database. See [Post-filtering](https://moodleuserlifecycle.gandrass.de/dev/createfilter/#post-filtering) for more information.
 - Log process abortion (automatic timeout, manual, on workflow deactivation) and display it in the action log.

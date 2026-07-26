@@ -27,7 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$string['pluginname'] = 'Sperrungsstatus';
+$string['pluginname'] = 'Sperrungs­status';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten.';
-$string['setting_suspended'] = 'Sperrungsstatus';
+$string['setting_suspended'] = 'Sperrungs­status';
 $string['setting_suspended_help'] = 'Wenn diese Option aktiviert ist, werden nur Nutzer ausgewählt, die derzeit gesperrt sind. Wenn diese Option deaktiviert ist, werden nur Nutzer ausgewählt, die nicht gesperrt sind.';
