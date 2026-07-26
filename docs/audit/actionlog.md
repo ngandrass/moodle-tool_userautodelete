@@ -29,3 +29,14 @@ followed by a [suspend action](../actions/suspend.md). This will create two acti
 - (B) 25 users that got suspended.
 
 Both entries will have the same timestamp, workflow, and step associated with them.
+
+
+## System events
+
+In addition to action plugin executions, the log also records the following system events:
+
+| Event                                      | When it appears                                                                                                                                                   |
+|--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Process timed out**                      | A user's process was automatically aborted because it exceeded the step's configured timeout (enforced by the daily cleanup task).                                |
+| **Process aborted (manual)**               | An administrator manually aborted a specific user's process via the user process management page.                                                                 |
+| **Process aborted (workflow deactivated)** | A workflow was deactivated, causing all active user processes to be aborted. One entry is created per step that had active processes at the time of deactivation. |

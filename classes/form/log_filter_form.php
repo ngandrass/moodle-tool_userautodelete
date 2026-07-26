@@ -71,7 +71,7 @@ class log_filter_form extends \moodleform {
             }
             $stepattrs = [];
         } else {
-            $stepoptions = [0 => ''];
+            $stepoptions = [0 => get_string('log_filter_all_steps', 'tool_userautodelete')];
             $stepattrs = ['disabled' => 'disabled'];
         }
 
