@@ -10,6 +10,7 @@
 - Extend mail action to support different recipient types: targeted user (previously fixed behavior), site administrators, custom email address.
 - Add button to process inspection dialog that allows admins to abort specific user processes on demand.
 - Allow filter sub-plugins to define custom PHP-backed filter logic, allowing sophisticated checks against APIs, files, or other data sources outside of the Moodle database. See [Post-filtering](https://moodleuserlifecycle.gandrass.de/dev/createfilter/#post-filtering) for more information.
+- Improve log page filter bar: Show "All steps" indicator instead of an empty step selector if no specific workflow is selected yet.
 
 
 ## Version 2.3.0 (2026072200)
