@@ -24,7 +24,9 @@
 
 namespace tool_userautodelete\output;
 
+use core\exception\moodle_exception;
 use tool_userautodelete\local\type\db_table;
+use tool_userautodelete\local\type\log_event;
 use tool_userautodelete\local\util\plugin_util;
 use tool_userautodelete\step;
 use tool_userautodelete\userdeleteaction;
@@ -116,8 +118,17 @@ class log_table extends \table_sql {
      *
      * @param mixed $values Current data row
      * @return string Rendered field content
+     * @throws \coding_exception
      */
     public function col_action($values) {
+        // Handle custom log events.
+        $logevent = log_event::tryFrom($values->action);
+        if ($logevent !== null) {
+            return '<i class="me-2 ' . $logevent->get_icon_class() . '"></i>&nbsp;'
+                . get_string($logevent->get_lang_key(), 'tool_userautodelete');
+        }
+
+        // Handle action sub-plugin executions.
         try {
             /** @var userdeleteaction $action */
             $action = plugin_util::get_subplugin_class('userdeleteaction', $values->action);
