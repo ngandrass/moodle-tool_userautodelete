@@ -571,41 +571,55 @@ class workflow {
             );
 
             // Perform transition.
+            $transitionedcount = 0;
             foreach ($processes as $process) {
-                $process->transition();
+                try {
+                    $process->transition();
+                    logger::info("  -> Transitioned user {$process->userid} from {$prevstepstr} to {$targetstepstr}");
+                    $transitionedcount++;
 
-                logger::info("  -> Transitioned user {$process->userid} from {$prevstepstr} to {$targetstepstr}");
-                foreach ($targetstepactionstrings as $actionstring) {
-                    logger::info("    -> Executed action: {$actionstring}");
+                    foreach ($targetstepactionstrings as $actionstring) {
+                        logger::info("    -> Executed action: {$actionstring}");
+                    }
+                } catch (\Exception $e) {
+                    logger::error("  -> Failed to transition user {$process->userid}: {$e->getMessage()}");
                 }
             }
 
             // Log executed actions.
-            foreach ($targetstep->actions as $action) {
-                logger::action(
-                    name: $action::get_plugin_name(),
-                    affectedusers: count($processes),
-                    workflowid: $this->id,
-                    stepid: $targetstep->id,
-                    timestamp: $now,
-                );
+            if ($transitionedcount > 0) {
+                foreach ($targetstep->actions as $action) {
+                    logger::action(
+                        name: $action::get_plugin_name(),
+                        affectedusers: $transitionedcount,
+                        workflowid: $this->id,
+                        stepid: $targetstep->id,
+                        timestamp: $now,
+                    );
+                }
             }
         }
 
         // Ingest new applicable users.
         logger::info("-> Performing ingestion");
         $newusers = $this->get_applicable_users();
+        $ingestedcount = 0;
         foreach ($newusers as $userid) {
-            process::create($userid, $this);
-            logger::info("  -> Ingested user {$userid}");
+            try {
+                process::create($userid, $this);
+                logger::info("  -> Ingested user {$userid}");
+                $ingestedcount++;
+            } catch (\Exception $e) {
+                logger::error("  -> Failed to ingest user {$userid}: {$e->getMessage()}");
+            }
         }
 
-        if (count($newusers) > 0) {
+        if ($ingestedcount > 0) {
             $initialstep = $this->get_steps()[0];
             foreach ($initialstep->actions as $action) {
                 logger::action(
                     name: $action::get_plugin_name(),
-                    affectedusers: count($newusers),
+                    affectedusers: $ingestedcount,
                     workflowid: $this->id,
                     stepid: $initialstep->id,
                     timestamp: $now,
