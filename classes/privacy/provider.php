@@ -62,6 +62,15 @@ class provider implements // phpcs:ignore
             'privacy:metadata:tool_userautodelete_process'
         );
 
+        $collection->add_database_table(
+            db_table::WORKFLOW->value,
+            [
+                'createdby' => 'privacy:metadata:tool_userautodelete_workflow:createdby',
+                'modifiedby' => 'privacy:metadata:tool_userautodelete_workflow:modifiedby',
+            ],
+            'privacy:metadata:tool_userautodelete_workflow'
+        );
+
         return $collection;
     }
 
@@ -69,7 +78,7 @@ class provider implements // phpcs:ignore
      * Get the list of contexts that contain user information for the specified user.
      *
      * @param int $userid The user to search.
-     * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
+     * @return contextlist The contextlist containing the list of contexts used in this plugin.
      * @throws \dml_exception
      */
     #[\Override]
@@ -135,7 +144,7 @@ class provider implements // phpcs:ignore
     /**
      * Delete all data for all users in the specified context.
      *
-     * @param \context $context $context The specific context to delete data for.
+     * @param \context $context The specific context to delete data for.
      * @throws \dml_exception
      */
     #[\Override]
