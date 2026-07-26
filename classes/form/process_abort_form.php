@@ -51,7 +51,7 @@ class process_abort_form extends \moodleform {
 
         // Warning notification including the affected user's full name.
         $warnhead = get_string('areyousure');
-        $warnmsg = get_string('abort_process_warning', 'tool_userautodelete', fullname($user) . " (ID: {$user->id})");
+        $warnmsg = get_string('abort_process_warning', 'tool_userautodelete', s(fullname($user)) . " (ID: {$user->id})");
 
         $mform->addElement('html', $OUTPUT->notification(
             "<h4>$warnhead</h4> $warnmsg",

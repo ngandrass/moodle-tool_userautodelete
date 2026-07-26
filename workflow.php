@@ -91,7 +91,9 @@ foreach ($workflow->steps as $step) {
     $stepsmeta[] = [
         'id' => $step->id,
         'title' => $step->title,
+        'title_js' => addslashes_js($step->title),
         'description' => $step->description,
+        'description_js' => addslashes_js($step->description),
         'sort' => $step->sort,
         'isfirst' => $step->sort === 1,
         'islast' => $step->sort === count($workflow->steps),
@@ -222,7 +224,9 @@ echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('tool_userautodelete/workflow', [
     'id' => $workflow->id,
     'title' => $workflow->title,
+    'title_js' => addslashes_js($workflow->title),
     'description' => $workflow->description,
+    'description_js' => addslashes_js($workflow->description),
     'sort' => $workflow->sort,
     'active' => $workflow->active,
     'isvalid' => $workflow->is_valid(),

@@ -727,8 +727,8 @@
                         title: Str.get_string('edit_workflow', 'tool_userautodelete'),
                         body: Templates.render('tool_userautodelete/modal/editworkflow', {
                             id: {{id}},
-                            title: '{{title}}',
-                            description: '{{description}}',
+                            title: '{{{title_js}}}',
+                            description: '{{{description_js}}}',
                             submiturl: '{{{urls.update}}}',
                         }),
                         isVerticallyCentered: true,
@@ -745,8 +745,8 @@
                             title: Str.get_string('edit_step', 'tool_userautodelete'),
                             body: Templates.render('tool_userautodelete/modal/editstep', {
                                 id: {{id}},
-                                title: '{{title}}',
-                                description: '{{description}}',
+                                title: '{{{title_js}}}',
+                                description: '{{{description_js}}}',
                                 submiturl: '{{{urls.edit}}}',
                             }),
                             isVerticallyCentered: true,

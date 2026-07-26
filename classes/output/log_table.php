@@ -136,7 +136,7 @@ class log_table extends \table_sql {
             $title .= get_string('pluginname', 'userdeleteaction_' . $values->action);
         } catch (\moodle_exception $e) {
             $title = '<i class="me-2 ' . userdeleteaction::get_icon_class() . '"></i>';
-            $title .= $values->action;
+            $title .= s($values->action);
         }
 
         return $title;

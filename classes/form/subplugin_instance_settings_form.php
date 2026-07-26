@@ -101,7 +101,7 @@ class subplugin_instance_settings_form extends dynamic_form {
         if ($instanceerror) {
             $instanceerrorhtml =
                 get_string("{$instance::get_plugin_type()->value}_is_invalid", 'tool_userautodelete') .
-                '<br><b>' . get_string('error') . ":</b> {$instanceerror}";
+                '<br><b>' . get_string('error') . ':</b> ' . s($instanceerror);
             $mform->addElement('html', '<div class="alert alert-warning">' . $instanceerrorhtml . '</div>');
         }
 

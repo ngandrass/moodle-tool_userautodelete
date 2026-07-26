@@ -97,7 +97,7 @@ class dryrun_users_table extends \table_sql {
      */
     public function col_user($values) {
         $userurl = new moodle_url('/user/profile.php', ['id' => $values->id]);
-        return '<a href="' . $userurl . '">' . fullname($values) . ' (' . $values->username . ')</a>';
+        return '<a href="' . $userurl . '">' . s(fullname($values)) . ' (' . s($values->username) . ')</a>';
     }
 
     /**

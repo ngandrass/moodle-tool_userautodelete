@@ -54,8 +54,8 @@ class workflow_disable_form extends \moodleform {
         // Generic warning message.
         $warnhead = get_string('areyousure');
         $warnmsg = get_string('disable_workflow_warning', 'tool_userautodelete');
-        $warndetails  = '<b>' . $workflow->title . ' (ID: ' . $workflow->id . ')</b><br>';
-        $warndetails .= '<span>' . $workflow->description . '<br>';
+        $warndetails  = '<b>' . s($workflow->title) . ' (ID: ' . $workflow->id . ')</b><br>';
+        $warndetails .= '<span>' . s($workflow->description) . '<br>';
         $warndetails .= '<i class="fa-solid fa-user"></i>&nbsp;';
         $warndetails .= get_string('active_processes', 'tool_userautodelete', $numactiveprocesses) . '</span>';
 

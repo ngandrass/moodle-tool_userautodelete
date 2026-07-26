@@ -57,8 +57,8 @@ class workflow_enable_form extends \moodleform {
         // Generic warning message.
         $warnhead = get_string('areyousure');
         $warnmsg = get_string('enable_workflow_warning', 'tool_userautodelete');
-        $warndetails  = '<b>' . $workflow->title . ' (ID: ' . $workflow->id . ')</b><br>';
-        $warndetails .= '<span>' . $workflow->description . '</span>';
+        $warndetails  = '<b>' . s($workflow->title) . ' (ID: ' . $workflow->id . ')</b><br>';
+        $warndetails .= '<span>' . s($workflow->description) . '</span>';
 
         // Print warning element.
         $mform->addElement('html', $OUTPUT->notification(
