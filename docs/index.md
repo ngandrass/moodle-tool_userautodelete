@@ -68,6 +68,8 @@ request.
 [:material-bug: Issue Tracker](https://github.com/ngandrass/moodle-tool_userautodelete/issues){.md-button}
 &nbsp;&nbsp;&nbsp;
 [:material-code-tags: Developer Docs](dev/index.md){.md-button}
+&nbsp;&nbsp;&nbsp;
+[:material-security: Security Policy](security.md){.md-button}
 
 
 ## License

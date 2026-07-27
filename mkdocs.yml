@@ -114,6 +114,7 @@ nav:
   - "Introduction": index.md
   - "Screenshots": screenshots.md
   - "Changelog": changelog.md
+  - "Security Policy": security.md
 
   - "Getting Started":
     - getstarted/index.md
