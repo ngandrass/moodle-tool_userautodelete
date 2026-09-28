@@ -119,9 +119,9 @@ class dryrun_users_table extends \table_sql {
      */
     public function col_status($values) {
         if ($values->suspended) {
-            return '<span class="badge badge-danger rounded-pill text-bg-danger">' . get_string('suspended') . '</span>';
+            return '<span class="badge rounded-pill text-bg-danger">' . get_string('suspended') . '</span>';
         } else {
-            return '<span class="badge badge-primary rounded-pill text-bg-primary">' . get_string('active') . '</span>';
+            return '<span class="badge rounded-pill text-bg-primary">' . get_string('active') . '</span>';
         }
     }
 

@@ -123,10 +123,10 @@
                         <li class="list-group-item">
                             <b>{{#str}} status {{/str}}:</b>
                             {{#active}}
-                                <span class="badge badge-success">{{#str}} active {{/str}}</span>
+                                <span class="badge text-bg-success">{{#str}} active {{/str}}</span>
                             {{/active}}
                             {{^active}}
-                                <span class="badge badge-secondary">{{#str}} disabled, admin {{/str}}</span>
+                                <span class="badge text-bg-secondary">{{#str}} disabled, admin {{/str}}</span>
                             {{/active}}
                         </li>
                         <li class="list-group-item">
@@ -275,7 +275,7 @@
                             <div class="border-end pe-2 me-2">
                                 <i class="fa-solid fa-hashtag"></i>&nbsp;<b>{{sort}}</b>
                             </div>
-                            <div class="flex-grow-1 text-left">
+                            <div class="flex-grow-1 text-start">
                                 {{#title}}
                                     <b>{{title}}</b>
                                 {{/title}}
@@ -309,7 +309,7 @@
                         <div class="card-body">
                             <div>
                                 <div class="mb-2">
-                                    <span class="border rounded-pill px-3 py-1 font-weight-bold">
+                                    <span class="border rounded-pill px-3 py-1 fw-bold">
                                         <i class="fa-solid fa-filter"></i>&nbsp;
                                         {{#str}} filters, tool_userautodelete {{/str}}
                                     </span>
@@ -343,7 +343,7 @@
                                         {{/isediting}}
                                     >
                                         <div>
-                                            <div class="font-weight-bold">
+                                            <div class="fw-bold">
                                                 {{#iconclass}}
                                                     <i class="{{iconclass}} pe-1"></i>
                                                 {{/iconclass}}
@@ -387,7 +387,7 @@
                             <hr>
                             <div>
                                 <div class="mb-2">
-                                    <span class="border rounded-pill px-3 py-1 font-weight-bold">
+                                    <span class="border rounded-pill px-3 py-1 fw-bold">
                                         <i class="fa-solid fa-gears"></i>&nbsp;
                                         {{#str}} actions, tool_userautodelete {{/str}}
                                     </span>
@@ -421,7 +421,7 @@
                                         {{/isediting}}
                                     >
                                         <div>
-                                            <div class="font-weight-bold">
+                                            <div class="fw-bold">
                                                 {{#iconclass}}
                                                     <i class="{{iconclass}} pe-1"></i>
                                                 {{/iconclass}}

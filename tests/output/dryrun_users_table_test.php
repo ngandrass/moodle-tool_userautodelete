@@ -75,7 +75,7 @@ final class dryrun_users_table_test extends \advanced_testcase {
         $this->assertStringContainsString('/user/profile.php?id=' . $user->id, $html, 'Profile URL is missing');
         $this->assertStringContainsString('jdoe', $html, 'Username is missing from rendered table');
         $this->assertStringContainsString(userdate(1700000000), $html, 'Last access value is missing or incorrectly formatted');
-        $this->assertStringContainsString('badge-danger', $html, 'Suspended badge class is missing');
+        $this->assertStringContainsString('text-bg-danger', $html, 'Suspended badge class is missing');
         $this->assertStringContainsString(get_string('suspended'), $html, 'Suspended status label is missing');
         $this->assertStringContainsString(get_string('pluginname', 'auth_manual'), $html, 'Auth plugin label is missing');
     }
