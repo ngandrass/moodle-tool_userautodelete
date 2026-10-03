@@ -120,6 +120,43 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
+     * Tests that execute() triggers a user_updated event for the anonymized
+     * user, both for active and already deleted users.
+     *
+     * @covers \userdeleteaction_anonymize\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_triggers_user_updated_event(): void {
+        $this->resetAfterTest();
+
+        $activeuser = $this->getDataGenerator()->create_user();
+        $deleteduser = $this->getDataGenerator()->create_user();
+        delete_user($deleteduser);
+
+        $step = $this->create_step();
+        $action = $this->create_action($step);
+
+        foreach ([$activeuser, $deleteduser] as $user) {
+            $process = $this->create_process((int) $user->id, $step);
+
+            $sink = $this->redirectEvents();
+            $this->assertTrue($action->execute($process), 'anonymize action execute() must return true on success');
+            $events = array_values(array_filter(
+                $sink->get_events(),
+                fn($event) => $event instanceof \core\event\user_updated
+            ));
+            $sink->close();
+
+            $this->assertCount(1, $events, 'Exactly one user_updated event must be triggered');
+            $this->assertEquals($user->id, $events[0]->objectid, 'Event objectid must match the anonymized user');
+            $this->assertEquals($user->id, $events[0]->relateduserid, 'Event relateduserid must match the anonymized user');
+        }
+    }
+
+    /**
      * Tests that a default instance (no required settings) is considered valid.
      *
      * @covers \userdeleteaction_anonymize\userdeleteaction
