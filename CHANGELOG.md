@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDNN)
 
+- Add action sub-plugin that deletes all badges awarded to a user. See [Action: Delete Badges](https://moodleuserlifecycle.gandrass.de/actions/badge/) for more information. (Thanks to @marcusgreen !)
 - Ensure compatibility with Moodle 5.3
 - Migrate all `user_update_user()` calls to `\core\user::update_user()` for Moodle >= 5.3
 - Anonymize action now triggers `\core\event\user_updated` and terminates the user's sessions
