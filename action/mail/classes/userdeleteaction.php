@@ -183,9 +183,11 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
         }
 
         // Build the variable context and resolve references in subject and message.
+        // Substituted values are HTML-encoded for the HTML body. The text body is derived from it.
         $ctx = static::get_variable_context($user);
         $subject = variable_resolver::resolve($subject, $ctx);
-        $message = variable_resolver::resolve($message, $ctx);
+        $messagehtml = variable_resolver::resolve($message, $ctx, escapehtml: true);
+        $messagetext = html_to_text(nl2br($messagehtml));
 
         $recipienttype = recipient::from($this->get_instance_setting('recipient'));
 
@@ -195,8 +197,8 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
                     user: $admin,
                     from: get_admin(),
                     subject: $subject,
-                    messagetext: html_to_text(nl2br($message)),
-                    messagehtml: $message
+                    messagetext: $messagetext,
+                    messagehtml: $messagehtml
                 );
 
                 if (!$sent) {
@@ -216,8 +218,8 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
                 user: $customuser,
                 from: get_admin(),
                 subject: $subject,
-                messagetext: html_to_text(nl2br($message)),
-                messagehtml: $message
+                messagetext: $messagetext,
+                messagehtml: $messagehtml
             );
         }
 
@@ -230,8 +232,8 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
                 user: $user,
                 from: get_admin(),
                 subject: $subject,
-                messagetext: html_to_text(nl2br($message)),
-                messagehtml: $message
+                messagetext: $messagetext,
+                messagehtml: $messagehtml
             );
         }
 

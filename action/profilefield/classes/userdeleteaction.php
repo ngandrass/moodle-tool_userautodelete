@@ -171,7 +171,12 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
             if (str_starts_with($field, self::PREFIX_STD)) {
                 // Handle standard core user fields.
                 $fieldname = substr($field, strlen(self::PREFIX_STD));
-                user_update_user((object)['id' => $process->userid, $fieldname => $value], false, false);
+
+                if ($CFG->branch <= 502) {
+                    user_update_user((object)['id' => $process->userid, $fieldname => $value], false, false);
+                } else {
+                    \core\user::update_user((object)['id' => $process->userid, $fieldname => $value], false, false);
+                }
             } else if (str_starts_with($field, self::PREFIX_CUSTOM)) {
                 // Handle custom user fields.
                 $shortname = substr($field, strlen(self::PREFIX_CUSTOM));

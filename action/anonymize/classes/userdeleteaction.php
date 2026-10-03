@@ -77,10 +77,10 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
         global $DB;
 
         // We purposfully do not call user_update_user() here to circumvent any checks that might
-        // prevent storing the anonymized values inside the user record.
-        // Writing directly into the user table without calling user_update_user() is desired for
-        // this use case. Please do not flag it in reviews.
-        return $DB->update_record('user', [
+        // prevent storing the anonymized values inside the user record. The side effects of
+        // user_update_user() are replayed manually below instead. Writing directly into the user
+        // table without calling user_update_user() is desired for this use case.
+        $success = $DB->update_record('user', [
             'id' => $process->userid,
             'username' => "DELETED-USER-{$process->userid}",
             'password' => AUTH_PASSWORD_NOT_CACHED,
@@ -107,6 +107,17 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
             'moodlenetprofile' => '',
             'timemodified' => time(),
         ]);
+        if (!$success) {
+            return false;
+        }
+
+        // Terminate all sessions to ensure that no stale copy of the user record survives.
+        \core\session\manager::destroy_user_sessions($process->userid);
+
+        // Notify observers (e.g., global search, external user sync) so they can drop stale PII.
+        \core\event\user_updated::create_from_userid($process->userid)->trigger();
+
+        return true;
     }
 
     /**

@@ -134,6 +134,30 @@ final class variable_resolver_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that resolve() HTML-encodes substituted values only if requested and
+     * leaves the template markup itself untouched.
+     *
+     * @covers \tool_userautodelete\local\variable_resolver
+     *
+     * @return void
+     */
+    public function test_resolve_escapes_html_in_values_if_requested(): void {
+        $context = ['user' => ['firstname' => '<a href="x">Evil</a> & Co']];
+        $template = '<p>Hello {{user.firstname}}</p>';
+
+        $this->assertSame(
+            '<p>Hello &lt;a href=&quot;x&quot;&gt;Evil&lt;/a&gt; &amp; Co</p>',
+            variable_resolver::resolve($template, $context, escapehtml: true),
+            'Substituted values must be HTML-encoded while template markup is kept.'
+        );
+        $this->assertSame(
+            '<p>Hello <a href="x">Evil</a> & Co</p>',
+            variable_resolver::resolve($template, $context),
+            'Substituted values must be returned verbatim by default.'
+        );
+    }
+
+    /**
      * Tests that has_unresolved_variables() reports false when all variables were resolved.
      *
      * @covers \tool_userautodelete\local\variable_resolver

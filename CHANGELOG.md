@@ -1,5 +1,13 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Ensure compatibility with Moodle 5.3
+- Migrate all `user_update_user()` calls to `\core\user::update_user()` for Moodle >= 5.3
+- Anonymize action now triggers `\core\event\user_updated` and terminates the user's sessions
+- Escape HTML special chars in user profile fields when using in mail templates
+
+
 ## Version 2.4.0 (2026072600)
 
 - Create a course enrolment filter that allows to select users based on whether they are currently enrolled in at least one course or not. See [Filter: Course Enrolment](https://moodleuserlifecycle.gandrass.de/filters/enrolment/) for more information. (Thanks to @35grain !)
