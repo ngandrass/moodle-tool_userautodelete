@@ -41,3 +41,8 @@ Moodle and cannot be removed by this action.
 ## Settings
 
 This action has no configurable settings.
+
+
+## Example
+
+![Example screenshot of the instance settings for the delete badges action](../assets/screenshots/userdeleteaction_badge_example.png)
