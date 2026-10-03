@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 2.5.0 (2026100300)
 
 - Add action sub-plugin that deletes all badges awarded to a user. See [Action: Delete Badges](https://moodleuserlifecycle.gandrass.de/actions/badge/) for more information. (Thanks to @marcusgreen !)
 - Ensure compatibility with Moodle 5.3
