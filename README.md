@@ -52,6 +52,7 @@ More information about the plugin and a comprehensive
 - Action subplugins to perform various operations. Core actions available:
   - Anonymize user account (GDPR compliance)
   - Cohort membership changes
+  - Delete badges awarded to user
   - Delete user
   - Profile field changes (standard and custom)
   - Send mail to user, site admins, or custom address
