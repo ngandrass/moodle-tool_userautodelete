@@ -75,7 +75,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * @throws \dml_exception
      */
     public function execute(process $process): bool {
-        global $DB;
+        global $CFG, $DB;
 
         $user = $DB->get_record('user', ['id' => $process->userid], '*', MUST_EXIST);
 
@@ -83,7 +83,12 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
             if ($user->suspended != 0) {
                 $user->suspended = 0;
                 $user->timemodified = time();
-                user_update_user($user, false);
+
+                if ($CFG->branch <= 502) {
+                    user_update_user($user, false);
+                } else {
+                    \core\user::update_user($user, false);
+                }
             }
         } catch (\moodle_exception) {
             return false;
