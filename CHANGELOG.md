@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDNN)
 
 - Ensure compatibility with Moodle 5.3
+- Migrate all `user_update_user()` calls to `\core\user::update_user()` for Moodle >= 5.3
 
 
 ## Version 2.4.0 (2026072600)
