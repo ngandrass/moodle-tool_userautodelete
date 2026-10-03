@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Tests for the userdeleteaction_badges sub-plugin
+ * Tests for the userdeleteaction_badge sub-plugin
  *
- * @package     userdeleteaction_badges
+ * @package     userdeleteaction_badge
  * @category    test
  * @author      Marcus Green
  * @copyright   2026 Catalyst-EU
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace userdeleteaction_badges;
+namespace userdeleteaction_badge;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die();
@@ -33,14 +33,14 @@ require_once(__DIR__ . '/../../../tests/userdeleteaction_testcase.php');
 
 
 /**
- * Unit tests for the userdeleteaction_badges sub-plugin
+ * Unit tests for the userdeleteaction_badge sub-plugin
  */
 final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_testcase {
     /**
      * Returns the short plugin name of the action sub-plugin under test.
      */
     protected function get_plugin_name(): string {
-        return 'badges';
+        return 'badge';
     }
 
     /**
@@ -84,7 +84,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
      * Tests that execute() removes all badge data of the process user, keeps
      * badge data of other users, and returns true.
      *
-     * @covers \userdeleteaction_badges\userdeleteaction
+     * @covers \userdeleteaction_badge\userdeleteaction
      *
      * @return void
      * @throws \dml_exception
@@ -115,7 +115,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $process = $this->create_process((int) $user->id, $step);
 
         // Execute and assert success.
-        $this->assertTrue($action->execute($process), 'badges action execute() must return true on success');
+        $this->assertTrue($action->execute($process), 'badge action execute() must return true on success');
 
         // Badge data of the process user must be gone.
         $this->assertFalse($DB->record_exists('badge_issued', ['userid' => $user->id]));
@@ -140,7 +140,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
      * Tests that execute() also removes badge data of users that were already
      * deleted by Moodle's delete_user(), e.g., by a preceding delete action.
      *
-     * @covers \userdeleteaction_badges\userdeleteaction
+     * @covers \userdeleteaction_badge\userdeleteaction
      *
      * @return void
      * @throws \dml_exception
@@ -168,7 +168,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     /**
      * Tests that execute() succeeds for users without any badges.
      *
-     * @covers \userdeleteaction_badges\userdeleteaction
+     * @covers \userdeleteaction_badge\userdeleteaction
      *
      * @return void
      * @throws \dml_exception
@@ -188,7 +188,7 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     /**
      * Tests that a default instance (no required settings) is considered valid.
      *
-     * @covers \userdeleteaction_badges\userdeleteaction
+     * @covers \userdeleteaction_badge\userdeleteaction
      *
      * @return void
      * @throws \dml_exception
@@ -200,13 +200,13 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $this->assertTrue($action->is_valid(), 'badges action without settings must be valid by default');
+        $this->assertTrue($action->is_valid(), 'badge action without settings must be valid by default');
     }
 
     /**
      * Tests that get_instance_details() returns an empty string (no settings).
      *
-     * @covers \userdeleteaction_badges\userdeleteaction
+     * @covers \userdeleteaction_badge\userdeleteaction
      *
      * @return void
      * @throws \dml_exception
@@ -218,6 +218,6 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
         $step = $this->create_step();
         $action = $this->create_action($step);
 
-        $this->assertSame('', $action->get_instance_details(), 'badges action get_instance_details() must return empty string');
+        $this->assertSame('', $action->get_instance_details(), 'badge action get_instance_details() must return empty string');
     }
 }

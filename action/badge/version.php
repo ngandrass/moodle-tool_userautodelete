@@ -15,18 +15,23 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Plugin version and other meta-data are defined here.
  *
- * @package     userdeleteaction_badges
- * @category    string
+ * @package     userdeleteaction_badge
  * @author      Marcus Green
  * @copyright   2026 Catalyst-EU
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// @codingStandardsIgnoreFile
-
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$string['pluginname'] = 'Delete badges';
-$string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$plugin->component = 'userdeleteaction_badge';
+$plugin->release = '1.0.0';
+$plugin->version = 2026092400;
+$plugin->requires = 2024100700;
+$plugin->supported = [405, 502]; // X meta-supported-moodle{4.5 - 5.2} meta-supported-php{8.1 - 8.4}.
+$plugin->maturity = MATURITY_STABLE;
+$plugin->dependencies = [
+    'tool_userautodelete' => 2026072600,
+];

@@ -17,20 +17,20 @@
 /**
  * Privacy provider class for this plugin.
  *
- * @package   userdeleteaction_badges
+ * @package   userdeleteaction_badge
  * @author    Marcus Green
  * @copyright 2026 Catalyst-EU
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace userdeleteaction_badges\privacy;
+namespace userdeleteaction_badge\privacy;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
- * Privacy provider for userdeleteaction_badges
+ * Privacy provider for userdeleteaction_badge
  *
  * @codeCoverageIgnore This is handled by Moodle core tests
  */

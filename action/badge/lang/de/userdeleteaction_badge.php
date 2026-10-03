@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     userdeleteaction_badges
+ * @package     userdeleteaction_badge
  * @category    string
  * @author      Marcus Green
  * @copyright   2026 Catalyst-EU

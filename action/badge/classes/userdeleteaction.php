@@ -17,13 +17,13 @@
 /**
  * User action that deletes all badges awarded to users.
  *
- * @package     userdeleteaction_badges
+ * @package     userdeleteaction_badge
  * @author      Marcus Green
  * @copyright   2026 Catalyst-EU
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace userdeleteaction_badges;
+namespace userdeleteaction_badge;
 
 use core_privacy\local\request\approved_contextlist;
 use tool_userautodelete\local\type\instance_setting_descriptor;
@@ -43,7 +43,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * @return string The name of this filter sub-plugin
      */
     public static function get_plugin_name(): string {
-        return 'badges';
+        return 'badge';
     }
 
     /**
@@ -65,7 +65,7 @@ class userdeleteaction extends \tool_userautodelete\userdeleteaction {
      * null if no additional documentation is available
      */
     public static function get_help_url(): ?\moodle_url {
-        return new \moodle_url("https://moodleuserlifecycle.gandrass.de/actions/badges/");
+        return new \moodle_url("https://moodleuserlifecycle.gandrass.de/actions/badge/");
     }
 
     /**
