@@ -5,6 +5,7 @@
 - Ensure compatibility with Moodle 5.3
 - Migrate all `user_update_user()` calls to `\core\user::update_user()` for Moodle >= 5.3
 - Anonymize action now triggers `\core\event\user_updated` and terminates the user's sessions
+- Escape HTML special chars in user profile fields when using in mail templates
 
 
 ## Version 2.4.0 (2026072600)

@@ -657,6 +657,46 @@ final class userdeleteaction_test extends \tool_userautodelete\userdeleteaction_
     }
 
     /**
+     * Tests that execute() HTML-encodes substituted user profile values in the
+     * HTML message body so that they cannot inject markup.
+     *
+     * @covers \userdeleteaction_mail\userdeleteaction
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute_escapes_html_in_substituted_values(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        // Write the name directly to the DB to bypass core's input cleaning on user creation.
+        $user = $this->getDataGenerator()->create_user();
+        $DB->set_field('user', 'firstname', '<b>Evil</b> & Co', ['id' => $user->id]);
+        $step = $this->create_step();
+        $action = $this->create_action($step, [
+            'recipient' => recipient::ADMINS->value,
+            'subject'   => 'User: {{user.firstname}}',
+            'message'   => '<p>Name: {{user.firstname}}</p>',
+        ]);
+        $process = $this->create_process((int) $user->id, $step);
+
+        $mailsink = $this->redirectEmails();
+        $action->execute($process);
+        $mailsink->close();
+
+        $messages = $mailsink->get_messages();
+        $this->assertNotEmpty($messages, 'At least one email must be sent.');
+        foreach ($messages as $msg) {
+            $this->assertStringContainsString(
+                '<p>Name: &lt;b&gt;Evil&lt;/b&gt; &amp; Co</p>',
+                $msg->body,
+                'Substituted values must be HTML-encoded in the HTML body while template markup is kept.'
+            );
+        }
+    }
+
+    /**
      * Tests that execute() with recipient set to 'custom' delivers the email to
      * the configured custom address and not to the process user.
      *

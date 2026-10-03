@@ -48,17 +48,19 @@ final class variable_resolver {
      * @param string $template The template string containing variable references
      * @param array $context Nested associative array of resolved values in the
      * form ['namespace' => ['key' => 'value']]
+     * @param bool $escapehtml If true, substituted values are HTML-encoded for safe use in HTML output
      * @return string The template with all resolvable variables replaced by their values
      */
-    public static function resolve(string $template, array $context): string {
+    public static function resolve(string $template, array $context, bool $escapehtml = false): string {
         return preg_replace_callback(
             self::VARIABLE_PATTERN,
-            function (array $matches) use ($context): string {
+            function (array $matches) use ($context, $escapehtml): string {
                 $namespace = $matches[1];
                 $key = $matches[2];
 
                 if (isset($context[$namespace][$key])) {
-                    return (string) $context[$namespace][$key];
+                    $value = (string) $context[$namespace][$key];
+                    return $escapehtml ? s($value) : $value;
                 }
 
                 // Variable not found in context - leave unreplaced.
