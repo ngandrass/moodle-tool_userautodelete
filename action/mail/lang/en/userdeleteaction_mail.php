@@ -27,7 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$string['pluginname'] = 'Send mail';
+$string['pluginname'] = 'Send Mail';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 $string['error_customrecipient_invalid'] = 'The custom recipient email address is not valid.';
 $string['error_customrecipient_required'] = 'A recipient email address is required when the recipient type is set to "Custom address".';

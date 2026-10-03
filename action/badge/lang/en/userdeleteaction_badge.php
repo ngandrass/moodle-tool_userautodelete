@@ -28,5 +28,5 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-$string['pluginname'] = 'Delete badges';
+$string['pluginname'] = 'Delete Badges';
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
