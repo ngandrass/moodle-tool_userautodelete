@@ -580,13 +580,17 @@ final class step_test extends \advanced_testcase {
     public function test_get_timeoutsec(): void {
         $this->resetAfterTest();
 
-        // If next step has no delay filter, timeout should fall back to WEEKSECS.
+        // If next step has no delay filter, timeout should fall back to the grace period.
         $workflow = workflow::create('Workflow', 'Description');
         $step1 = step::create(workflow: $workflow, title: 'Step 1', description: '');
         $step2 = step::create(workflow: $workflow, title: 'Step 2', description: '');
         userdeletefilter::create_instance($step2, 'suspension');
 
-        $this->assertSame(WEEKSECS, $step1->timeoutsec, 'Timeout should default to one week when no delay filter is present');
+        $this->assertSame(
+            step::TIMEOUT_GRACE_SEC,
+            $step1->timeoutsec,
+            'Timeout should default to the grace period when no delay filter is present'
+        );
         $this->assertNull($step2->timeoutsec, 'Final step should not have a timeout');
 
         // If next step has multiple delay filters, the longest one should be used.
@@ -597,6 +601,10 @@ final class step_test extends \advanced_testcase {
         userdeletefilter::create_instance($delayed, 'delay', ['delaysec' => DAYSECS * 3]);
         userdeletefilter::create_instance($delayed, 'suspension');
 
-        $this->assertSame(DAYSECS * 3, $entry->timeoutsec, 'Timeout should use the longest configured delay in the next step');
+        $this->assertSame(
+            DAYSECS * 3 + step::TIMEOUT_GRACE_SEC,
+            $entry->timeoutsec,
+            'Timeout should use the longest configured delay in the next step plus the grace period'
+        );
     }
 }

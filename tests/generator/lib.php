@@ -197,8 +197,9 @@ class tool_userautodelete_generator extends \testing_data_generator {
      *
      * Step 1 (ingestion): Matches users whose last access is older than
      * $lastaccessthresholdsec seconds. On entry the user is suspended.
-     * The step timeout equals the delay configured in step 2 so that the
-     * cleanup task can abort stale processes automatically.
+     * The step timeout equals the delay configured in step 2 plus the step
+     * timeout grace period so that the cleanup task can abort stale processes
+     * automatically.
      *
      * Step 2 (deletion): Matches users who have been in step 1 for at least
      * $delaysec seconds (via the delay filter). On entry the user is deleted.
@@ -250,7 +251,8 @@ class tool_userautodelete_generator extends \testing_data_generator {
      * Workflows:
      *  - lastaccess_lifecycle (active): Step 1 ingests users inactive for
      *    more than YEARSECS and suspends them. Step 2 deletes them after a
-     *    30-day delay (DAYSECS * 30). Step 1 timeout equals the step-2 delay.
+     *    30-day delay (DAYSECS * 30). Step 1 timeout equals the step-2 delay
+     *    plus the step timeout grace period.
      *
      * Users:
      *  - recent:         Last access = now. Never matched by the ingestion filter.

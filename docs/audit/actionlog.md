@@ -37,6 +37,6 @@ In addition to action plugin executions, the log also records the following syst
 
 | Event                                      | When it appears                                                                                                                                                   |
 |--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Process timed out**                      | A user's process was automatically aborted because it exceeded the step's configured timeout (enforced by the daily cleanup task).                                |
+| **Process timed out**                      | A user's process was automatically aborted because it exceeded the step's timeout (longest delay of the next step plus one week).                                 |
 | **Process aborted (manual)**               | An administrator manually aborted a specific user's process via the user process management page.                                                                 |
 | **Process aborted (workflow deactivated)** | A workflow was deactivated, causing all active user processes to be aborted. One entry is created per step that had active processes at the time of deactivation. |

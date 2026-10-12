@@ -226,7 +226,7 @@ final class endtoend_scenario_test extends \advanced_testcase {
         $workflow = $scenario['workflow'];
         $step1 = $workflow->steps[0];
         $step2 = $workflow->steps[1];
-        $delaysec = $step1->timeoutsec; // Equals step-2 delay filter value.
+        $delaysec = (int) $step2->filters[0]->get_instance_setting('delaysec');
 
         // Run 1: stale users are ingested into step 1 and suspended.
         $manager->execute();
