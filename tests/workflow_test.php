@@ -1445,4 +1445,77 @@ final class workflow_test extends \advanced_testcase {
         $this->assertSame($firststep->id, (int) $log->stepid, 'Log entry must reference the step that had active processes');
         $this->assertSame(2, (int) $log->affectedusers, 'Log entry must count both aborted processes');
     }
+
+    /**
+     * Tests that cleanup_processes() does not abort processes that just missed
+     * a delay-based transition by a few seconds, but still aborts processes
+     * that exceed the step timeout including its grace period.
+     *
+     * @covers \tool_userautodelete\workflow
+     * @covers \tool_userautodelete\step
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_cleanup_processes_respects_timeout_grace_period(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Prepare active workflow with a delay filter in step 2.
+        $delaysec = DAYSECS * 30;
+        $workflow = $this->get_userautodelete_generator()->create_lastaccess_lifecycle_workflow(delaysec: $delaysec);
+        $firststep = $workflow->steps[0];
+
+        $lastaccess = time() - YEARSECS - DAYSECS;
+        $delayeduser = $this->getDataGenerator()->create_user(['lastaccess' => $lastaccess]);
+        $timedoutuser = $this->getDataGenerator()->create_user(['lastaccess' => $lastaccess]);
+        $delayedprocess = process::create((int) $delayeduser->id, $workflow);
+        $timedoutprocess = process::create((int) $timedoutuser->id, $workflow);
+
+        // Process misses the transition by a few seconds and must stay in step 1.
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $delayedprocess->id,
+            'timemodified' => time() - $delaysec + 5,
+        ]);
+        $workflow->process();
+        $this->assertSame(
+            $firststep->id,
+            process::get_by_id($delayedprocess->id)->stepid,
+            'Process must not transition before the delay has passed'
+        );
+
+        // Once the delay has passed, cleanup must not abort the process before the workflow had a chance to transition it.
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $delayedprocess->id,
+            'timemodified' => time() - $delaysec - HOURSECS,
+        ]);
+        $workflow->cleanup_processes();
+        $this->assertSame(
+            process_state::ACTIVE,
+            process::get_by_id($delayedprocess->id)->state,
+            'Cleanup must not abort a process that is still within the timeout grace period'
+        );
+
+        // The next workflow run must transition and finish the process.
+        $workflow->process();
+        $this->assertSame(
+            process_state::FINISHED,
+            process::get_by_id($delayedprocess->id)->state,
+            'Process must transition to the final step after the delay has passed'
+        );
+
+        // Processes exceeding the timeout including the grace period must still be aborted.
+        $DB->update_record(db_table::USER_PROCESS->value, [
+            'id' => $timedoutprocess->id,
+            'timemodified' => time() - $firststep->timeoutsec - 30,
+        ]);
+        $workflow->cleanup_processes();
+        $this->assertSame(
+            process_state::ABORTED,
+            process::get_by_id($timedoutprocess->id)->state,
+            'Cleanup must abort processes that exceed the timeout including the grace period'
+        );
+    }
 }
