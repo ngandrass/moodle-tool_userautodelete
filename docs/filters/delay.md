@@ -17,6 +17,11 @@ further actions.
     If you want to check how long a user has been inactive on your Moodle site before ingesting them into the workflow,
     please use the [last access filter](lastaccess.md) instead!
 
+!!! info "Process timeout"
+    User processes that do not transition to the next step are aborted by the cleanup task once they exceed the
+    timeout of their current step. This timeout is the longest delay configured in the next step plus a grace period
+    of one week. If the next step has no time delay filter, the timeout is one week.
+
 
 ## Settings
 

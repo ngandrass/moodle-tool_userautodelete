@@ -81,10 +81,10 @@ terminated without reaching the end of a workflow. For example, if a user gets s
 then becomes active again. In this case, the user process should not advance to the deletion step of the workflow but
 should be terminated prematurely.
 
-This plugin automatically terminates idle user processes based on the time a user process spent in a step. If a step has
-a [time delay filter](../filters/delay.md), the configured delay time is used as a threshold for termination. If no
-explicit delay is given, processes that stayed inside a single step for more than 7 days will be terminated
-automatically.
+This plugin automatically terminates idle user processes based on the time an individual user process spent in a step.
+By default, the timeout threshold is set to 7 days. If a step has a [time delay filter](../filters/delay.md), the
+configured delay time is added on top of the existing 7-day threshold, thereby terminating stale processes 7 days after
+the configured delay passed. 
 
 
 ## Time of execution
