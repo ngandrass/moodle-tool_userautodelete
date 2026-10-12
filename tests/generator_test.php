@@ -335,7 +335,11 @@ final class generator_test extends \advanced_testcase {
         $this->assert_step_subplugins($steps[1], ['delay'], ['delete']);
         $this->assertSame($thresholdsec, (int) $steps[0]->filters[0]->get_instance_setting('thresholdsec'));
         $this->assertSame($delaysec, (int) $steps[1]->filters[0]->get_instance_setting('delaysec'));
-        $this->assertSame($delaysec, $steps[0]->timeoutsec, 'First step timeout should match step-2 delay');
+        $this->assertSame(
+            $delaysec + step::TIMEOUT_GRACE_SEC,
+            $steps[0]->timeoutsec,
+            'First step timeout should match step-2 delay plus grace period'
+        );
         $this->assertNull($steps[1]->timeoutsec, 'Final lifecycle step should not have a timeout');
     }
 
