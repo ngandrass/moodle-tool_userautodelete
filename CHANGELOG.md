@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 2.5.1 (2026101200)
 
 - Add a unified grace period for user process timeouts that is added to the steps delay
 - Fix race condition between user process timeout and scheduled task execution
