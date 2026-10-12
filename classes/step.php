@@ -43,12 +43,22 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @property-read userdeletefilter[] $filters The user filters linked to this step
  * @property-read userdeleteaction[] $actions The user actions linked to this step
  * @property-read int|null $timeoutsec Number of seconds after which a process in this step
- * is considered as inactive and can be aborted. Null values indicate that there is no timeout.
+ * is considered as inactive and can be aborted. This is the longest delay of the next step plus
+ * TIMEOUT_GRACE_SEC. Null values indicate that there is no timeout.
  * @property-read int $sort Position of this step in relation to the steps of the same workflow
  * @property-read string|null $title Optional custom title for this step
  * @property-read string|null $description Optional custom description for this step
  */
 class step {
+    /**
+     * @var int Grace period that is added to the longest delay filter of the next step when
+     * determining the timeout of a process in this step. This ensures that processes are not
+     * aborted by the cleanup task before the workflow task had a chance to transition them,
+     * e.g., due to cron jitter or long-running batches. If the next step has no delay filter,
+     * this value is used as the timeout.
+     */
+    public const TIMEOUT_GRACE_SEC = WEEKSECS;
+
     /** @var userdeletefilter[]|null Lazy-loaded user filter instances linked to this step */
     protected ?array $filters = null;
 
@@ -173,7 +183,10 @@ class step {
 
     /**
      * Determines the number of seconds a user process has to stay untouched
-     * within this step to be considered as inactive and applicable for cleanup
+     * within this step to be considered as inactive and applicable for cleanup.
+     *
+     * The timeout is the longest delay filter of the next step plus TIMEOUT_GRACE_SEC.
+     * If the next step has no delay filter, TIMEOUT_GRACE_SEC is used as timeout.
      *
      * @return int|null Number of seconds before a process in this step is
      * considered as timed out
@@ -196,7 +209,7 @@ class step {
             }
         }
 
-        return $maxdelaysec ?: WEEKSECS;
+        return $maxdelaysec + self::TIMEOUT_GRACE_SEC;
     }
 
     /**

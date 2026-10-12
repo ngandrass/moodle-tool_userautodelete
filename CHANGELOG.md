@@ -1,5 +1,11 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Add a unified grace period for user process timeouts that is added to the steps delay
+- Fix race condition between user process timeout and scheduled task execution
+
+
 ## Version 2.5.0 (2026100300)
 
 - Add action sub-plugin that deletes all badges awarded to a user. See [Action: Delete Badges](https://moodleuserlifecycle.gandrass.de/actions/badge/) for more information. (Thanks to @marcusgreen !)
